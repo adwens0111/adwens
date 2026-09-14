@@ -1,4 +1,4 @@
-/* ADWENS product-page widgets v3.3 (COORD + verified SIZEFIT) */
+/* ADWENS product-page widgets v3.4 (COORD + verified SIZEFIT) */
 (function () {
   'use strict';
   var itemMatch = location.pathname.match(/^\/items\/(\d+)/);
@@ -130,13 +130,12 @@
     return normalizeFit(raw);
   }
   function nearest(arr, value) {
-    var best = 0;
-    var distance = Infinity;
-    for (var i = 0; i < arr.length; i++) {
-      var d = Math.abs(arr[i] - value);
-      if (d < distance) { distance = d; best = i; }
+    var selected = 0;
+    for (var i = 0; i < arr.length - 1; i++) {
+      if (value >= arr[i] + 2) selected = i + 1;
+      else break;
     }
-    return best;
+    return selected;
   }
   function cell(fit, row, col) {
     return SIZE_MAP[(fit.G[row] || '').charAt(col)] || '';
