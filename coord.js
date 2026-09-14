@@ -1,4 +1,4 @@
-/* ADWENS product-page widgets v3.4 (COORD + verified SIZEFIT) */
+/* ADWENS product-page widgets v3.5 (COORD + verified SIZEFIT) */
 (function () {
   'use strict';
   var itemMatch = location.pathname.match(/^\/items\/(\d+)/);
@@ -94,7 +94,8 @@
       W: Array.isArray(raw.W) ? raw.W.map(Number).filter(function (x) { return !isNaN(x); }) : [],
       G: Array.isArray(raw.G) ? raw.G.map(function (r) { return String(r).trim(); }) : [],
       N: raw.N ? String(raw.N) : '',
-      R: String(raw.R || 'H').toUpperCase() === 'W' ? 'W' : 'H'
+      R: String(raw.R || 'H').toUpperCase() === 'W' ? 'W' : 'H',
+      O: Array.isArray(raw.O) ? raw.O : []
     };
     if (!fit.H.length || !fit.W.length) return null;
     if (fit.R === 'W') {
@@ -163,12 +164,25 @@
       var ri = nearest(fit.H, h);
       var ci = nearest(fit.W, w);
       var main = cell(fit, ri, ci);
+      var overridden = false;
+      for (var oi = 0; oi < fit.O.length; oi++) {
+        var rule = fit.O[oi] || {};
+        var inHeight = (rule.HMIN == null || h >= Number(rule.HMIN)) && (rule.HMAX == null || h <= Number(rule.HMAX));
+        var inWeight = (rule.WMIN == null || w >= Number(rule.WMIN)) && (rule.WMAX == null || w <= Number(rule.WMAX));
+        if (inHeight && inWeight) {
+          main = SIZE_MAP[String(rule.S || '')] || String(rule.S || '');
+          overridden = !!main;
+          break;
+        }
+      }
       if (!main) { out.innerHTML = ''; return; }
       var tips = [];
-      var up = ri + 1 < fit.H.length ? cell(fit, ri + 1, ci) : '';
-      var down = ri > 0 ? cell(fit, ri - 1, ci) : '';
-      if (up && up !== main) tips.push('ゆったり履きたい方は <b style="color:' + GOLD + '">' + up + '</b>');
-      if (down && down !== main) tips.push('タイトに履きたい方は <b style="color:' + GOLD + '">' + down + '</b>');
+      if (!overridden) {
+        var up = ri + 1 < fit.H.length ? cell(fit, ri + 1, ci) : '';
+        var down = ri > 0 ? cell(fit, ri - 1, ci) : '';
+        if (up && up !== main) tips.push('ゆったり履きたい方は <b style="color:' + GOLD + '">' + up + '</b>');
+        if (down && down !== main) tips.push('タイトに履きたい方は <b style="color:' + GOLD + '">' + down + '</b>');
+      }
       out.innerHTML = '<div style="position:relative;padding:36px 12px 12px;background:#111;border-left:3px solid ' + GOLD + ';">'
         + '<button type="button" data-sizefit-close aria-label="診断結果を閉じる" style="position:absolute;top:7px;right:8px;width:28px;height:28px;padding:0;border:1px solid #555;border-radius:50%;background:transparent;color:#ddd;font-size:20px;line-height:24px;cursor:pointer;">×</button>'
         + '<p style="margin:0;font-size:12px;color:#bbb;">身長 ' + h + 'cm / 体重 ' + w + 'kg のおすすめ</p>'
