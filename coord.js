@@ -1,8 +1,9 @@
-/* ADWENS product-page widgets v3.0 (COORD + verified SIZEFIT) */
+/* ADWENS product-page widgets v3.1 (COORD + verified SIZEFIT) */
 (function () {
   'use strict';
   var itemMatch = location.pathname.match(/^\/items\/(\d+)/);
   if (!itemMatch) return;
+
 
   var ITEM_ID = itemMatch[1];
   var GOLD = '#c9a227';
@@ -11,6 +12,7 @@
   var RE_COORD = /\[COORD:([\d,\s]+)(?:\|([^\]]*))?\]/;
   var RE_FIT = /\[SIZEFIT:([^\]]+)\]/;
   var SIZE_MAP = { S: 'S', M: 'M', L: 'L', X: 'XL', '2': '2XL', '3': '3XL', A: 'XS', F: 'FREE' };
+
 
   function esc(s) {
     return String(s).replace(/[&<>"]/g, function (c) {
@@ -35,6 +37,7 @@
     after.nodeValue = after.nodeValue.slice(mt[0].length);
     node.parentNode.insertBefore(box, after);
   }
+
 
   /* ---------- COORD ---------- */
   function fetchItem(id) {
@@ -81,6 +84,7 @@
       return fetchItem(id).catch(function () { return { id: id, n: '商品ページを見る', g: '', p: 0 }; });
     })).then(function (items) { row.innerHTML = items.map(card).join(''); });
   }
+
 
   /* ---------- SIZEFIT ---------- */
   function normalizeFit(raw) {
@@ -188,7 +192,8 @@
     var fit = normalizeFit(raw);
     if (!fit) return;
     var box = buildFitBox(fit);
-    var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
+    var scope = document.querySelector('.item-description') || document.querySelector('main') || document.body;
+    var walker = document.createTreeWalker(scope, NodeFilter.SHOW_TEXT, null, false);
     var n;
     while ((n = walker.nextNode())) {
       if (/SIZE\s*GUIDE/i.test(n.nodeValue || '')) {
@@ -197,7 +202,7 @@
         if (anchor && anchor.parentNode) { anchor.parentNode.insertBefore(box, anchor); return; }
       }
     }
-    var fallback = document.querySelector('main') || document.body;
+    var fallback = scope;
     fallback.appendChild(box);
   }
   function loadVerifiedFit() {
@@ -207,6 +212,7 @@
       .then(function (data) { if (data && data[ITEM_ID]) insertAutoFit(data[ITEM_ID]); })
       .catch(function () {});
   }
+
 
   var busy = false;
   function run() {
