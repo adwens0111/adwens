@@ -1,4 +1,4 @@
-/* ADWENS product-page widgets v3.2 (COORD + verified SIZEFIT) */
+/* ADWENS product-page widgets v3.3 (COORD + verified SIZEFIT) */
 (function () {
   'use strict';
   var itemMatch = location.pathname.match(/^\/items\/(\d+)/);
@@ -183,18 +183,7 @@
     inputs[1].addEventListener('keydown', function (e) { if (e.key === 'Enter') diagnose(); });
     return box;
   }
-  function renderFitMarker(node) {
-    var mt = node.nodeValue.match(RE_FIT);
-    if (!mt) return;
-    var fit = parseFitMarker(mt[1]);
-    var box = fit ? buildFitBox(fit) : document.createElement('span');
-    replaceMarker(node, mt, box);
-  }
-  function insertAutoFit(raw) {
-    if (document.querySelector('[data-adwens-sizefit]') || findMarkers(RE_FIT).length) return;
-    var fit = normalizeFit(raw);
-    if (!fit) return;
-    var box = buildFitBox(fit);
+  function placeFitBox(box) {
     var variation = document.querySelector('#variationSelectWrap');
     if (variation && variation.parentNode) {
       variation.parentNode.insertBefore(box, variation);
@@ -207,6 +196,29 @@
     }
     var fallback = document.querySelector('.item-description') || document.querySelector('main') || document.body;
     fallback.appendChild(box);
+  }
+  function renderFitMarker(node) {
+    var mt = node.nodeValue.match(RE_FIT);
+    if (!mt) return;
+    var markerFit = parseFitMarker(mt[1]);
+    var box = markerFit ? buildFitBox(markerFit) : document.createElement('span');
+    replaceMarker(node, mt, box);
+    placeFitBox(box);
+    fetch(SIZEFIT_URL, { cache: 'no-store' })
+      .then(function (r) { if (!r.ok) throw new Error('sizefit ' + r.status); return r.json(); })
+      .then(function (data) {
+        var verifiedFit = data && data[ITEM_ID] ? normalizeFit(data[ITEM_ID]) : null;
+        if (!verifiedFit || !box.parentNode) return;
+        var verifiedBox = buildFitBox(verifiedFit);
+        box.parentNode.replaceChild(verifiedBox, box);
+      })
+      .catch(function () {});
+  }
+  function insertAutoFit(raw) {
+    if (document.querySelector('[data-adwens-sizefit]') || findMarkers(RE_FIT).length) return;
+    var fit = normalizeFit(raw);
+    if (!fit) return;
+    placeFitBox(buildFitBox(fit));
   }
   function loadVerifiedFit() {
     if (document.querySelector('[data-adwens-sizefit]') || findMarkers(RE_FIT).length) return;
