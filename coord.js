@@ -1,4 +1,4 @@
-/* ADWENS product-page widgets v3.5 (COORD + verified SIZEFIT) */
+/* ADWENS product-page widgets v3.5.1 (COORD + verified SIZEFIT) */
 (function () {
   'use strict';
   var itemMatch = location.pathname.match(/^\/items\/(\d+)/);
@@ -8,7 +8,7 @@
   var ITEM_ID = itemMatch[1];
   var GOLD = '#c9a227';
   var LINE_URL = 'https://l.omct.jp/2006632232-Ex9Ye0xv';
-  var SIZEFIT_URL = 'https://adwens0111.github.io/adwens/sizefit.json';
+  var SIZEFIT_URL = 'https://adwens0111.github.io/adwens/sizefit.json?v=3.5.1';
   var RE_COORD = /\[COORD:([\d,\s]+)(?:\|([^\]]*))?\]/;
   var RE_FIT = /\[SIZEFIT:([^\]]+)\]/;
   var SIZE_MAP = { S: 'S', M: 'M', L: 'L', X: 'XL', '2': '2XL', '3': '3XL', A: 'XS', F: 'FREE' };
