@@ -1,4 +1,4 @@
-/* ADWENS product-page widgets v3.1 (COORD + verified SIZEFIT) */
+/* ADWENS product-page widgets v3.2 (COORD + verified SIZEFIT) */
 (function () {
   'use strict';
   var itemMatch = location.pathname.match(/^\/items\/(\d+)/);
@@ -170,11 +170,14 @@
       var down = ri > 0 ? cell(fit, ri - 1, ci) : '';
       if (up && up !== main) tips.push('ゆったり履きたい方は <b style="color:' + GOLD + '">' + up + '</b>');
       if (down && down !== main) tips.push('タイトに履きたい方は <b style="color:' + GOLD + '">' + down + '</b>');
-      out.innerHTML = '<div style="padding:12px;background:#111;border-left:3px solid ' + GOLD + ';">'
+      out.innerHTML = '<div style="position:relative;padding:36px 12px 12px;background:#111;border-left:3px solid ' + GOLD + ';">'
+        + '<button type="button" data-sizefit-close aria-label="診断結果を閉じる" style="position:absolute;top:7px;right:8px;width:28px;height:28px;padding:0;border:1px solid #555;border-radius:50%;background:transparent;color:#ddd;font-size:20px;line-height:24px;cursor:pointer;">×</button>'
         + '<p style="margin:0;font-size:12px;color:#bbb;">身長 ' + h + 'cm / 体重 ' + w + 'kg のおすすめ</p>'
         + '<p style="margin:4px 0 0;font-size:26px;font-weight:bold;color:' + GOLD + ';letter-spacing:.05em;">' + main + '<span style="font-size:13px;color:#fff;margin-left:6px;">サイズ</span></p>'
         + (tips.length ? '<p style="margin:8px 0 0;font-size:12px;color:#ccc;line-height:1.6;">' + tips.join('<br>') + '</p>' : '')
         + '<p style="margin:10px 0 0;font-size:11px;color:#999;">※目安です。個体差があります。迷ったら <a href="' + LINE_URL + '" target="_blank" rel="noopener" style="color:' + GOLD + ';">LINEでサイズ相談（初回5%OFF）</a></p></div>';
+      var closeButton = out.querySelector('[data-sizefit-close]');
+      if (closeButton) closeButton.addEventListener('click', function () { out.innerHTML = ''; });
     }
     box.querySelector('button').addEventListener('click', diagnose);
     inputs[1].addEventListener('keydown', function (e) { if (e.key === 'Enter') diagnose(); });
@@ -192,17 +195,17 @@
     var fit = normalizeFit(raw);
     if (!fit) return;
     var box = buildFitBox(fit);
-    var scope = document.querySelector('.item-description') || document.querySelector('main') || document.body;
-    var walker = document.createTreeWalker(scope, NodeFilter.SHOW_TEXT, null, false);
-    var n;
-    while ((n = walker.nextNode())) {
-      if (/SIZE\s*GUIDE/i.test(n.nodeValue || '')) {
-        var anchor = n.parentElement;
-        while (anchor && anchor.parentElement && !/^(DIV|SECTION|P|H[1-6])$/.test(anchor.tagName)) anchor = anchor.parentElement;
-        if (anchor && anchor.parentNode) { anchor.parentNode.insertBefore(box, anchor); return; }
-      }
+    var variation = document.querySelector('#variationSelectWrap');
+    if (variation && variation.parentNode) {
+      variation.parentNode.insertBefore(box, variation);
+      return;
     }
-    var fallback = scope;
+    var purchaseForm = document.querySelector('.x_purchaseForm');
+    if (purchaseForm) {
+      purchaseForm.insertBefore(box, purchaseForm.firstChild);
+      return;
+    }
+    var fallback = document.querySelector('.item-description') || document.querySelector('main') || document.body;
     fallback.appendChild(box);
   }
   function loadVerifiedFit() {
