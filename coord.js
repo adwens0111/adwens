@@ -1,18 +1,16 @@
-/* ADWENS product-page widgets v3.5.1 (COORD + verified SIZEFIT) */
+/* ADWENS product-page widgets v3.0 (COORD + verified SIZEFIT) */
 (function () {
   'use strict';
   var itemMatch = location.pathname.match(/^\/items\/(\d+)/);
   if (!itemMatch) return;
 
-
   var ITEM_ID = itemMatch[1];
   var GOLD = '#c9a227';
   var LINE_URL = 'https://l.omct.jp/2006632232-Ex9Ye0xv';
-  var SIZEFIT_URL = 'https://adwens0111.github.io/adwens/sizefit.json?v=3.5.1';
+  var SIZEFIT_URL = 'https://adwens0111.github.io/adwens/sizefit.json';
   var RE_COORD = /\[COORD:([\d,\s]+)(?:\|([^\]]*))?\]/;
   var RE_FIT = /\[SIZEFIT:([^\]]+)\]/;
   var SIZE_MAP = { S: 'S', M: 'M', L: 'L', X: 'XL', '2': '2XL', '3': '3XL', A: 'XS', F: 'FREE' };
-
 
   function esc(s) {
     return String(s).replace(/[&<>"]/g, function (c) {
@@ -37,7 +35,6 @@
     after.nodeValue = after.nodeValue.slice(mt[0].length);
     node.parentNode.insertBefore(box, after);
   }
-
 
   /* ---------- COORD ---------- */
   function fetchItem(id) {
@@ -85,7 +82,6 @@
     })).then(function (items) { row.innerHTML = items.map(card).join(''); });
   }
 
-
   /* ---------- SIZEFIT ---------- */
   function normalizeFit(raw) {
     if (!raw) return null;
@@ -94,8 +90,7 @@
       W: Array.isArray(raw.W) ? raw.W.map(Number).filter(function (x) { return !isNaN(x); }) : [],
       G: Array.isArray(raw.G) ? raw.G.map(function (r) { return String(r).trim(); }) : [],
       N: raw.N ? String(raw.N) : '',
-      R: String(raw.R || 'H').toUpperCase() === 'W' ? 'W' : 'H',
-      O: Array.isArray(raw.O) ? raw.O : []
+      R: String(raw.R || 'H').toUpperCase() === 'W' ? 'W' : 'H'
     };
     if (!fit.H.length || !fit.W.length) return null;
     if (fit.R === 'W') {
@@ -131,12 +126,13 @@
     return normalizeFit(raw);
   }
   function nearest(arr, value) {
-    var selected = 0;
-    for (var i = 0; i < arr.length - 1; i++) {
-      if (value >= arr[i] + 2) selected = i + 1;
-      else break;
+    var best = 0;
+    var distance = Infinity;
+    for (var i = 0; i < arr.length; i++) {
+      var d = Math.abs(arr[i] - value);
+      if (d < distance) { distance = d; best = i; }
     }
-    return selected;
+    return best;
   }
   function cell(fit, row, col) {
     return SIZE_MAP[(fit.G[row] || '').charAt(col)] || '';
@@ -164,74 +160,45 @@
       var ri = nearest(fit.H, h);
       var ci = nearest(fit.W, w);
       var main = cell(fit, ri, ci);
-      var overridden = false;
-      for (var oi = 0; oi < fit.O.length; oi++) {
-        var rule = fit.O[oi] || {};
-        var inHeight = (rule.HMIN == null || h >= Number(rule.HMIN)) && (rule.HMAX == null || h <= Number(rule.HMAX));
-        var inWeight = (rule.WMIN == null || w >= Number(rule.WMIN)) && (rule.WMAX == null || w <= Number(rule.WMAX));
-        if (inHeight && inWeight) {
-          main = SIZE_MAP[String(rule.S || '')] || String(rule.S || '');
-          overridden = !!main;
-          break;
-        }
-      }
       if (!main) { out.innerHTML = ''; return; }
       var tips = [];
-      if (!overridden) {
-        var up = ri + 1 < fit.H.length ? cell(fit, ri + 1, ci) : '';
-        var down = ri > 0 ? cell(fit, ri - 1, ci) : '';
-        if (up && up !== main) tips.push('ゆったり履きたい方は <b style="color:' + GOLD + '">' + up + '</b>');
-        if (down && down !== main) tips.push('タイトに履きたい方は <b style="color:' + GOLD + '">' + down + '</b>');
-      }
-      out.innerHTML = '<div style="position:relative;padding:36px 12px 12px;background:#111;border-left:3px solid ' + GOLD + ';">'
-        + '<button type="button" data-sizefit-close aria-label="診断結果を閉じる" style="position:absolute;top:7px;right:8px;width:28px;height:28px;padding:0;border:1px solid #555;border-radius:50%;background:transparent;color:#ddd;font-size:20px;line-height:24px;cursor:pointer;">×</button>'
+      var up = ri + 1 < fit.H.length ? cell(fit, ri + 1, ci) : '';
+      var down = ri > 0 ? cell(fit, ri - 1, ci) : '';
+      if (up && up !== main) tips.push('ゆったり履きたい方は <b style="color:' + GOLD + '">' + up + '</b>');
+      if (down && down !== main) tips.push('タイトに履きたい方は <b style="color:' + GOLD + '">' + down + '</b>');
+      out.innerHTML = '<div style="padding:12px;background:#111;border-left:3px solid ' + GOLD + ';">'
         + '<p style="margin:0;font-size:12px;color:#bbb;">身長 ' + h + 'cm / 体重 ' + w + 'kg のおすすめ</p>'
         + '<p style="margin:4px 0 0;font-size:26px;font-weight:bold;color:' + GOLD + ';letter-spacing:.05em;">' + main + '<span style="font-size:13px;color:#fff;margin-left:6px;">サイズ</span></p>'
         + (tips.length ? '<p style="margin:8px 0 0;font-size:12px;color:#ccc;line-height:1.6;">' + tips.join('<br>') + '</p>' : '')
         + '<p style="margin:10px 0 0;font-size:11px;color:#999;">※目安です。個体差があります。迷ったら <a href="' + LINE_URL + '" target="_blank" rel="noopener" style="color:' + GOLD + ';">LINEでサイズ相談（初回5%OFF）</a></p></div>';
-      var closeButton = out.querySelector('[data-sizefit-close]');
-      if (closeButton) closeButton.addEventListener('click', function () { out.innerHTML = ''; });
     }
     box.querySelector('button').addEventListener('click', diagnose);
     inputs[1].addEventListener('keydown', function (e) { if (e.key === 'Enter') diagnose(); });
     return box;
   }
-  function placeFitBox(box) {
-    var variation = document.querySelector('#variationSelectWrap');
-    if (variation && variation.parentNode) {
-      variation.parentNode.insertBefore(box, variation);
-      return;
-    }
-    var purchaseForm = document.querySelector('.x_purchaseForm');
-    if (purchaseForm) {
-      purchaseForm.insertBefore(box, purchaseForm.firstChild);
-      return;
-    }
-    var fallback = document.querySelector('.item-description') || document.querySelector('main') || document.body;
-    fallback.appendChild(box);
-  }
   function renderFitMarker(node) {
     var mt = node.nodeValue.match(RE_FIT);
     if (!mt) return;
-    var markerFit = parseFitMarker(mt[1]);
-    var box = markerFit ? buildFitBox(markerFit) : document.createElement('span');
+    var fit = parseFitMarker(mt[1]);
+    var box = fit ? buildFitBox(fit) : document.createElement('span');
     replaceMarker(node, mt, box);
-    placeFitBox(box);
-    fetch(SIZEFIT_URL, { cache: 'no-store' })
-      .then(function (r) { if (!r.ok) throw new Error('sizefit ' + r.status); return r.json(); })
-      .then(function (data) {
-        var verifiedFit = data && data[ITEM_ID] ? normalizeFit(data[ITEM_ID]) : null;
-        if (!verifiedFit || !box.parentNode) return;
-        var verifiedBox = buildFitBox(verifiedFit);
-        box.parentNode.replaceChild(verifiedBox, box);
-      })
-      .catch(function () {});
   }
   function insertAutoFit(raw) {
     if (document.querySelector('[data-adwens-sizefit]') || findMarkers(RE_FIT).length) return;
     var fit = normalizeFit(raw);
     if (!fit) return;
-    placeFitBox(buildFitBox(fit));
+    var box = buildFitBox(fit);
+    var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
+    var n;
+    while ((n = walker.nextNode())) {
+      if (/SIZE\s*GUIDE/i.test(n.nodeValue || '')) {
+        var anchor = n.parentElement;
+        while (anchor && anchor.parentElement && !/^(DIV|SECTION|P|H[1-6])$/.test(anchor.tagName)) anchor = anchor.parentElement;
+        if (anchor && anchor.parentNode) { anchor.parentNode.insertBefore(box, anchor); return; }
+      }
+    }
+    var fallback = document.querySelector('main') || document.body;
+    fallback.appendChild(box);
   }
   function loadVerifiedFit() {
     if (document.querySelector('[data-adwens-sizefit]') || findMarkers(RE_FIT).length) return;
@@ -240,7 +207,6 @@
       .then(function (data) { if (data && data[ITEM_ID]) insertAutoFit(data[ITEM_ID]); })
       .catch(function () {});
   }
-
 
   var busy = false;
   function run() {
@@ -262,30 +228,3 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
   else start();
 })();
-
-/* ADWENS_SIZEFIT_POSITION_V36_START */
-(function(){
-  var moving=false,timer=null;
-  function moveSizeFit(){
-    if(moving)return;
-    var box=document.querySelector("[data-adwens-sizefit]");
-    var price=document.querySelector(".item-detail-main > .price");
-    if(!box||!price||price.nextElementSibling===box)return;
-    moving=true;
-    price.insertAdjacentElement("afterend",box);
-    box.style.width="100%";
-    box.style.maxWidth="100%";
-    box.style.boxSizing="border-box";
-    box.style.marginTop="18px";
-    box.style.marginBottom="20px";
-    moving=false;
-  }
-  function schedule(){clearTimeout(timer);timer=setTimeout(moveSizeFit,50);}
-  function startPlacement(){
-    moveSizeFit();
-    new MutationObserver(schedule).observe(document.body,{childList:true,subtree:true});
-    var count=0,retry=setInterval(function(){moveSizeFit();if(++count>=20)clearInterval(retry);},500);
-  }
-  if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",startPlacement);}else{startPlacement();}
-})();
-/* ADWENS_SIZEFIT_POSITION_V36_END */
