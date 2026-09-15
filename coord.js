@@ -157,8 +157,8 @@
         out.innerHTML = '<p style="font-size:12px;color:#e0b0b0;margin:0;">身長と体重を入力してください</p>';
         return;
       }
-      var ri = nearest(fit.H, h);
-      var ci = nearest(fit.W, w);
+      var ri = nearest(fit.H, h + 2);
+      var ci = nearest(fit.W, w + 2);
       var main = cell(fit, ri, ci);
       if (!main) { out.innerHTML = ''; return; }
       var tips = [];
@@ -170,9 +170,14 @@
         + '<p style="margin:0;font-size:12px;color:#bbb;">身長 ' + h + 'cm / 体重 ' + w + 'kg のおすすめ</p>'
         + '<p style="margin:4px 0 0;font-size:26px;font-weight:bold;color:' + GOLD + ';letter-spacing:.05em;">' + main + '<span style="font-size:13px;color:#fff;margin-left:6px;">サイズ</span></p>'
         + (tips.length ? '<p style="margin:8px 0 0;font-size:12px;color:#ccc;line-height:1.6;">' + tips.join('<br>') + '</p>' : '')
-        + '<p style="margin:10px 0 0;font-size:11px;color:#999;">※目安です。個体差があります。迷ったら <a href="' + LINE_URL + '" target="_blank" rel="noopener" style="color:' + GOLD + ';">LINEでサイズ相談（初回5%OFF）</a></p></div>';
+        + '<p style="margin:10px 0 0;font-size:11px;color:#999;">※目安です。個体差があります。迷ったら <a href="' + LINE_URL + '" target="_blank" rel="noopener" style="color:' + GOLD + ';">LINEでサイズ相談（初回5%OFF）</a></p>'
+        + '<button type="button" data-sizefit-close style="margin-top:10px;padding:6px 10px;background:transparent;color:#999;border:1px solid #444;font-size:11px;cursor:pointer;">結果を閉じる</button></div>';
     }
     box.querySelector('button').addEventListener('click', diagnose);
+    out.addEventListener('click', function (e) {
+      var close = e.target.closest('[data-sizefit-close]');
+      if (close) out.innerHTML = '';
+    });
     inputs[1].addEventListener('keydown', function (e) { if (e.key === 'Enter') diagnose(); });
     return box;
   }
@@ -228,3 +233,55 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
   else start();
 })();
+
+/* ADWENS_SIZEFIT_POSITION_V38_START */
+(function(){
+  var moving=false,timer=null;
+
+  function moveSizeFit(){
+    if(moving)return;
+
+    var box=document.querySelector("[data-adwens-sizefit]");
+    var price=document.querySelector(".item-detail-main > .price");
+
+    if(!box||!price||price.nextElementSibling===box)return;
+
+    moving=true;
+    price.insertAdjacentElement("afterend",box);
+
+    box.style.width="100%";
+    box.style.maxWidth="100%";
+    box.style.boxSizing="border-box";
+    box.style.marginTop="18px";
+    box.style.marginBottom="20px";
+
+    moving=false;
+  }
+
+  function schedule(){
+    clearTimeout(timer);
+    timer=setTimeout(moveSizeFit,50);
+  }
+
+  function startPlacement(){
+    moveSizeFit();
+
+    new MutationObserver(schedule).observe(document.body,{
+      childList:true,
+      subtree:true
+    });
+
+    var count=0;
+    var retry=setInterval(function(){
+      moveSizeFit();
+      if(++count>=20)clearInterval(retry);
+    },500);
+  }
+
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",startPlacement);
+  }else{
+    startPlacement();
+  }
+})();
+/* ADWENS_SIZEFIT_POSITION_V38_END */
