@@ -262,3 +262,30 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
   else start();
 })();
+
+/* ADWENS_SIZEFIT_POSITION_V36_START */
+(function(){
+  var moving=false,timer=null;
+  function moveSizeFit(){
+    if(moving)return;
+    var box=document.querySelector("[data-adwens-sizefit]");
+    var price=document.querySelector(".item-detail-main > .price");
+    if(!box||!price||price.nextElementSibling===box)return;
+    moving=true;
+    price.insertAdjacentElement("afterend",box);
+    box.style.width="100%";
+    box.style.maxWidth="100%";
+    box.style.boxSizing="border-box";
+    box.style.marginTop="18px";
+    box.style.marginBottom="20px";
+    moving=false;
+  }
+  function schedule(){clearTimeout(timer);timer=setTimeout(moveSizeFit,50);}
+  function startPlacement(){
+    moveSizeFit();
+    new MutationObserver(schedule).observe(document.body,{childList:true,subtree:true});
+    var count=0,retry=setInterval(function(){moveSizeFit();if(++count>=20)clearInterval(retry);},500);
+  }
+  if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",startPlacement);}else{startPlacement();}
+})();
+/* ADWENS_SIZEFIT_POSITION_V36_END */
