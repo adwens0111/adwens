@@ -1,4 +1,4 @@
-/* ADWENS product-page widgets v3.0 (COORD + verified SIZEFIT) */
+/* ADWENS product-page widgets v3.9 (COORD + verified SIZEFIT) */
 (function () {
   'use strict';
   var itemMatch = location.pathname.match(/^\/items\/(\d+)/);
@@ -7,7 +7,34 @@
   var ITEM_ID = itemMatch[1];
   var GOLD = '#c9a227';
   var LINE_URL = 'https://l.omct.jp/2006632232-Ex9Ye0xv';
-  var SIZEFIT_URL = 'https://adwens0111.github.io/adwens/sizefit.json';
+  var SIZEFIT_URLS = [
+    'https://raw.githubusercontent.com/adwens0111/adwens/main/sizefit.json',
+    'https://adwens0111.github.io/adwens/sizefit.json'
+  ];
+  var BUILTIN_SIZEFIT = {
+    '88671936': {
+      H: [160,165,170,175,180,185,190],
+      W: [50,55,60,65,70,75,80,85,90,95,100],
+      R: 'H',
+      G: ['SSSMMMMMMMM','SSSMMMMMMMM','MMMMMLLLLLL','LLLLLLLXXXX','XXXXXXXXX22','22222222222','22222222222'],
+      N: '細身の作りです。身長と体重の両方を基準にお選びください。',
+      O: [
+        {HMIN:160,HMAX:169,WMIN:57,WMAX:70,S:'L'},
+        {HMIN:160,HMAX:169,WMIN:71,WMAX:75,S:'XL'},
+        {HMIN:160,HMAX:169,WMIN:76,S:'2XL'},
+        {HMIN:170,HMAX:179,WMIN:57,WMAX:69,S:'L'},
+        {HMIN:170,HMAX:179,WMIN:70,WMAX:75,S:'XL'},
+        {HMIN:185,HMAX:190,WMAX:55,S:'L'},
+        {HMIN:185,HMAX:190,WMIN:56,WMAX:64,S:'XL'},
+        {HMIN:160,HMAX:174,WMAX:56,S:'S'}
+      ]
+    },
+    '157501327': {
+      H: [165,170,175,180,185], W: [60,70.5,80.5,90.5], R: 'H',
+      G: ['SMLL','SMLL','SMLL','SMLL','MLLL'],
+      N: '細身の作りです。ゆったり着たい方は1サイズアップがおすすめです。'
+    }
+  };
   var RE_COORD = /\[COORD:([\d,\s]+)(?:\|([^\]]*))?\]/;
   var RE_FIT = /\[SIZEFIT:([^\]]+)\]/;
   var SIZE_MAP = { S: 'S', M: 'M', L: 'L', X: 'XL', '2': '2XL', '3': '3XL', A: 'XS', F: 'FREE' };
@@ -90,7 +117,8 @@
       W: Array.isArray(raw.W) ? raw.W.map(Number).filter(function (x) { return !isNaN(x); }) : [],
       G: Array.isArray(raw.G) ? raw.G.map(function (r) { return String(r).trim(); }) : [],
       N: raw.N ? String(raw.N) : '',
-      R: String(raw.R || 'H').toUpperCase() === 'W' ? 'W' : 'H'
+      R: String(raw.R || 'H').toUpperCase() === 'W' ? 'W' : 'H',
+      O: Array.isArray(raw.O) ? raw.O : []
     };
     if (!fit.H.length || !fit.W.length) return null;
     if (fit.R === 'W') {
@@ -125,14 +153,13 @@
     });
     return normalizeFit(raw);
   }
-  function nearest(arr, value) {
-    var best = 0;
-    var distance = Infinity;
-    for (var i = 0; i < arr.length; i++) {
-      var d = Math.abs(arr[i] - value);
-      if (d < distance) { distance = d; best = i; }
+  function plusTwoBucket(arr, value) {
+    var index = 0;
+    for (var i = 0; i < arr.length - 1; i++) {
+      if (value >= arr[i] + 2) index = i + 1;
+      else break;
     }
-    return best;
+    return index;
   }
   function cell(fit, row, col) {
     return SIZE_MAP[(fit.G[row] || '').charAt(col)] || '';
@@ -157,27 +184,31 @@
         out.innerHTML = '<p style="font-size:12px;color:#e0b0b0;margin:0;">身長と体重を入力してください</p>';
         return;
       }
-      var ri = nearest(fit.H, h + 2);
-      var ci = nearest(fit.W, w + 2);
+      var ri = plusTwoBucket(fit.H, h);
+      var ci = plusTwoBucket(fit.W, w);
       var main = cell(fit, ri, ci);
+      for (var oi = 0; oi < fit.O.length; oi++) {
+        var o = fit.O[oi] || {};
+        if ((o.HMIN == null || h >= Number(o.HMIN)) && (o.HMAX == null || h <= Number(o.HMAX)) &&
+            (o.WMIN == null || w >= Number(o.WMIN)) && (o.WMAX == null || w <= Number(o.WMAX)) && o.S) {
+          main = String(o.S);
+        }
+      }
       if (!main) { out.innerHTML = ''; return; }
       var tips = [];
       var up = ri + 1 < fit.H.length ? cell(fit, ri + 1, ci) : '';
       var down = ri > 0 ? cell(fit, ri - 1, ci) : '';
       if (up && up !== main) tips.push('ゆったり履きたい方は <b style="color:' + GOLD + '">' + up + '</b>');
       if (down && down !== main) tips.push('タイトに履きたい方は <b style="color:' + GOLD + '">' + down + '</b>');
-      out.innerHTML = '<div style="padding:12px;background:#111;border-left:3px solid ' + GOLD + ';">'
+      out.innerHTML = '<div style="position:relative;padding:12px 36px 12px 12px;background:#111;border-left:3px solid ' + GOLD + ';">'
+        + '<button type="button" data-sizefit-close aria-label="診断結果を閉じる" style="position:absolute;right:8px;top:6px;border:0;background:transparent;color:#bbb;font-size:22px;line-height:1;cursor:pointer;">&times;</button>'
         + '<p style="margin:0;font-size:12px;color:#bbb;">身長 ' + h + 'cm / 体重 ' + w + 'kg のおすすめ</p>'
         + '<p style="margin:4px 0 0;font-size:26px;font-weight:bold;color:' + GOLD + ';letter-spacing:.05em;">' + main + '<span style="font-size:13px;color:#fff;margin-left:6px;">サイズ</span></p>'
         + (tips.length ? '<p style="margin:8px 0 0;font-size:12px;color:#ccc;line-height:1.6;">' + tips.join('<br>') + '</p>' : '')
-        + '<p style="margin:10px 0 0;font-size:11px;color:#999;">※目安です。個体差があります。迷ったら <a href="' + LINE_URL + '" target="_blank" rel="noopener" style="color:' + GOLD + ';">LINEでサイズ相談（初回5%OFF）</a></p>'
-        + '<button type="button" data-sizefit-close style="margin-top:10px;padding:6px 10px;background:transparent;color:#999;border:1px solid #444;font-size:11px;cursor:pointer;">結果を閉じる</button></div>';
+        + '<p style="margin:10px 0 0;font-size:11px;color:#999;">※目安です。個体差があります。迷ったら <a href="' + LINE_URL + '" target="_blank" rel="noopener" style="color:' + GOLD + ';">LINEでサイズ相談（初回5%OFF）</a></p></div>';
+      out.querySelector('[data-sizefit-close]').addEventListener('click', function () { out.innerHTML = ''; });
     }
     box.querySelector('button').addEventListener('click', diagnose);
-    out.addEventListener('click', function (e) {
-      var close = e.target.closest('[data-sizefit-close]');
-      if (close) out.innerHTML = '';
-    });
     inputs[1].addEventListener('keydown', function (e) { if (e.key === 'Enter') diagnose(); });
     return box;
   }
@@ -193,6 +224,8 @@
     var fit = normalizeFit(raw);
     if (!fit) return;
     var box = buildFitBox(fit);
+    var price = document.querySelector('.item-detail-main > .price');
+    if (price && price.parentNode) { price.parentNode.insertBefore(box, price.nextSibling); return; }
     var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
     var n;
     while ((n = walker.nextNode())) {
@@ -205,10 +238,17 @@
     var fallback = document.querySelector('main') || document.body;
     fallback.appendChild(box);
   }
+  function fetchFitJson(index) {
+    if (index >= SIZEFIT_URLS.length) return Promise.reject(new Error('sizefit unavailable'));
+    return fetch(SIZEFIT_URLS[index] + '?v=39-' + Date.now(), { cache: 'no-store' })
+      .then(function (r) { if (!r.ok) throw new Error('sizefit ' + r.status); return r.json(); })
+      .catch(function () { return fetchFitJson(index + 1); });
+  }
   function loadVerifiedFit() {
     if (document.querySelector('[data-adwens-sizefit]') || findMarkers(RE_FIT).length) return;
-    fetch(SIZEFIT_URL, { cache: 'no-store' })
-      .then(function (r) { if (!r.ok) throw new Error('sizefit ' + r.status); return r.json(); })
+    if (BUILTIN_SIZEFIT[ITEM_ID]) insertAutoFit(BUILTIN_SIZEFIT[ITEM_ID]);
+    if (document.querySelector('[data-adwens-sizefit]')) return;
+    fetchFitJson(0)
       .then(function (data) { if (data && data[ITEM_ID]) insertAutoFit(data[ITEM_ID]); })
       .catch(function () {});
   }
@@ -233,55 +273,3 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
   else start();
 })();
-
-/* ADWENS_SIZEFIT_POSITION_V38_START */
-(function(){
-  var moving=false,timer=null;
-
-  function moveSizeFit(){
-    if(moving)return;
-
-    var box=document.querySelector("[data-adwens-sizefit]");
-    var price=document.querySelector(".item-detail-main > .price");
-
-    if(!box||!price||price.nextElementSibling===box)return;
-
-    moving=true;
-    price.insertAdjacentElement("afterend",box);
-
-    box.style.width="100%";
-    box.style.maxWidth="100%";
-    box.style.boxSizing="border-box";
-    box.style.marginTop="18px";
-    box.style.marginBottom="20px";
-
-    moving=false;
-  }
-
-  function schedule(){
-    clearTimeout(timer);
-    timer=setTimeout(moveSizeFit,50);
-  }
-
-  function startPlacement(){
-    moveSizeFit();
-
-    new MutationObserver(schedule).observe(document.body,{
-      childList:true,
-      subtree:true
-    });
-
-    var count=0;
-    var retry=setInterval(function(){
-      moveSizeFit();
-      if(++count>=20)clearInterval(retry);
-    },500);
-  }
-
-  if(document.readyState==="loading"){
-    document.addEventListener("DOMContentLoaded",startPlacement);
-  }else{
-    startPlacement();
-  }
-})();
-/* ADWENS_SIZEFIT_POSITION_V38_END */
