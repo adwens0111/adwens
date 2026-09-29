@@ -35,7 +35,13 @@
       N: '細身の作りです。ゆったり着たい方は1サイズアップがおすすめです。'
     }
   };
-  var RE_COORD = /\[COORD:([\d,\s]+)(?:\|([^\]]*))?\]/;
+  /*
+   * COORD marker (backward compatible)
+   * [COORD:id1,id2|heading]
+   * [COORD:id1,id2|heading|C=t,r,b,l,z;t,r,b,l,z]
+   * Crop values are percentages. z is the existing manual zoom ratio (100 = unchanged).
+   */
+  var RE_COORD = /\[COORD:([\d,\s]+)(?:\|([^|\]]*))?(?:\|C=([^\]]+))?\]/;
   var RE_FIT = /\[SIZEFIT:([^\]]+)\]/;
   var SIZE_MAP = { S: 'S', M: 'M', L: 'L', X: 'XL', '2': '2XL', '3': '3XL', A: 'XS', F: 'FREE' };
 
@@ -87,9 +93,35 @@
         return it;
       });
   }
-  function card(it) {
+  function parseCoordCrops(src) {
+    var empty = { t: 0, r: 0, b: 0, l: 0, z: 100 };
+    if (!src) return [empty, empty];
+    return src.split(';').slice(0, 2).map(function (part) {
+      var v = part.split(',').map(Number);
+      var c = {
+        t: isFinite(v[0]) ? Math.max(0, Math.min(45, v[0])) : 0,
+        r: isFinite(v[1]) ? Math.max(0, Math.min(45, v[1])) : 0,
+        b: isFinite(v[2]) ? Math.max(0, Math.min(45, v[2])) : 0,
+        l: isFinite(v[3]) ? Math.max(0, Math.min(45, v[3])) : 0,
+        z: isFinite(v[4]) ? Math.max(100, Math.min(250, v[4])) : 100
+      };
+      if (c.l + c.r > 80) c.r = 80 - c.l;
+      if (c.t + c.b > 80) c.b = 80 - c.t;
+      return c;
+    }).concat([empty, empty]).slice(0, 2);
+  }
+  function cropStyle(c) {
+    c = c || { t: 0, r: 0, b: 0, l: 0, z: 100 };
+    var rw = Math.max(20, 100 - c.l - c.r) / 100;
+    var rh = Math.max(20, 100 - c.t - c.b) / 100;
+    var scale = Math.max(1 / rw, 1 / rh) * (c.z / 100);
+    var cx = c.l + (100 - c.l - c.r) / 2;
+    var cy = c.t + (100 - c.t - c.b) / 2;
+    return 'width:100%;height:100%;object-fit:cover;display:block;transform:scale(' + scale.toFixed(4) + ');transform-origin:' + cx.toFixed(2) + '% ' + cy.toFixed(2) + '%;';
+  }
+  function card(it, crop) {
     return '<a href="/items/' + it.id + '" style="width:48%;text-decoration:none;color:inherit;display:block;">'
-      + (it.g ? '<img src="' + esc(it.g) + '" alt="' + esc(it.n) + '" loading="lazy" style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:2px;display:block;background:#111;">' : '')
+      + (it.g ? '<span style="width:100%;aspect-ratio:1/1;overflow:hidden;border-radius:2px;display:block;background:#111;"><img src="' + esc(it.g) + '" alt="' + esc(it.n) + '" loading="lazy" style="' + cropStyle(crop) + '"></span>' : '')
       + '<p style="font-size:11px;margin:6px 0 0;color:#ccc;line-height:1.3;">' + esc(it.n) + '</p>'
       + '<p style="font-size:12px;font-weight:bold;color:' + GOLD + ';margin:2px 0 0;">' + yen(it.p) + '</p></a>';
   }
@@ -98,6 +130,7 @@
     if (!mt) return;
     var ids = mt[1].split(',').map(function (s) { return s.trim(); }).filter(Boolean).slice(0, 2);
     var head = (mt[2] || '').trim() || '\u25a0 このアイテムに合わせるなら';
+    var crops = parseCoordCrops(mt[3] || '');
     var box = document.createElement('div');
     box.setAttribute('data-adwens-coord', '');
     box.style.cssText = 'margin:24px 0;padding-top:16px;border-top:1px solid #333;';
@@ -106,7 +139,7 @@
     var row = box.lastChild;
     Promise.all(ids.map(function (id) {
       return fetchItem(id).catch(function () { return { id: id, n: '商品ページを見る', g: '', p: 0 }; });
-    })).then(function (items) { row.innerHTML = items.map(card).join(''); });
+    })).then(function (items) { row.innerHTML = items.map(function (it, i) { return card(it, crops[i]); }).join(''); });
   }
 
   /* ---------- SIZEFIT ---------- */
