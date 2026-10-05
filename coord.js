@@ -1,4 +1,4 @@
-/* ADWENS product-page widgets v3.9 (COORD + verified SIZEFIT) */
+/* ADWENS product-page widgets v3.10 (COORD + verified SIZEFIT) */
 (function () {
   'use strict';
   var itemMatch = location.pathname.match(/^\/items\/(\d+)/);
@@ -197,12 +197,20 @@
   function cell(fit, row, col) {
     return SIZE_MAP[(fit.G[row] || '').charAt(col)] || '';
   }
+  function publicFitNote(note) {
+    note = String(note || '').trim();
+    if (!note) return '';
+    if (/Codex could not|No such file|os error|身長見出し|体重見出し|体重列|weights|実寸|推奨サイズ早見表/i.test(note)) return '';
+    if (note.length > 90) return note.slice(0, 87) + '...';
+    return note;
+  }
   function buildFitBox(fit) {
     var box = document.createElement('div');
+    var note = publicFitNote(fit.N);
     box.setAttribute('data-adwens-sizefit', '');
     box.style.cssText = 'margin:24px 0;padding:16px 14px;border:1px solid #333;';
     box.innerHTML = '<p style="font-weight:bold;font-size:14px;margin:0 0 4px;letter-spacing:1px;">\u25a0 あなたのおすすめサイズを診断</p>'
-      + (fit.N ? '<p style="font-size:11px;color:#999;margin:0 0 12px;">' + esc(fit.N) + '</p>' : '<div style="height:8px"></div>')
+      + (note ? '<p style="font-size:11px;color:#999;margin:0 0 12px;">' + esc(note) + '</p>' : '<p style="font-size:11px;color:#999;margin:0 0 12px;">身長と体重を入力すると、おすすめサイズを診断できます。</p>')
       + '<div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;">'
       + '<label style="flex:1;min-width:90px;font-size:11px;color:#bbb;">身長(cm)<input type="number" inputmode="numeric" min="130" max="220" placeholder="175" style="display:block;width:100%;margin-top:4px;padding:10px;font-size:16px;border:1px solid #444;background:#111;color:#fff;box-sizing:border-box;"></label>'
       + '<label style="flex:1;min-width:90px;font-size:11px;color:#bbb;">体重(kg)<input type="number" inputmode="numeric" min="30" max="160" placeholder="65" style="display:block;width:100%;margin-top:4px;padding:10px;font-size:16px;border:1px solid #444;background:#111;color:#fff;box-sizing:border-box;"></label>'
@@ -231,8 +239,8 @@
       var tips = [];
       var up = ri + 1 < fit.H.length ? cell(fit, ri + 1, ci) : '';
       var down = ri > 0 ? cell(fit, ri - 1, ci) : '';
-      if (up && up !== main) tips.push('ゆったり履きたい方は <b style="color:' + GOLD + '">' + up + '</b>');
-      if (down && down !== main) tips.push('タイトに履きたい方は <b style="color:' + GOLD + '">' + down + '</b>');
+      if (up && up !== main) tips.push('ゆったり着たい方は <b style="color:' + GOLD + '">' + up + '</b>');
+      if (down && down !== main) tips.push('タイトに着たい方は <b style="color:' + GOLD + '">' + down + '</b>');
       out.innerHTML = '<div style="position:relative;padding:12px 36px 12px 12px;background:#111;border-left:3px solid ' + GOLD + ';">'
         + '<button type="button" data-sizefit-close aria-label="診断結果を閉じる" style="position:absolute;right:8px;top:6px;border:0;background:transparent;color:#bbb;font-size:22px;line-height:1;cursor:pointer;">&times;</button>'
         + '<p style="margin:0;font-size:12px;color:#bbb;">身長 ' + h + 'cm / 体重 ' + w + 'kg のおすすめ</p>'
@@ -273,7 +281,7 @@
   }
   function fetchFitJson(index) {
     if (index >= SIZEFIT_URLS.length) return Promise.reject(new Error('sizefit unavailable'));
-    return fetch(SIZEFIT_URLS[index] + '?v=39-' + Date.now(), { cache: 'no-store' })
+    return fetch(SIZEFIT_URLS[index] + '?v=310-' + Date.now(), { cache: 'no-store' })
       .then(function (r) { if (!r.ok) throw new Error('sizefit ' + r.status); return r.json(); })
       .catch(function () { return fetchFitJson(index + 1); });
   }
