@@ -1,4 +1,4 @@
-/* ADWENS product-page widgets v3.10 (COORD + verified SIZEFIT) */
+/* ADWENS product-page widgets v3.11 (COORD + verified SIZEFIT + size guide image) */
 (function () {
   'use strict';
   var itemMatch = location.pathname.match(/^\/items\/(\d+)/);
@@ -151,7 +151,8 @@
       G: Array.isArray(raw.G) ? raw.G.map(function (r) { return String(r).trim(); }) : [],
       N: raw.N ? String(raw.N) : '',
       R: String(raw.R || 'H').toUpperCase() === 'W' ? 'W' : 'H',
-      O: Array.isArray(raw.O) ? raw.O : []
+      O: Array.isArray(raw.O) ? raw.O : [],
+      I: raw.I ? String(raw.I) : (raw.IMG ? String(raw.IMG) : '')
     };
     if (!fit.H.length || !fit.W.length) return null;
     if (fit.R === 'W') {
@@ -182,7 +183,7 @@
       var value = part.slice(i + 1).trim();
       if (key === 'H' || key === 'W') raw[key] = value.split(',');
       else if (key === 'G') raw.G = value.split(',');
-      else if (key === 'N' || key === 'R') raw[key] = value;
+      else if (key === 'N' || key === 'R' || key === 'I' || key === 'IMG') raw[key] = value;
     });
     return normalizeFit(raw);
   }
@@ -253,18 +254,40 @@
     inputs[1].addEventListener('keydown', function (e) { if (e.key === 'Enter') diagnose(); });
     return box;
   }
+  function buildSizeGuideImage(fit) {
+    if (!fit.I) return null;
+    var box = document.createElement('div');
+    box.setAttribute('data-adwens-sizeguide', '');
+    box.style.cssText = 'margin:24px 0 0;';
+    box.innerHTML = '<p style="font-weight:bold;font-size:14px;margin:0 0 10px;letter-spacing:1px;">\u25a0 サイズ表</p>'
+      + '<img src="' + esc(fit.I) + '" alt="\u30b5\u30a4\u30ba\u8868" loading="lazy" style="display:block;width:100%;height:auto;background:#111;border:1px solid #333;box-sizing:border-box;">';
+    return box;
+  }
+  function buildFitBlock(fit) {
+    var form = buildFitBox(fit);
+    var guide = buildSizeGuideImage(fit);
+    if (!guide) return form;
+    var wrap = document.createElement('div');
+    wrap.setAttribute('data-adwens-sizefit', '');
+    wrap.style.cssText = 'margin:24px 0;';
+    form.removeAttribute('data-adwens-sizefit');
+    form.style.margin = '16px 0 0';
+    wrap.appendChild(guide);
+    wrap.appendChild(form);
+    return wrap;
+  }
   function renderFitMarker(node) {
     var mt = node.nodeValue.match(RE_FIT);
     if (!mt) return;
     var fit = parseFitMarker(mt[1]);
-    var box = fit ? buildFitBox(fit) : document.createElement('span');
+    var box = fit ? buildFitBlock(fit) : document.createElement('span');
     replaceMarker(node, mt, box);
   }
   function insertAutoFit(raw) {
     if (document.querySelector('[data-adwens-sizefit]') || findMarkers(RE_FIT).length) return;
     var fit = normalizeFit(raw);
     if (!fit) return;
-    var box = buildFitBox(fit);
+    var box = buildFitBlock(fit);
     var price = document.querySelector('.item-detail-main > .price');
     if (price && price.parentNode) { price.parentNode.insertBefore(box, price.nextSibling); return; }
     var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
@@ -281,7 +304,7 @@
   }
   function fetchFitJson(index) {
     if (index >= SIZEFIT_URLS.length) return Promise.reject(new Error('sizefit unavailable'));
-    return fetch(SIZEFIT_URLS[index] + '?v=310-' + Date.now(), { cache: 'no-store' })
+    return fetch(SIZEFIT_URLS[index] + '?v=311-' + Date.now(), { cache: 'no-store' })
       .then(function (r) { if (!r.ok) throw new Error('sizefit ' + r.status); return r.json(); })
       .catch(function () { return fetchFitJson(index + 1); });
   }
