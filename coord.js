@@ -348,6 +348,31 @@
     replaceMarker(node,mt,a);
   }
 
+  /* Web-only media rail; native BASE blocks remain stored for other surfaces. */
+  var videoRows=[],mediaReady=false,mediaStarted=false;
+  function videoKey(url){try{var u=new URL(url),m;if(/^(www\.|m\.)?youtube\.com$/.test(u.hostname)){m=u.pathname.match(/^\/(?:embed|shorts)\/([\w-]{11})/);return 'yt:'+(m?m[1]:u.searchParams.get('v'));}if(u.hostname==='youtu.be')return 'yt:'+u.pathname.slice(1);return u.href;}catch(e){return '';}}
+  function mediaCss(){if(document.getElementById('adw-media-style'))return;var s=document.createElement('style');s.id='adw-media-style';s.textContent='.adw-video-section{margin:24px 0;clear:both;max-width:100%;min-width:0}.adw-video-rail{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding:0 0 12px;overscroll-behavior-x:contain}.adw-video-card{flex:0 0 82%;max-width:360px;min-width:0;margin:0;scroll-snap-align:start}.adw-video-card iframe,.adw-video-card video{display:block;width:100%!important;height:auto!important;aspect-ratio:4/5;object-fit:contain;border:0;background:#101010}.adw-video-card figcaption{font-size:13px;line-height:1.6;margin-top:8px;white-space:normal}.adw-video-controls{display:flex;align-items:center;gap:12px;margin:8px 0}.adw-video-controls button{padding:8px 14px;background:transparent;color:inherit;border:1px solid #888;border-radius:4px}.adw-video-controls span{font-size:12px}.adw-cart-dock{display:none}@media(max-width:767px){.adw-cart-dock{position:fixed;left:0;right:0;bottom:0;z-index:9000;padding:8px 16px calc(8px + env(safe-area-inset-bottom));background:#111;border-top:1px solid #555;box-shadow:0 -3px 12px #0005}.adw-cart-dock:not([hidden]){display:block}.adw-cart-dock button{width:100%;min-height:48px;border:0;border-radius:4px;background:#08b3c9;color:#fff;font-size:16px;font-weight:700}.adw-cart-space{height:82px}#purchase_form{scroll-margin-top:90px}}';document.head.appendChild(s);}
+  function renderVideos(){
+   var description=document.querySelector('.item-description > .text.markdown');if(!description)return;
+   var native=Array.from(document.querySelectorAll('#appsItemDetailCustomTag .appsItemDetailCustomTag_youtube iframe'));
+   var section=document.querySelector('[data-adw-videos]');if(!section&&!native.length&&!videoRows.length)return;
+   mediaCss();if(!section){section=document.createElement('section');section.className='adw-video-section';section.setAttribute('data-adw-videos','');var h=document.createElement('h3');h.textContent='着用動画';section.appendChild(h);var controls=document.createElement('div');controls.className='adw-video-controls';var prev=document.createElement('button'),next=document.createElement('button'),note=document.createElement('span');prev.type=next.type='button';prev.textContent='←';next.textContent='→';prev.setAttribute('aria-label','前の動画');next.setAttribute('aria-label','次の動画');note.textContent='横にスライドして見る';controls.append(prev,note,next);section.appendChild(controls);var rail=document.createElement('div');rail.className='adw-video-rail';rail.tabIndex=0;rail.setAttribute('aria-label','着用動画一覧');section.appendChild(rail);prev.onclick=function(){rail.scrollBy({left:-rail.clientWidth*.85,behavior:'smooth'});};next.onclick=function(){rail.scrollBy({left:rail.clientWidth*.85,behavior:'smooth'});};description.appendChild(section);}
+   var rail=section.querySelector('.adw-video-rail');
+   function card(key,el){var f=document.createElement('figure');f.className='adw-video-card';f.dataset.videoKey=key;f.appendChild(el);f.appendChild(document.createElement('figcaption'));rail.appendChild(f);return f;}
+   native.forEach(function(el){var key=videoKey(el.src),old=el.parentElement;if(!key)return;var found=Array.from(rail.children).find(function(c){return c.dataset.videoKey===key;});if(!found){el.loading='lazy';card(key,el);}else{old.hidden=true;}if(!old.children.length)old.hidden=true;});
+   videoRows.forEach(function(r){var key=videoKey(r.url);if(!key)return;var found=Array.from(rail.children).find(function(c){return c.dataset.videoKey===key;});if(!found){var el;if(key.indexOf('yt:')===0&&/^yt:[\w-]{11}$/.test(key)){el=document.createElement('iframe');el.src='https://www.youtube.com/embed/'+key.slice(3)+'?rel=0';el.title='着用動画';el.loading='lazy';el.allow='encrypted-media; picture-in-picture';el.allowFullscreen=true;el.referrerPolicy='strict-origin-when-cross-origin';}else if(/^https:\/\/.+\.(mp4|webm)(\?.*)?$/i.test(key)){el=document.createElement('video');el.src=r.url;el.controls=true;el.playsInline=true;el.preload='none';}else return;found=card(key,el);}var text=[r.height?'モデル身長'+r.height+'cm':'',r.weight?'体重'+r.weight+'kg':'',r.size?'着用サイズ'+r.size:''].filter(Boolean).join(' ');var caption=found.querySelector('figcaption');if(caption.textContent!==text)caption.textContent=text;});
+   var multiple=rail.children.length>1;section.querySelector('.adw-video-controls').hidden=!multiple;
+  }
+  function loadVideos(){if(mediaStarted)return;mediaStarted=true;var urls=['https://raw.githubusercontent.com/adwens0111/adwens/main/product_media.json','https://adwens0111.github.io/adwens/product_media.json'];function read(i){if(i===urls.length)return Promise.reject();return fetch(urls[i]+'?v='+Date.now(),{cache:'no-store'}).then(function(r){if(!r.ok)throw Error();return r.json();}).catch(function(){return read(i+1);});}read(0).then(function(all){videoRows=Array.isArray(all[ITEM_ID])?all[ITEM_ID]:[];mediaReady=true;renderVideos();}).catch(function(){renderVideos();});}
+  function setupCartDock(){
+   if(document.querySelector('.adw-cart-dock'))return;var form=document.querySelector('#purchase_form'),native=form&&form.querySelector('.purchaseButton__btn--addToCart');if(!form||!native)return;mediaCss();
+   var dock=document.createElement('div');dock.className='adw-cart-dock';dock.hidden=true;var btn=document.createElement('button');btn.type='button';btn.textContent='サイズを選んでカートへ';dock.appendChild(btn);document.body.appendChild(dock);var space=document.createElement('div');space.className='adw-cart-space';space.hidden=true;document.body.appendChild(space);
+   // Always return to BASE's original controls; never submit or synthesize a cart click.
+   btn.onclick=function(){form.scrollIntoView({behavior:'smooth',block:'start'});var control=form.querySelector('#valiationSelect')||native;control.focus({preventScroll:true});};
+   function update(){var rect=form.getBoundingClientRect(),mobile=window.matchMedia('(max-width:767px)').matches,available=!native.disabled&&form.getAttribute('data-disabled')!=='true'&&getComputedStyle(native).display!=='none';var show=mobile&&rect.bottom<0&&available;dock.hidden=!show;space.hidden=!show;}
+   window.addEventListener('scroll',update,{passive:true});window.addEventListener('resize',update);form.addEventListener('change',update);new MutationObserver(update).observe(form,{attributes:true,subtree:true,attributeFilter:['disabled','style','data-disabled']});update();
+  }
+
   var busy = false;
   function run() {
     if (busy || !document.body) return;
@@ -356,11 +381,13 @@
       findMarkers(RE_LINE).forEach(renderLine);
       findMarkers(RE_COORD).forEach(renderCoord);
       findMarkers(RE_FIT).forEach(renderFitMarker);
+      renderVideos();setupCartDock();
     } finally { busy = false; }
   }
   function start() {
     run();
     loadVerifiedFit();
+    loadVideos();
     var mo = new MutationObserver(function () { run(); });
     mo.observe(document.body, { childList: true, subtree: true, characterData: true });
     var tries = 0;
