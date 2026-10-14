@@ -1,4 +1,4 @@
-/* ADWENS product-page widgets v3.11 (COORD + verified SIZEFIT + size guide image) */
+/* ADWENS product-page widgets v3.12 (COORD + verified SIZEFIT + size guide image) */
 (function () {
   'use strict';
   var itemMatch = location.pathname.match(/^\/items\/(\d+)/);
@@ -41,7 +41,7 @@
    * [COORD:id1,id2|heading|C=t,r,b,l,z;t,r,b,l,z]
    * Crop values are percentages. z is the existing manual zoom ratio (100 = unchanged).
    */
-  var RE_COORD = /\[COORD:([\d,\s]+)(?:\|([^|\]]*))?(?:\|C=([^\]]+))?\]/;
+  var RE_COORD = /\[COORD:([\d,\s]+)(?:\|([^|\]]*))?((?:\|[^\]]*)?)\]/;
   var RE_FIT = /\[SIZEFIT:([^\]]+)\]/;
   var SIZE_MAP = { S: 'S', M: 'M', L: 'L', X: 'XL', '2': '2XL', '3': '3XL', A: 'XS', F: 'FREE' };
 
@@ -130,13 +130,29 @@
     if (!mt) return;
     var ids = mt[1].split(',').map(function (s) { return s.trim(); }).filter(Boolean).slice(0, 2);
     var head = (mt[2] || '').trim() || '\u25a0 このアイテムに合わせるなら';
-    var crops = parseCoordCrops(mt[3] || '');
+    var opts = mt[3] || '';
+    var cropMatch = opts.match(/(?:^|\|)C=([^|]*)/);
+    var crops = parseCoordCrops(cropMatch ? cropMatch[1] : '');
+    var imageMatch = opts.match(/(?:^|\|)I=([^|]*)/);
     var box = document.createElement('div');
     box.setAttribute('data-adwens-coord', '');
     box.style.cssText = 'margin:24px 0;padding-top:16px;border-top:1px solid #333;';
     box.innerHTML = '<p style="font-weight:bold;font-size:14px;margin:0 0 12px;letter-spacing:1px;">' + esc(head) + '</p><div style="display:flex;gap:10px;justify-content:space-between;"></div>';
     replaceMarker(node, mt, box);
     var row = box.lastChild;
+    if (imageMatch && /^https:\/\/(?:adwens0111\.github\.io\/adwens\/|raw\.githubusercontent\.com\/adwens0111\/adwens\/)/i.test(imageMatch[1])) {
+      var figure = document.createElement('div');
+      figure.setAttribute('data-adwens-coord-image', '');
+      figure.style.cssText = 'margin:18px 0 0;';
+      var image = document.createElement('img');
+      image.src = imageMatch[1];
+      image.alt = 'このアイテムを使ったおすすめコーデ';
+      image.loading = 'lazy';
+      image.style.cssText = 'display:block;width:100%;height:auto;max-width:100%;';
+      image.addEventListener('error', function () { figure.style.display = 'none'; });
+      figure.appendChild(image);
+      box.appendChild(figure);
+    }
     Promise.all(ids.map(function (id) {
       return fetchItem(id).catch(function () { return { id: id, n: '商品ページを見る', g: '', p: 0 }; });
     })).then(function (items) { row.innerHTML = items.map(function (it, i) { return card(it, crops[i]); }).join(''); });
@@ -337,3 +353,4 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
   else start();
 })();
+
