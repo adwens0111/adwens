@@ -357,7 +357,10 @@
    var native=Array.from(document.querySelectorAll('#appsItemDetailCustomTag .appsItemDetailCustomTag_youtube iframe'));
    var section=document.querySelector('[data-adw-videos]');if(!section&&!native.length&&!videoRows.length)return;
    mediaCss();if(!section){section=document.createElement('section');section.className='adw-video-section';section.setAttribute('data-adw-videos','');var h=document.createElement('h3');h.textContent='着用動画';section.appendChild(h);var controls=document.createElement('div');controls.className='adw-video-controls';var prev=document.createElement('button'),next=document.createElement('button'),note=document.createElement('span');prev.type=next.type='button';prev.textContent='←';next.textContent='→';prev.setAttribute('aria-label','前の動画');next.setAttribute('aria-label','次の動画');note.textContent='横にスライドして見る';controls.append(prev,note,next);section.appendChild(controls);var rail=document.createElement('div');rail.className='adw-video-rail';rail.tabIndex=0;rail.setAttribute('aria-label','着用動画一覧');section.appendChild(rail);prev.onclick=function(){rail.scrollBy({left:-rail.clientWidth*.85,behavior:'smooth'});};next.onclick=function(){rail.scrollBy({left:rail.clientWidth*.85,behavior:'smooth'});};description.appendChild(section);}
-   var line=description.querySelector('[data-adwens-line]');
+   var line = description.querySelector('[data-adwens-line]')
+  || Array.from(description.querySelectorAll('a[href]')).find(function(a){
+    return a.href.indexOf(LINE_URL) === 0;
+  });
 if(line && line.nextSibling!==section){
   line.parentNode.insertBefore(section,line.nextSibling);
 }
