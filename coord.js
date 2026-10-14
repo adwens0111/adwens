@@ -302,10 +302,12 @@
   function insertAutoFit(raw) {
     if (document.querySelector('[data-adwens-sizefit]') || findMarkers(RE_FIT).length) return;
     var fit = normalizeFit(raw);
+    var guide = !document.querySelector('[data-adwens-sizeguide]') && buildSizeGuideImage(raw || {});
+    var description = document.querySelector('.item-description > .text.markdown');
+    if (guide && description) description.appendChild(guide);
     if (!fit) return;
     var box = buildFitBox(fit);
-    var guide = buildSizeGuideImage(fit);
-    if (guide) { var description = document.querySelector('.item-description > .text.markdown'); if (description) description.appendChild(guide); else box.appendChild(guide); }
+    if (guide && !description) box.appendChild(guide);
     var price = document.querySelector('.item-detail-main > .price');
     if (price && price.parentNode) { price.parentNode.insertBefore(box, price.nextSibling); return; }
     var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
