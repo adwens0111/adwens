@@ -303,7 +303,9 @@
     if (document.querySelector('[data-adwens-sizefit]') || findMarkers(RE_FIT).length) return;
     var fit = normalizeFit(raw);
     if (!fit) return;
-    var box = buildFitBlock(fit);
+    var box = buildFitBox(fit);
+    var guide = buildSizeGuideImage(fit);
+    if (guide) { var description = document.querySelector('.item-description > .text.markdown'); if (description) description.appendChild(guide); else box.appendChild(guide); }
     var price = document.querySelector('.item-detail-main > .price');
     if (price && price.parentNode) { price.parentNode.insertBefore(box, price.nextSibling); return; }
     var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
@@ -324,13 +326,14 @@
       .then(function (r) { if (!r.ok) throw new Error('sizefit ' + r.status); return r.json(); })
       .catch(function () { return fetchFitJson(index + 1); });
   }
+  var fitLoadStarted = false;
   function loadVerifiedFit() {
     if (document.querySelector('[data-adwens-sizefit]') || findMarkers(RE_FIT).length) return;
-    if (BUILTIN_SIZEFIT[ITEM_ID]) insertAutoFit(BUILTIN_SIZEFIT[ITEM_ID]);
-    if (document.querySelector('[data-adwens-sizefit]')) return;
+    if (fitLoadStarted) return;
+    fitLoadStarted = true;
     fetchFitJson(0)
-      .then(function (data) { if (data && data[ITEM_ID]) insertAutoFit(data[ITEM_ID]); })
-      .catch(function () {});
+      .then(function (data) { var fit = data && data[ITEM_ID] || BUILTIN_SIZEFIT[ITEM_ID]; if (fit) insertAutoFit(fit); })
+      .catch(function () { if (BUILTIN_SIZEFIT[ITEM_ID]) insertAutoFit(BUILTIN_SIZEFIT[ITEM_ID]); });
   }
 
   /* Plain text remains readable in BASE / PAY ID; only this explicit CTA becomes a link. */
