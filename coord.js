@@ -1,4 +1,4 @@
-/* ADWENS product-page widgets v3.12 (COORD + verified SIZEFIT + size guide image) */
+/* ADWENS product-page widgets v3.13 (COORD + verified SIZEFIT + size guide image) */
 (function () {
   'use strict';
   var itemMatch = location.pathname.match(/^\/items\/(\d+)/);
@@ -333,11 +333,22 @@
       .catch(function () {});
   }
 
+  /* Plain text remains readable in BASE / PAY ID; only this explicit CTA becomes a link. */
+  var RE_LINE = /［LINEでサイズを相談する］[ \t]*https:\/\/l\.omct\.jp\/2006632232-Ex9Ye0xv/;
+  function renderLine(node) {
+    var mt=node.nodeValue.match(RE_LINE);if(!mt)return;
+    var a=document.createElement('a');a.href=LINE_URL;a.target='_blank';a.rel='noopener';
+    a.textContent='LINEでサイズを相談する';a.setAttribute('data-adwens-line','');
+    a.style.cssText='display:inline-block;margin:8px 0 12px;padding:10px 16px;border:1px solid #06c755;border-radius:5px;color:#fff;background:#078b3e;font-size:14px;line-height:1.5;text-decoration:none;max-width:100%;box-sizing:border-box';
+    replaceMarker(node,mt,a);
+  }
+
   var busy = false;
   function run() {
     if (busy || !document.body) return;
     busy = true;
     try {
+      findMarkers(RE_LINE).forEach(renderLine);
       findMarkers(RE_COORD).forEach(renderCoord);
       findMarkers(RE_FIT).forEach(renderFitMarker);
     } finally { busy = false; }
