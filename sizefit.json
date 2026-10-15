@@ -343,5 +343,41 @@
     ],
     "N": "身長と体重を目安におすすめサイズを診断します。",
     "I": "https://adwens0111.github.io/adwens/sizecharts/157558251.png?v=20261014142416"
+  },
+  "162929356": {
+    "H": [
+      160,
+      165,
+      170,
+      175,
+      180,
+      185,
+      190
+    ],
+    "W": [
+      50,
+      55,
+      60,
+      65,
+      70,
+      75,
+      80,
+      85,
+      90,
+      95,
+      100
+    ],
+    "R": "H",
+    "G": [
+      "SSSSSSSSSSS",
+      "SSSSSSSSSSS",
+      "SSSSSSSSSSS",
+      "SSMMMMMMMMM",
+      "MMMLLLLLLLL",
+      "LLLLLLLLLLL",
+      "LLLLLLLLLLL"
+    ],
+    "N": "",
+    "I": "https://base-ec2.akamaized.net/images/item/origin/6d661fb5ec1305d3086e053156441135.jpg"
   }
 }
