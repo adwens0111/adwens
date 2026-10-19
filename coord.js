@@ -1,4 +1,4 @@
-/* ADWENS product-page widgets v3.14 (independent COORD loading + placement) */
+/* ADWENS product-page widgets v3.15 (reconcile async cards after theme redraw) */
 (function () {
   'use strict';
   var itemMatch = location.pathname.match(/^\/items\/(\d+)/);
@@ -93,6 +93,38 @@
 
   /* おすすめコーデ */
   var itemRequests = {};
+  var coordSequence = 0;
+  var coordStates = {};
+
+  function paintCoordSlot(key, index) {
+    var state = coordStates[key];
+    if (!state || !state.items[index]) return;
+
+    var selector =
+      '[data-adwens-coord-key="' + key + '"] ' +
+      '[data-adwens-coord-slot="' + index + '"]';
+
+    Array.from(document.querySelectorAll(selector)).forEach(function (slot) {
+      if (
+        slot.getAttribute('data-adwens-coord-ready') === state.ids[index] &&
+        slot.querySelector('img')
+      ) {
+        return;
+      }
+
+      slot.innerHTML = card(state.items[index], state.crops[index]);
+      slot.firstElementChild.style.width = '100%';
+      slot.setAttribute('data-adwens-coord-ready', state.ids[index]);
+    });
+  }
+
+  function hydrateCoords() {
+    Object.keys(coordStates).forEach(function (key) {
+      coordStates[key].ids.forEach(function (id, index) {
+        paintCoordSlot(key, index);
+      });
+    });
+  }
 
   function fetchItem(id) {
     var key = 'adwens_coord_' + id;
@@ -243,6 +275,15 @@
 
     var box = document.createElement('div');
     box.setAttribute('data-adwens-coord', '');
+
+    var coordKey = ITEM_ID + '-' + (++coordSequence);
+    box.setAttribute('data-adwens-coord-key', coordKey);
+    coordStates[coordKey] = {
+      ids: ids,
+      crops: crops,
+      items: []
+    };
+
     box.style.cssText =
       'margin:24px 0;padding-top:16px;border-top:1px solid #333;';
 
@@ -279,6 +320,7 @@
 
     ids.forEach(function (id, index) {
       var slot = document.createElement('div');
+      slot.setAttribute('data-adwens-coord-slot', String(index));
       slot.style.cssText = 'width:48%;min-width:0;';
       row.appendChild(slot);
 
@@ -294,8 +336,8 @@
           '商品情報を読み込み中…</p>';
 
         fetchItem(id).then(function (item) {
-          slot.innerHTML = card(item, crops[index]);
-          slot.firstElementChild.style.width = '100%';
+          coordStates[coordKey].items[index] = item;
+          paintCoordSlot(coordKey, index);
           placeCoord();
         }).catch(function () {
           if (attempts < 3) {
@@ -303,13 +345,20 @@
             return;
           }
 
-          slot.innerHTML =
+          var currentSlot = document.querySelector(
+            '[data-adwens-coord-key="' + coordKey + '"] ' +
+            '[data-adwens-coord-slot="' + index + '"]'
+          );
+
+          if (!currentSlot) return;
+
+          currentSlot.innerHTML =
             '<a href="/items/' + id +
             '" style="color:inherit;">商品ページを見る</a>' +
             '<p style="font-size:11px;">読み込みできませんでした。</p>' +
             '<button type="button">再読み込み</button>';
 
-          slot.querySelector('button').onclick = function () {
+          currentSlot.querySelector('button').onclick = function () {
             attempts = 0;
             loadCard();
           };
@@ -370,9 +419,11 @@
 
       for (var i = 0; i < fit.H.length; i++) {
         var row = '';
+
         for (var j = 0; j < fit.W.length; j++) {
           row += (fit.G[j] || '').charAt(i) || ' ';
         }
+
         transposed.push(row);
       }
 
@@ -1121,6 +1172,7 @@
       findMarkers(RE_FIT).forEach(renderFitMarker);
       renderVideos();
       setupCartDock();
+      hydrateCoords();
       placeCoord();
     } finally {
       busy = false;
