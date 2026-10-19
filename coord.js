@@ -1,4 +1,4 @@
-/* ADWENS product-page widgets v3.15 (reconcile async cards after theme redraw) */
+/* ADWENS product-page widgets v3.16 (compact purchase layout) */
 (function () {
   'use strict';
   var itemMatch = location.pathname.match(/^\/items\/(\d+)/);
@@ -99,19 +99,9 @@
   function paintCoordSlot(key, index) {
     var state = coordStates[key];
     if (!state || !state.items[index]) return;
-
-    var selector =
-      '[data-adwens-coord-key="' + key + '"] ' +
-      '[data-adwens-coord-slot="' + index + '"]';
-
+    var selector = '[data-adwens-coord-key="' + key + '"] [data-adwens-coord-slot="' + index + '"]';
     Array.from(document.querySelectorAll(selector)).forEach(function (slot) {
-      if (
-        slot.getAttribute('data-adwens-coord-ready') === state.ids[index] &&
-        slot.querySelector('img')
-      ) {
-        return;
-      }
-
+      if (slot.getAttribute('data-adwens-coord-ready') === state.ids[index] && slot.querySelector('img')) return;
       slot.innerHTML = card(state.items[index], state.crops[index]);
       slot.firstElementChild.style.width = '100%';
       slot.setAttribute('data-adwens-coord-ready', state.ids[index]);
@@ -275,15 +265,9 @@
 
     var box = document.createElement('div');
     box.setAttribute('data-adwens-coord', '');
-
     var coordKey = ITEM_ID + '-' + (++coordSequence);
     box.setAttribute('data-adwens-coord-key', coordKey);
-    coordStates[coordKey] = {
-      ids: ids,
-      crops: crops,
-      items: []
-    };
-
+    coordStates[coordKey] = { ids: ids, crops: crops, items: [] };
     box.style.cssText =
       'margin:24px 0;padding-top:16px;border-top:1px solid #333;';
 
@@ -345,13 +329,8 @@
             return;
           }
 
-          var currentSlot = document.querySelector(
-            '[data-adwens-coord-key="' + coordKey + '"] ' +
-            '[data-adwens-coord-slot="' + index + '"]'
-          );
-
+          var currentSlot = document.querySelector('[data-adwens-coord-key="' + coordKey + '"] [data-adwens-coord-slot="' + index + '"]');
           if (!currentSlot) return;
-
           currentSlot.innerHTML =
             '<a href="/items/' + id +
             '" style="color:inherit;">商品ページを見る</a>' +
@@ -372,20 +351,134 @@
   }
 
   function placeCoord() {
-    var fit = document.querySelector('[data-adwens-sizefit]');
-    if (!fit || !fit.parentNode) return;
-
-    var anchor = fit;
-
-    Array.from(
-      document.querySelectorAll('[data-adwens-coord]')
-    ).forEach(function (box) {
-      if (anchor.nextSibling !== box) {
-        anchor.parentNode.insertBefore(box, anchor.nextSibling);
+    var form = document.querySelector('#purchase_form');
+    var description = document.querySelector('.item-description > .text.markdown');
+    if (!form || !description || !form.parentNode) return;
+    var host = form.parentNode;
+    function before(element) {
+      if (element) host.insertBefore(element, form);
+    }
+    function after(anchor, element) {
+      if (element && anchor.nextElementSibling !== element) {
+        anchor.parentNode.insertBefore(element, anchor.nextSibling);
       }
-      anchor = box;
+      return element || anchor;
+    }
+    if (!document.getElementById('adw-layout-style')) {
+      var style = document.createElement('style');
+      style.id = 'adw-layout-style';
+      style.textContent =
+        '.adw-buy-info{margin:12px 0;font-size:13px;line-height:1.65;color:inherit}' +
+        '.adw-shipping{border:1px solid #c9a227;padding:10px 12px;border-radius:4px}' +
+        '.adw-shipping strong{display:block;color:#d8b654;font-size:12px}' +
+        '.adw-shipping p{margin:4px 0 0!important;font-size:12px!important;line-height:1.7!important}' +
+        '.adw-model{padding:8px 10px;background:rgba(128,128,128,.12);border-left:3px solid #c9a227;font-size:12px}' +
+        '.adw-line{display:block!important;margin:10px 0 14px!important;padding:9px 12px!important;border:1px solid #06c755!important;border-radius:4px!important;background:transparent!important;color:inherit!important;text-decoration:none!important;line-height:1.6!important;font-size:12px!important}' +
+        '.adw-line strong{color:#06b850;display:block;font-size:13px}' +
+        '[data-adwens-coord-image]{display:none!important}' +
+        '[data-adwens-sizefit]{margin:12px 0!important;padding:10px!important;border:1px solid #444!important}' +
+        '[data-adwens-sizefit] label{min-width:65px!important}' +
+        '[data-adwens-sizefit] input{padding:8px!important;min-height:40px}' +
+        '[data-adwens-sizefit] button{flex:0 0 auto!important;padding:10px!important;font-size:12px!important;min-height:40px}' +
+        '[data-adwens-sizefit] [data-out]:empty{margin:0!important}' +
+        '[data-adwens-coord]{margin:20px 0!important}' +
+        '[data-adw-videos]{margin:20px 0!important}' +
+        '[data-adwens-sizeguide]{margin:22px 0!important}' +
+        '[data-adwens-sizeguide] img{display:block;width:100%;height:auto}';
+      document.head.appendChild(style);
+    }
+    var shipping = host.querySelector('[data-adw-shipping-card]');
+    if (!shipping) {
+      var source = Array.from(description.querySelectorAll('p')).find(function (p) {
+        return /^【発送目安[｜|]/.test(p.textContent.trim());
+      });
+      if (source) {
+        var text = source.innerText || source.textContent;
+        var heading = text.match(/^【発送目安[｜|]([^】]+)】/);
+        var body = text.replace(/^【発送目安[｜|][^】]+】\s*/, '').trim();
+        var domestic = heading && /国内/.test(heading[1]);
+        var lines = body.split(/\n+/).map(function (v) { return v.trim(); }).filter(Boolean);
+        var first = lines[0] || '';
+        var days = first.match(/(?:翌営業日[〜～~−-]?\s*)?\d+\s*(?:[〜～~−-]\s*\d+\s*)?(?:営業日|週間|日)(?:以内|前後)?/);
+        var label = days ? days[0].replace(/\s/g, '') + (/週間/.test(days[0]) ? 'で発送' : 'に発送') : (domestic ? '翌営業日〜5日以内に発送' : '2〜3週間で発送');
+        // 抽出した日数以外の文面・備考も消さずに表示する。
+        shipping = document.createElement('section');
+        shipping.className = 'adw-buy-info adw-shipping';
+        shipping.setAttribute('data-adw-shipping-card', '');
+        var title = document.createElement('strong');
+        title.textContent = '送料無料｜サイズ・イメージ違い交換OK｜' + label;
+        shipping.appendChild(title);
+        var note = document.createElement('p');
+        note.style.whiteSpace = 'pre-line';
+        note.textContent = body;
+        if (body) shipping.appendChild(note);
+        source.remove();
+      }
+    }
+    var model = host.querySelector('[data-adw-model-strip]');
+    if (!model) {
+      var modelSource = Array.from(description.querySelectorAll('p')).find(function (p) {
+        var value = p.textContent.trim();
+        return /^モデル(?:（[^）]*）)?\s*身長/.test(value) && value.length < 140 && /着用サイズ/.test(value) && !p.querySelector('img,video,iframe');
+      });
+      if (modelSource) {
+        model = document.createElement('div');
+        model.className = 'adw-buy-info adw-model';
+        model.setAttribute('data-adw-model-strip', '');
+        model.textContent = modelSource.textContent.trim();
+        modelSource.remove();
+      }
+    }
+    var fit = document.querySelector('[data-adwens-sizefit]');
+    // サイズ表画像は診断欄から分け、商品説明の末尾に常時表示する。
+    Array.from(document.querySelectorAll('[data-adwens-sizeguide]')).forEach(function (guide) {
+      if (guide.parentNode !== description) {
+        description.appendChild(guide);
+      }
     });
+    if (fit) {
+      var button = fit.querySelector('button');
+      if (button && button.textContent === '診断する') button.textContent = '診断';
+    }
+    var line = host.querySelector('[data-adw-compact-line]');
+    if (!line) {
+      line = document.createElement('a');
+      line.href = 'https://l.omct.jp/2006632232-Ex9Ye0xv';
+      line.target = '_blank';
+      line.rel = 'noopener';
+      line.className = 'adw-line';
+      line.setAttribute('data-adw-compact-line', '');
+      line.innerHTML = '<strong>サイズ選びに迷ったら、LINEでご相談ください！</strong>友だち追加で5%OFFクーポンをプレゼント！<br>LINEでサイズを相談する →';
+    }
+    // 今回の定型案内だけを除去し、その他の商品説明は残す。
+    Array.from(description.querySelectorAll('a[href]')).forEach(function (a) {
+      if (a.href.indexOf('https://l.omct.jp/2006632232-Ex9Ye0xv') === 0 && /サイズ.*相談/.test(a.textContent)) a.remove();
+    });
+    var walker = document.createTreeWalker(description, NodeFilter.SHOW_TEXT);
+    var nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    nodes.forEach(function (node) {
+      if (node.parentElement.closest('script,style,textarea')) return;
+      var value = node.nodeValue.replace(/サイズ選びに迷ったら、LINEでご相談ください！/g, '').replace(/友だち追加で5%OFFクーポンをプレゼント！/g, '');
+      if (node.nodeValue !== value) node.nodeValue = value;
+    });
+    // 既に目的の順なら移動しない。監視処理による再描画ループを防ぐ。
+    var blocks = [shipping, model, fit, line].filter(Boolean);
+    var previous = form.previousElementSibling;
+    var ordered = true;
+    for (var i = blocks.length - 1; i >= 0; i--) {
+      if (previous !== blocks[i]) ordered = false;
+      previous = previous && previous.previousElementSibling;
+    }
+    if (!ordered) blocks.forEach(before);
+    var anchor = form;
+    Array.from(document.querySelectorAll('[data-adwens-coord]')).forEach(function (box) {
+      anchor = after(anchor, box);
+    });
+    var videos = document.querySelector('[data-adw-videos]');
+    if (videos) after(anchor, videos);
   }
+
 
   /* おすすめサイズ診断 */
   function normalizeFit(raw) {
@@ -419,11 +512,9 @@
 
       for (var i = 0; i < fit.H.length; i++) {
         var row = '';
-
         for (var j = 0; j < fit.W.length; j++) {
           row += (fit.G[j] || '').charAt(i) || ' ';
         }
-
         transposed.push(row);
       }
 
@@ -939,17 +1030,6 @@
       description.appendChild(section);
     }
 
-    var line = description.querySelector('[data-adwens-line]') ||
-      Array.from(description.querySelectorAll('a[href]')).find(
-        function (link) {
-          return link.href.indexOf(LINE_URL) === 0;
-        }
-      );
-
-    if (line && line.nextSibling !== section) {
-      line.parentNode.insertBefore(section, line.nextSibling);
-    }
-
     var rail = section.querySelector('.adw-video-rail');
 
     function videoCard(key, element) {
@@ -1207,3 +1287,4 @@
     start();
   }
 })();
+
