@@ -1,4 +1,4 @@
-/* ADWENS product-page widgets v3.16 (compact purchase layout) */
+/* ADWENS product-page widgets v3.17 (opt-in outfit gallery) */
 (function () {
   'use strict';
   var itemMatch = location.pathname.match(/^\/items\/(\d+)/);
@@ -473,8 +473,14 @@
     if (!ordered) blocks.forEach(before);
     var anchor = form;
     Array.from(document.querySelectorAll('[data-adwens-coord]')).forEach(function (box) {
+      if (document.querySelector('[data-adw-gallery]')) {
+        box.setAttribute('data-gallery-hidden', '');
+        return;
+      }
       anchor = after(anchor, box);
     });
+    var gallery = document.querySelector('[data-adw-gallery]');
+    if (gallery) anchor = after(anchor, gallery);
     var videos = document.querySelector('[data-adw-videos]');
     if (videos) after(anchor, videos);
   }
@@ -1240,6 +1246,132 @@
     update();
   }
 
+  /* Outfit gallery: absent catalog entry always keeps the legacy cards. */
+  var galleryConfig = null;
+  function renderGallery() {
+    if (!galleryConfig || document.querySelector('[data-adw-gallery]')) return;
+    var rows = galleryConfig.rows;
+    var description = document.querySelector('.item-description > .text.markdown');
+    if (!description || !rows.length) return;
+    var style = document.createElement('style');
+    style.textContent = '[data-adwens-coord][data-gallery-hidden]{display:none!important}' +
+      '.adw-gallery{margin:20px 0;min-width:0;max-width:100%;clear:both}' +
+      '.adw-gallery h3{font-size:16px;margin:0 0 12px}' +
+      '.adw-gallery-rail{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:10px;max-width:100%;overscroll-behavior-x:contain}' +
+      '.adw-gallery-slide{flex:0 0 94%;min-width:0;margin:0;scroll-snap-align:start}' +
+      '.adw-gallery-slide:only-child{flex-basis:100%}' +
+      '.adw-gallery-slide img{display:block;width:100%;height:360px;max-height:65vh;object-fit:contain;background:rgba(128,128,128,.08)}' +
+      '.adw-gallery-slide figcaption{font-size:12px;margin:8px 0;min-height:0}' +
+      '.adw-gallery-controls{display:flex;justify-content:center;align-items:center;gap:16px;margin:8px 0}' +
+      '.adw-gallery-controls[hidden]{display:none!important}' +
+      '.adw-gallery-controls button{background:transparent;color:inherit;border:1px solid currentColor;min-width:44px;min-height:44px}' +
+      '.adw-gallery-products{display:flex;flex-wrap:wrap;gap:8px}' +
+      '.adw-gallery-products a{flex:1 1 130px;min-width:0;padding:10px 12px;border:1px solid rgba(128,128,128,.5);font-size:12px;color:inherit;text-decoration:none;overflow-wrap:anywhere}' +
+      '.adw-gallery-products:empty{display:none}';
+    document.head.appendChild(style);
+    var section = document.createElement('section');
+    section.className = 'adw-gallery';
+    section.setAttribute('data-adw-gallery', '');
+    var heading = document.createElement('h3');
+    heading.textContent = '着用コーディネート';
+    var rail = document.createElement('div');
+    rail.className = 'adw-gallery-rail';
+    rail.setAttribute('aria-label', '着用コーディネートの写真');
+    var slides = rows.map(function (row, i) {
+      var figure = document.createElement('figure');
+      figure.className = 'adw-gallery-slide';
+      var image = document.createElement('img');
+      image.src = row.imageUrl;
+      image.loading = i ? 'lazy' : 'eager';
+      image.decoding = 'async';
+      image.alt = '着用コーディネート ' + (i + 1);
+      image.width = 1080;
+      image.height = 1350;
+      figure.appendChild(image);
+      var info = [];
+      if (row.height) info.push('身長 ' + row.height + 'cm');
+      if (row.weight) info.push('体重 ' + row.weight + 'kg');
+      if (row.size) info.push('着用サイズ ' + row.size);
+      if (info.length) {
+        var caption = document.createElement('figcaption');
+        caption.textContent = info.join(' ／ ');
+        figure.appendChild(caption);
+      }
+      rail.appendChild(figure);
+      return figure;
+    });
+    var controls = document.createElement('div');
+    controls.className = 'adw-gallery-controls';
+    controls.hidden = rows.length < 2;
+    var prev = document.createElement('button');
+    var next = document.createElement('button');
+    prev.type = next.type = 'button';
+    prev.textContent = '←'; next.textContent = '→';
+    prev.setAttribute('aria-label', '前のコーデ');
+    next.setAttribute('aria-label', '次のコーデ');
+    var count = document.createElement('span');
+    count.setAttribute('aria-live', 'polite');
+    controls.append(prev, count, next);
+    var products = document.createElement('div');
+    products.className = 'adw-gallery-products';
+    var current = -1;
+    function update(index) {
+      if (current === index) return;
+      current = index;
+      count.textContent = (index + 1) + ' / ' + rows.length;
+      prev.disabled = index === 0;
+      next.disabled = index === rows.length - 1;
+      products.replaceChildren();
+      (rows[index].products || []).forEach(function (product) {
+        if (!/^\d+$/.test(String(product.id))) return;
+        var link = document.createElement('a');
+        link.href = '/items/' + product.id;
+        link.textContent = (product.name || '着用アイテム') + ' を見る →';
+        products.appendChild(link);
+      });
+    }
+    function go(index) {
+      var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      rail.scrollTo({left: slides[index].offsetLeft - slides[0].offsetLeft, behavior: reduced ? 'instant' : 'smooth'});
+    }
+    prev.onclick = function () { go(Math.max(0, current - 1)); };
+    next.onclick = function () { go(Math.min(rows.length - 1, current + 1)); };
+    rail.addEventListener('scroll', function () {
+      var x = rail.scrollLeft;
+      var index = 0, distance = Infinity;
+      slides.forEach(function (slide, i) {
+        var d = Math.abs(slide.offsetLeft - slides[0].offsetLeft - x);
+        if (d < distance) { distance = d; index = i; }
+      });
+      update(index);
+    }, {passive:true});
+    section.append(heading, rail, controls, products);
+    description.appendChild(section);
+    update(0);
+  }
+  function loadGallery() {
+    var urls = [
+      'https://raw.githubusercontent.com/adwens0111/adwens/main/coord_gallery.json',
+      'https://adwens0111.github.io/adwens/coord_gallery.json'
+    ];
+    function attempt(i) {
+      if (i >= urls.length) return Promise.resolve({});
+      return fetch(urls[i] + '?v=' + Math.floor(Date.now() / 60000))
+        .then(function (response) { if (!response.ok) throw new Error('catalog'); return response.json(); })
+        .catch(function () { return attempt(i + 1); });
+    }
+    attempt(0).then(function (all) {
+      var config = all && all[ITEM_ID];
+      if (!config || config.mode !== 'slides' || !Array.isArray(config.rows)) return;
+      var valid = config.rows.every(function (row) {
+        return row && /^https:\/\/(?:raw\.githubusercontent\.com\/adwens0111\/adwens\/main\/coord-gallery\/|adwens0111\.github\.io\/adwens\/coord-gallery\/)[a-f0-9]{64}\.(jpg|png)$/.test(row.imageUrl);
+      });
+      if (!valid || !config.rows.length) return;
+      galleryConfig = config;
+      run();
+    });
+  }
+
   var busy = false;
 
   function run() {
@@ -1251,6 +1383,7 @@
       findMarkers(RE_COORD).forEach(renderCoord);
       findMarkers(RE_FIT).forEach(renderFitMarker);
       renderVideos();
+      renderGallery();
       setupCartDock();
       hydrateCoords();
       placeCoord();
@@ -1263,6 +1396,7 @@
     run();
     loadVerifiedFit();
     loadVideos();
+    loadGallery();
 
     var observer = new MutationObserver(function () {
       run();
