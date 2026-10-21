@@ -1,4 +1,4 @@
-/* ADWENS product-page widgets v3.17 (opt-in outfit gallery) */
+/* ADWENS product-page widgets v3.18 (editorial outfit album) */
 (function () {
   'use strict';
   var itemMatch = location.pathname.match(/^\/items\/(\d+)/);
@@ -1255,28 +1255,46 @@
     if (!description || !rows.length) return;
     var style = document.createElement('style');
     style.textContent = '[data-adwens-coord][data-gallery-hidden]{display:none!important}' +
-      '.adw-gallery{margin:20px 0;min-width:0;max-width:100%;clear:both}' +
-      '.adw-gallery h3{font-size:16px;margin:0 0 12px}' +
-      '.adw-gallery-rail{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:10px;max-width:100%;overscroll-behavior-x:contain}' +
-      '.adw-gallery-slide{flex:0 0 94%;min-width:0;margin:0;scroll-snap-align:start}' +
+      '.adw-gallery{margin:26px 0;min-width:0;max-width:100%;clear:both;color:inherit}' +
+      '.adw-gallery-kicker{font-size:10px;letter-spacing:.24em;opacity:.65;margin:0 0 7px}' +
+      '.adw-gallery h3{font-size:18px;font-weight:400;letter-spacing:.08em;margin:0 0 16px}' +
+      '.adw-gallery-rail{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:12px;max-width:100%;overscroll-behavior-x:contain;scrollbar-width:none}' +
+      '.adw-gallery-rail::-webkit-scrollbar{display:none}' +
+      '.adw-gallery-slide{flex:0 0 91%;min-width:0;margin:0;scroll-snap-align:start}' +
       '.adw-gallery-slide:only-child{flex-basis:100%}' +
-      '.adw-gallery-slide img{display:block;width:100%;height:360px;max-height:65vh;object-fit:contain;background:rgba(128,128,128,.08)}' +
-      '.adw-gallery-slide figcaption{font-size:12px;margin:8px 0;min-height:0}' +
-      '.adw-gallery-controls{display:flex;justify-content:center;align-items:center;gap:16px;margin:8px 0}' +
-      '.adw-gallery-controls[hidden]{display:none!important}' +
-      '.adw-gallery-controls button{background:transparent;color:inherit;border:1px solid currentColor;min-width:44px;min-height:44px}' +
-      '.adw-gallery-products{display:flex;flex-wrap:wrap;gap:8px}' +
-      '.adw-gallery-products a{flex:1 1 130px;min-width:0;padding:10px 12px;border:1px solid rgba(128,128,128,.5);font-size:12px;color:inherit;text-decoration:none;overflow-wrap:anywhere}' +
-      '.adw-gallery-products:empty{display:none}';
+      '.adw-gallery-slide img{display:block;width:100%;height:auto;aspect-ratio:4/5;object-fit:contain;background:rgba(128,128,128,.06)}' +
+      '.adw-gallery-slide figcaption{font-size:11px;line-height:1.6;margin:8px 0 0;opacity:.75}' +
+      '.adw-gallery-controls{display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:44px;margin:4px 0 12px}' +
+      '.adw-gallery-controls[hidden],.adw-gallery [hidden]{display:none!important}' +
+      '.adw-gallery-count{font-size:11px;letter-spacing:.1em;font-variant-numeric:tabular-nums;opacity:.7}' +
+      '.adw-gallery-dots{display:flex;align-items:center;justify-content:center}' +
+      '.adw-gallery-dot{display:flex!important;align-items:center!important;justify-content:center!important;width:44px!important;min-width:44px!important;height:44px!important;min-height:44px!important;padding:0!important;border:0!important;border-radius:0!important;box-shadow:none!important;background:transparent!important;color:inherit!important;cursor:pointer}' +
+      '.adw-gallery-dot:after{content:"";width:5px;height:5px;border-radius:50%;background:currentColor;opacity:.35}' +
+      '.adw-gallery-dot[aria-pressed="true"]:after{width:18px;border-radius:4px;background:#c6b17e;opacity:1}' +
+      '.adw-gallery-caption{font-size:14px;line-height:1.9;letter-spacing:.025em;white-space:pre-line;margin:0 0 20px;overflow-wrap:anywhere}' +
+      '.adw-gallery-items{border-top:1px solid rgba(128,128,128,.3);border-bottom:1px solid rgba(128,128,128,.3)}' +
+      '.adw-gallery-items summary{display:flex;align-items:center;justify-content:space-between;gap:12px;list-style:none;padding:15px 0;font-size:12px;letter-spacing:.04em;cursor:pointer;min-height:44px;box-sizing:border-box}' +
+      '.adw-gallery-items summary::-webkit-details-marker{display:none}' +
+      '.adw-gallery-items summary:after{content:"";display:block;width:7px;height:7px;border-right:1px solid #c6b17e;border-bottom:1px solid #c6b17e;transform:rotate(45deg);margin:0 5px 4px}' +
+      '.adw-gallery-items[open] summary:after{transform:rotate(225deg);margin-top:5px}' +
+      '.adw-gallery-products{display:grid;gap:0;padding:0 0 4px}' +
+      '.adw-gallery-products a{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid rgba(128,128,128,.15);font-size:12px;line-height:1.6;color:inherit;text-decoration:none;overflow-wrap:anywhere}' +
+      '.adw-gallery-products img{display:block;width:48px;height:60px;flex:0 0 48px;object-fit:contain;background:rgba(128,128,128,.08)}' +
+      '.adw-gallery-products a span{flex:1;min-width:0}' +
+      '.adw-gallery-products a:after{content:"›";opacity:.65;padding:0 4px}';
     document.head.appendChild(style);
     var section = document.createElement('section');
     section.className = 'adw-gallery';
     section.setAttribute('data-adw-gallery', '');
+    var kicker = document.createElement('p');
+    kicker.className = 'adw-gallery-kicker';
+    kicker.textContent = 'STYLE ALBUM';
     var heading = document.createElement('h3');
-    heading.textContent = '着用コーディネート';
+    heading.textContent = '着こなしのヒント';
     var rail = document.createElement('div');
     rail.className = 'adw-gallery-rail';
-    rail.setAttribute('aria-label', '着用コーディネートの写真');
+    rail.setAttribute('aria-label', '着こなしの写真。横にスワイプして切り替え');
+    rail.tabIndex = 0;
     var slides = rows.map(function (row, i) {
       var figure = document.createElement('figure');
       figure.className = 'adw-gallery-slide';
@@ -1284,7 +1302,7 @@
       image.src = row.imageUrl;
       image.loading = i ? 'lazy' : 'eager';
       image.decoding = 'async';
-      image.alt = '着用コーディネート ' + (i + 1);
+      image.alt = '着こなし ' + (i + 1);
       image.width = 1080;
       image.height = 1350;
       figure.appendChild(image);
@@ -1293,9 +1311,9 @@
       if (row.weight) info.push('体重 ' + row.weight + 'kg');
       if (row.size) info.push('着用サイズ ' + row.size);
       if (info.length) {
-        var caption = document.createElement('figcaption');
-        caption.textContent = info.join(' ／ ');
-        figure.appendChild(caption);
+        var metadata = document.createElement('figcaption');
+        metadata.textContent = info.join(' ／ ');
+        figure.appendChild(metadata);
       }
       rail.appendChild(figure);
       return figure;
@@ -1303,39 +1321,73 @@
     var controls = document.createElement('div');
     controls.className = 'adw-gallery-controls';
     controls.hidden = rows.length < 2;
-    var prev = document.createElement('button');
-    var next = document.createElement('button');
-    prev.type = next.type = 'button';
-    prev.textContent = '←'; next.textContent = '→';
-    prev.setAttribute('aria-label', '前のコーデ');
-    next.setAttribute('aria-label', '次のコーデ');
     var count = document.createElement('span');
+    count.className = 'adw-gallery-count';
     count.setAttribute('aria-live', 'polite');
-    controls.append(prev, count, next);
+    var dots = document.createElement('div');
+    dots.className = 'adw-gallery-dots';
+    var buttons = rows.map(function (row, i) {
+      var button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'adw-gallery-dot';
+      button.setAttribute('aria-label', (i + 1) + '枚目の着こなしを見る');
+      button.onclick = function () { go(i); };
+      dots.appendChild(button);
+      return button;
+    });
+    controls.append(dots, count);
+    var caption = document.createElement('p');
+    caption.className = 'adw-gallery-caption';
+    var details = document.createElement('details');
+    details.className = 'adw-gallery-items';
+    var summary = document.createElement('summary');
+    summary.textContent = '着用アイテムを見る';
     var products = document.createElement('div');
     products.className = 'adw-gallery-products';
+    details.append(summary, products);
     var current = -1;
     function update(index) {
       if (current === index) return;
       current = index;
-      count.textContent = (index + 1) + ' / ' + rows.length;
-      prev.disabled = index === 0;
-      next.disabled = index === rows.length - 1;
+      count.textContent = String(index + 1).padStart(2, '0') + ' / ' + String(rows.length).padStart(2, '0');
+      var start = Math.max(0, Math.min(index - 2, rows.length - 5));
+      buttons.forEach(function (button, i) {
+        button.setAttribute('aria-pressed', String(index === i));
+        button.hidden = i < start || i >= start + 5;
+      });
+      caption.textContent = String(rows[index].caption || '').trim();
+      caption.hidden = !caption.textContent;
+      details.open = false;
       products.replaceChildren();
       (rows[index].products || []).forEach(function (product) {
         if (!/^\d+$/.test(String(product.id))) return;
         var link = document.createElement('a');
         link.href = '/items/' + product.id;
-        link.textContent = (product.name || '着用アイテム') + ' を見る →';
+        if (/^https:\/\//.test(String(product.image || ''))) {
+          var thumb = document.createElement('img');
+          thumb.src = product.image;
+          thumb.alt = '';
+          thumb.loading = 'lazy';
+          thumb.decoding = 'async';
+          thumb.width = 48; thumb.height = 60;
+          link.appendChild(thumb);
+        }
+        var name = document.createElement('span');
+        name.textContent = product.name || '着用アイテム';
+        link.appendChild(name);
         products.appendChild(link);
       });
+      details.hidden = !products.childElementCount;
     }
     function go(index) {
       var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       rail.scrollTo({left: slides[index].offsetLeft - slides[0].offsetLeft, behavior: reduced ? 'instant' : 'smooth'});
     }
-    prev.onclick = function () { go(Math.max(0, current - 1)); };
-    next.onclick = function () { go(Math.min(rows.length - 1, current + 1)); };
+    rail.addEventListener('keydown', function (event) {
+      if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+      event.preventDefault();
+      go(Math.max(0, Math.min(rows.length - 1, current + (event.key === 'ArrowLeft' ? -1 : 1))));
+    });
     rail.addEventListener('scroll', function () {
       var x = rail.scrollLeft;
       var index = 0, distance = Infinity;
@@ -1345,7 +1397,7 @@
       });
       update(index);
     }, {passive:true});
-    section.append(heading, rail, controls, products);
+    section.append(kicker, heading, rail, controls, caption, details);
     description.appendChild(section);
     update(0);
   }
