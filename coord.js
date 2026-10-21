@@ -1,4 +1,68 @@
-/* ADWENS product-page widgets v3.19 (album below description, visible outfit items) */
+/* ADWENS storefront widgets v3.20 (popular search, FAQ deep links, P00007 shipping) */
+(function () {
+  'use strict';
+  // BASE販売数・GA4閲覧数 2026/09/23–10/20、直近7日でも主力4型を確認。
+  var keywords = [
+    'スキニーカーゴパンツ', 'マルチラインダウン',
+    'グラデーションチェックシャツ', 'ハイカットブーツ',
+    'クロコレザーダウン', 'ワイドカーゴパンツ', 'ダウン', 'スニーカー'
+  ];
+  function updateKeywords() {
+    document.querySelectorAll('.header-search-wrap > ul, .ksearch-form-wrap > ul').forEach(function (list) {
+      if (list.getAttribute('data-adw-popular-search') === '20261021') return;
+      if (!list.querySelector('a[href*="/search?q="]')) return;
+      var fragment = document.createDocumentFragment();
+      keywords.forEach(function (word) {
+        var li = document.createElement('li');
+        var a = document.createElement('a');
+        a.textContent = word;
+        a.href = '/search?q=' + encodeURIComponent(word);
+        li.appendChild(a);
+        fragment.appendChild(li);
+      });
+      list.replaceChildren(fragment);
+      list.setAttribute('data-adw-popular-search', '20261021');
+    });
+  }
+  var jumpToken = 0;
+  function jumpToAboutTab() {
+    if (!/^\/about\/?$/.test(location.pathname) || !/^#tab[123]$/.test(location.hash)) return;
+    var token = ++jumpToken;
+    var hash = location.hash;
+    function jump() {
+      if (token !== jumpToken || location.hash !== hash) return;
+      var tabs = document.querySelector('.about-main .tab');
+      var link = tabs && tabs.querySelector('a[href="' + hash + '"]');
+      if (!link) return;
+      if (link.getAttribute('aria-expanded') !== 'true') link.click();
+      var header = document.querySelector('header');
+      var offset = header ? Math.min(header.getBoundingClientRect().height, 160) : 80;
+      window.scrollTo({top: Math.max(0, tabs.getBoundingClientRect().top + window.scrollY - offset - 20), behavior: 'instant'});
+    }
+    // テーマのタブ初期化・画像読み込みによる高さ変化の後も目的箇所に合わせる。
+    [0, 350, 1200].forEach(function (delay) { setTimeout(jump, delay); });
+  }
+  function start() {
+    updateKeywords();
+    jumpToAboutTab();
+    window.addEventListener('load', jumpToAboutTab, {once:true});
+    window.addEventListener('hashchange', jumpToAboutTab);
+    ['wheel', 'touchstart', 'keydown'].forEach(function (type) {
+      window.addEventListener(type, function () { jumpToken++; }, {passive:true});
+    });
+    document.addEventListener('click', function (event) {
+      var link = event.target.closest && event.target.closest('a[href]');
+      if (!link || !/^\/about\/?$/.test(location.pathname)) return;
+      var target = new URL(link.href, location.href);
+      if (target.origin === location.origin && /^\/about\/?$/.test(target.pathname) && target.hash === location.hash) {
+        jumpToAboutTab();
+      }
+    });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
+  else start();
+})();
+
 (function () {
   'use strict';
   var itemMatch = location.pathname.match(/^\/items\/(\d+)/);
@@ -413,6 +477,26 @@
         note.textContent = body;
         if (body) shipping.appendChild(note);
         source.remove();
+      }
+    }
+    // P00007は個別の発送目安を優先。既存カードが先に生成された場合も揃える。
+    if (ITEM_ID === '88671936') {
+      var shippingTitle = shipping && shipping.querySelector('strong');
+      var correctTitle = '送料無料｜サイズ・イメージ違い交換OK｜7日以内に発送';
+      if (shippingTitle && shippingTitle.textContent !== correctTitle) shippingTitle.textContent = correctTitle;
+      var guide = document.querySelector('.item-guide > .text.markdown');
+      if (guide && !guide.hasAttribute('data-adw-p00007-shipping')) {
+        guide.replaceChildren();
+        [
+          '【この商品の発送目安】\nスキニーカーゴパンツ(P00007)は、ご注文から7日以内に発送します。\n※発送までの目安です。到着までの日数とは異なります。',
+          '発送完了通知は、海外倉庫から発送したタイミングでお送りします。\n配送会社の追跡サイトに追跡番号が反映されるまで4日前後かかる場合があります。（航空便の状況により前後します）'
+        ].forEach(function (text) {
+          var p = document.createElement('p');
+          p.style.whiteSpace = 'pre-line';
+          p.textContent = text;
+          guide.appendChild(p);
+        });
+        guide.setAttribute('data-adw-p00007-shipping', '');
       }
     }
     var model = host.querySelector('[data-adw-model-strip]');
