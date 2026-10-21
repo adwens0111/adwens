@@ -1,4 +1,4 @@
-/* ADWENS product-page widgets v3.18 (editorial outfit album) */
+/* ADWENS product-page widgets v3.19 (album below description, visible outfit items) */
 (function () {
   'use strict';
   var itemMatch = location.pathname.match(/^\/items\/(\d+)/);
@@ -480,7 +480,8 @@
       anchor = after(anchor, box);
     });
     var gallery = document.querySelector('[data-adw-gallery]');
-    if (gallery) anchor = after(anchor, gallery);
+    // Keep the outfit album after the full description and size guide.
+    if (gallery && description.lastElementChild !== gallery) description.appendChild(gallery);
     var videos = document.querySelector('[data-adw-videos]');
     if (videos) after(anchor, videos);
   }
@@ -1273,10 +1274,7 @@
       '.adw-gallery-dot[aria-pressed="true"]:after{width:18px;border-radius:4px;background:#c6b17e;opacity:1}' +
       '.adw-gallery-caption{font-size:14px;line-height:1.9;letter-spacing:.025em;white-space:pre-line;margin:0 0 20px;overflow-wrap:anywhere}' +
       '.adw-gallery-items{border-top:1px solid rgba(128,128,128,.3);border-bottom:1px solid rgba(128,128,128,.3)}' +
-      '.adw-gallery-items summary{display:flex;align-items:center;justify-content:space-between;gap:12px;list-style:none;padding:15px 0;font-size:12px;letter-spacing:.04em;cursor:pointer;min-height:44px;box-sizing:border-box}' +
-      '.adw-gallery-items summary::-webkit-details-marker{display:none}' +
-      '.adw-gallery-items summary:after{content:"";display:block;width:7px;height:7px;border-right:1px solid #c6b17e;border-bottom:1px solid #c6b17e;transform:rotate(45deg);margin:0 5px 4px}' +
-      '.adw-gallery-items[open] summary:after{transform:rotate(225deg);margin-top:5px}' +
+      '.adw-gallery-items-title{font-size:12px;font-weight:400;letter-spacing:.04em;margin:0;padding:14px 0 4px}' +
       '.adw-gallery-products{display:grid;gap:0;padding:0 0 4px}' +
       '.adw-gallery-products a{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid rgba(128,128,128,.15);font-size:12px;line-height:1.6;color:inherit;text-decoration:none;overflow-wrap:anywhere}' +
       '.adw-gallery-products img{display:block;width:48px;height:60px;flex:0 0 48px;object-fit:contain;background:rgba(128,128,128,.08)}' +
@@ -1338,10 +1336,11 @@
     controls.append(dots, count);
     var caption = document.createElement('p');
     caption.className = 'adw-gallery-caption';
-    var details = document.createElement('details');
+    var details = document.createElement('section');
     details.className = 'adw-gallery-items';
-    var summary = document.createElement('summary');
-    summary.textContent = '着用アイテムを見る';
+    var summary = document.createElement('h4');
+    summary.className = 'adw-gallery-items-title';
+    summary.textContent = 'このコーデの着用アイテム';
     var products = document.createElement('div');
     products.className = 'adw-gallery-products';
     details.append(summary, products);
@@ -1357,7 +1356,6 @@
       });
       caption.textContent = String(rows[index].caption || '').trim();
       caption.hidden = !caption.textContent;
-      details.open = false;
       products.replaceChildren();
       (rows[index].products || []).forEach(function (product) {
         if (!/^\d+$/.test(String(product.id))) return;
@@ -1424,6 +1422,14 @@
     });
   }
 
+  function hideBaseRelated() {
+    if (document.getElementById('adw-base-related-style')) return;
+    var style = document.createElement('style');
+    style.id = 'adw-base-related-style';
+    style.textContent = '.item-detail .related-items{display:none!important}';
+    document.head.appendChild(style);
+  }
+
   var busy = false;
 
   function run() {
@@ -1431,6 +1437,7 @@
     busy = true;
 
     try {
+      hideBaseRelated();
       findMarkers(RE_LINE).forEach(renderLine);
       findMarkers(RE_COORD).forEach(renderCoord);
       findMarkers(RE_FIT).forEach(renderFitMarker);
