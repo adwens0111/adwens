@@ -1,9 +1,9 @@
-/* ADWENS storefront widgets v3.26 (mobile discovery and lightweight homepage) */
+/* ADWENS storefront widgets v3.27 (mobile discovery and lightweight homepage) */
 (function () {
   'use strict';
   // Short customer vocabulary; labels can differ from the BASE search query.
   var keywords = [
-    {label:'スキニー',query:'スキニー'}, {label:'カーゴパンツ',query:'カーゴパンツ'},
+    {label:'スキニー',query:'スキニー',href:'/items/88671936'}, {label:'カーゴパンツ',query:'カーゴパンツ'},
     {label:'ダウン',query:'ダウン'}, {label:'光沢・グロス',query:'シャイニー',href:'/items/163408942'},
     {label:'クロコ',query:'クロコ'}, {label:'チェックシャツ',query:'チェックシャツ'}
   ];
@@ -42,9 +42,9 @@
       style.textContent = `
 html.adw-home-discovery #oc-plugin-popup{display:none!important}
 .adw-home-discovery .main>.mv-wrap{order:1!important}
-.adw-home-discovery .main>.ksearch-wrap{order:2!important}
-.adw-home-discovery .main>.catlist-wrap{order:3!important}
-.adw-home-discovery .main>.topinfo{order:4!important}
+.adw-home-discovery .main>.topinfo{order:2!important}
+.adw-home-discovery .main>.ksearch-wrap{order:3!important}
+.adw-home-discovery .main>.catlist-wrap{order:4!important}
 .adw-home-discovery .main>.item-list-area{order:5!important}
 .adw-home-discovery .main>.historyitems{order:6!important}
 .adw-home-discovery .main>.ranking{order:7!important}
@@ -56,8 +56,10 @@ html.adw-home-discovery #oc-plugin-popup{display:none!important}
 .adw-home-discovery .ksearch-form input{flex:1!important;width:0!important;min-width:0!important;height:48px!important;box-sizing:border-box!important;font-size:16px!important;color:#fff!important;background:transparent!important;border:0!important;padding:0 12px!important}
 .adw-home-discovery .ksearch-form input::placeholder{color:#b9b9b9!important;font-size:14px!important}
 .adw-home-discovery .ksearch-form button{width:48px!important;min-width:48px!important;height:48px!important;position:relative!important;color:#fff!important;background:transparent!important;border:0!important}
-.adw-home-discovery .ksearch-form button:before{content:''!important;position:absolute;left:14px;top:13px;width:13px;height:13px;border:1.5px solid currentColor;border-radius:50%}
-.adw-home-discovery .ksearch-form button:after{content:''!important;position:absolute;left:28px;top:27px;width:8px;height:1.5px;background:currentColor;transform:rotate(45deg)}
+.adw-home-discovery .ksearch-form button{font-size:0!important;background-image:none!important}
+.adw-home-discovery .ksearch-form button>*{display:none!important}
+.adw-home-discovery .ksearch-form button:before{content:''!important;position:absolute!important;left:13px!important;top:12px!important;width:15px!important;height:15px!important;border:1.5px solid #eee!important;border-radius:50%!important;background:none!important;transform:none!important}
+.adw-home-discovery .ksearch-form button:after{content:''!important;position:absolute!important;left:27px!important;top:27px!important;width:8px!important;height:1.5px!important;background:#eee!important;border:0!important;transform:rotate(45deg)!important}
 .adw-home-discovery .ksearch-form-wrap>p{font-size:14px!important;font-weight:600!important;text-align:left!important;letter-spacing:.04em!important;margin:0 0 10px!important;color:#eee!important}
 .adw-home-discovery .ksearch-form-wrap>ul{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px!important;margin:0!important;padding:0!important;list-style:none!important}
 .adw-home-discovery .ksearch-form-wrap>ul>li{display:block!important;margin:0!important;padding:0!important;min-width:0}
@@ -73,11 +75,18 @@ html.adw-home-discovery #oc-plugin-popup{display:none!important}
 .adw-cat-text a{display:flex;align-items:center;justify-content:space-between;gap:4px;box-sizing:border-box;min-height:44px;padding:8px 10px;color:#eee;border:1px solid #555;border-radius:3px;text-decoration:none;font-size:13px;line-height:1.5}
 .adw-cat-text a:last-child{grid-column:1/-1;justify-content:center;gap:12px}
 .adw-cat-text a:after{content:'›';font-size:18px;color:#aaa}
-.adw-home-discovery .topinfo{padding:6px 18px 16px!important;margin:0!important}
-.adw-home-trust{max-width:960px;margin:auto;border-top:1px solid #444;border-bottom:1px solid #444;padding:12px 0;color:#ddd;font-size:12px;line-height:1.6}
-.adw-home-trust p{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 14px;margin:0 0 9px!important;font-size:12px!important;line-height:1.6!important}
-.adw-home-trust a{display:flex;justify-content:center;align-items:center;gap:10px;min-height:44px;text-decoration:none;color:#eee;font-size:14px;border-top:1px solid #333;padding-top:6px}
-.adw-home-trust a:before{content:'LINE';display:flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:7px;background:#06c755;color:#fff;font:700 8px Arial,sans-serif}
+.adw-home-discovery .topinfo{padding:14px 18px 16px!important;margin:0!important}
+.adw-home-trust{max-width:960px;margin:auto;color:#f4f4f4}
+.adw-home-trust-title{margin:0 0 10px!important;font-size:15px!important;font-weight:700!important;letter-spacing:.06em!important}
+.adw-home-trust-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:9px}
+.adw-home-trust-card{box-sizing:border-box;min-height:72px;padding:12px 10px;border:1px solid #555;border-radius:4px;background:#121212}
+.adw-home-trust-card strong{display:block;margin-bottom:4px;font-size:14px;line-height:1.45;color:#fff}
+.adw-home-trust-card span{display:block;font-size:11px;line-height:1.5;color:#bdbdbd}
+.adw-home-trust-line{display:flex;align-items:center;gap:12px;box-sizing:border-box;min-height:76px;padding:12px 14px;border:1px solid #17c964;border-radius:4px;background:#0d1711;color:#fff;text-decoration:none}
+.adw-home-trust-line:before{content:'LINE';display:flex;flex:0 0 38px;align-items:center;justify-content:center;width:38px;height:38px;border-radius:10px;background:#06c755;color:#fff;font:700 10px Arial,sans-serif}
+.adw-home-trust-line strong{display:block;font-size:15px;line-height:1.45}
+.adw-home-trust-line span{display:block;margin-top:2px;font-size:11px;line-height:1.5;color:#bde9cc}
+.adw-home-trust-line b{margin-left:auto;font-size:20px;font-weight:400}
 .adw-home-discovery #item-list{margin-top:18px!important}
 .adw-home-discovery #item-list .item-list-more a{display:flex!important;justify-content:center!important;align-items:center!important;min-height:48px!important;border:1px solid #777!important;border-radius:3px!important;font-size:15px!important;color:inherit!important}
 .adw-home-discovery #item-list .item-list-item[hidden],.adw-home-discovery #item-list [data-adw-local-more][hidden],.adw-home-discovery #item-list[data-adw-has-more] .item-list-more{display:none!important}
@@ -119,14 +128,23 @@ html.adw-home-discovery #oc-plugin-popup{display:none!important}
     }
     if (info && !info.querySelector('.adw-home-trust')) {
       var trust = document.createElement('div'); trust.className = 'adw-home-trust';
-      var p = document.createElement('p');
-      ['5,000円以上送料無料','サイズ・イメージ違い交換対応'].forEach(function (t) { var span = document.createElement('span'); span.textContent = t; p.appendChild(span); });
+      var titleTrust = document.createElement('p'); titleTrust.className = 'adw-home-trust-title'; titleTrust.textContent = 'ADWENS 3つの安心';
+      var grid = document.createElement('div'); grid.className = 'adw-home-trust-grid';
+      [['5,000円以上 送料無料','全国どこでも送料0円'],['サイズ・イメージ交換対応','届いてからでも相談できます']].forEach(function (row) {
+        var card = document.createElement('div'); card.className = 'adw-home-trust-card';
+        var strong = document.createElement('strong'); strong.textContent = row[0];
+        var small = document.createElement('span'); small.textContent = row[1]; card.append(strong,small); grid.appendChild(card);
+      });
       var line = document.createElement('a'); line.href = 'https://l.omct.jp/2006632232-Ex9Ye0xv';
-      line.textContent = 'LINEでサイズを相談する →'; trust.append(p,line); info.replaceChildren(trust);
+      line.className = 'adw-home-trust-line';
+      var lineText = document.createElement('span'); var lineStrong = document.createElement('strong'); lineStrong.textContent = '公式LINE追加で5%OFF';
+      var lineSmall = document.createElement('span'); lineSmall.textContent = 'サイズ相談・カート商品のご案内もLINEで';
+      lineText.append(lineStrong,lineSmall); var arrow = document.createElement('b'); arrow.textContent = '›';
+      line.append(lineText,arrow); trust.append(titleTrust,grid,line); info.replaceChildren(trust);
     }
     var hero = main.querySelector('.mv-wrap');
     function after(anchor, element) { if (anchor && element && anchor.nextElementSibling !== element) anchor.parentNode.insertBefore(element,anchor.nextSibling); }
-    after(hero, search); after(search,cats); after(cats,info);
+    after(hero, info); after(info,search); after(search,cats);
     var history = main.querySelector('.historyitems'); after(items,history);
     document.querySelectorAll('.ksearch-form-wrap > p').forEach(function (p) { if (p.textContent !== 'キーワードから探す') p.textContent = 'キーワードから探す'; });
     document.querySelectorAll('.ksearch-form input[name="q"]').forEach(function (input) {
@@ -199,7 +217,9 @@ html.adw-home-discovery #oc-plugin-popup{display:none!important}
       var input = form.querySelector('input[name="q"]');
       if (!input || !/\/search\/?$/.test(new URL(form.action,location.href).pathname)) return;
       var value = input.value.trim().replace(/[\s　]+/g,'');
-      if (/^(?:光沢|グロス|光沢・グロス|光沢ダウン|グロスダウン|シャイニー|シャイニーフードダウン|シャイニーフードダウンジャケット|OU00019)$/i.test(value)) {
+      if (/^(?:スキニー|スキニーカーゴ|スキニーカーゴパンツ|P00007)$/i.test(value)) {
+        event.preventDefault(); window.location.assign('/items/88671936');
+      } else if (/^(?:光沢|グロス|光沢・グロス|光沢ダウン|グロスダウン|シャイニー|シャイニーフードダウン|シャイニーフードダウンジャケット|OU00019)$/i.test(value)) {
         // BASE's search index currently omits OU00019; use the verified product URL.
         event.preventDefault(); window.location.assign('/items/163408942');
       }
