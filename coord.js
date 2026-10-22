@@ -1,4 +1,4 @@
-/* ADWENS storefront discovery v3.30: in-page category filtering */
+/* ADWENS storefront discovery v3.31: in-page category filtering */
 (function () {
   'use strict';
 
@@ -11,6 +11,7 @@
     { label: 'チェックシャツ', query: 'チェックシャツ', main: '6524986', virtual: 'check' }
   ];
   var mainCategories = [
+    { id: 'ranking', label: 'RANKING' },
     { id: '6524985', label: 'パンツ', image: 'c526d5b03e0f54471257d9cbcad59ef1.png' },
     { id: '6524986', label: 'トップス', image: '61d4b7730d48ca961c5f09e331beef68.png' },
     { id: '6524987', label: 'アウター', image: '52a1128b99d8f692fcf965d6104a7fb4.jpg' },
@@ -30,7 +31,7 @@
     croc: function (name) { return /クロコ/.test(name); },
     check: function (name) { return /チェックシャツ/.test(name); }
   };
-  var state = { data: null, main: '', sub: '', virtual: '', visible: 8, loading: false };
+  var state = { data: null, main: '', sub: '', virtual: '', visible: 8, loading: false, ranking: null };
 
   function updateKeywords() {
     document.querySelectorAll('.header-search-wrap > ul, .ksearch-form-wrap > ul').forEach(function (list) {
@@ -71,6 +72,7 @@
   }
   function filteredRows() {
     if (!state.data) return [];
+    if (state.main === 'ranking') return ((state.ranking && state.ranking.items) || []).map(function(r){return state.data.items.find(function(i){return String(i.id)===String(r.id);});}).filter(Boolean).slice(0,10);
     return state.data.items.filter(function (item) {
       if (state.main && !itemInCategory(item, state.main)) return false;
       if (state.sub && !itemInCategory(item, state.sub)) return false;
@@ -79,9 +81,10 @@
     });
   }
   function yen(value) { return '¥' + Number(value || 0).toLocaleString('ja-JP'); }
-  function productCard(item) {
+  function productCard(item, rank) {
     var card = document.createElement('div'); card.className = 'item-list-item';
     var imageBox = document.createElement('div'); imageBox.className = 'image';
+    if(rank){var badge=document.createElement('span');badge.className='adw-rank-number';badge.textContent=String(rank).padStart(2,'0');imageBox.appendChild(badge);}
     var link = document.createElement('a'); link.href = '/items/' + item.id;
     var image = document.createElement('img');
     if (/^https:\/\//.test(String(item.image || ''))) image.src = item.image;
@@ -96,6 +99,7 @@
     card.append(imageBox, text); return card;
   }
   function filterLabel() {
+    if(state.main==='ranking') return 'WEEKLY TOP 10';
     if (state.virtual) {
       var word = keywords.find(function (item) { return item.virtual === state.virtual; });
       if (word) return word.label;
@@ -113,8 +117,9 @@
     var more = area.querySelector('[data-adw-catalog-more]');
     var rows = filteredRows();
     list.replaceChildren();
-    rows.slice(0, state.visible).forEach(function (item) { list.appendChild(productCard(item)); });
-    status.textContent = filterLabel() + '｜' + rows.length + '商品';
+    rows.slice(0, state.visible).forEach(function (item,index) { list.appendChild(productCard(item,state.main==='ranking'?index+1:0)); });
+    var heading=area.querySelector('.sec-title h2');if(heading)heading.textContent=state.main==='ranking'?'WEEKLY TOP 10':'ITEMS';
+    status.textContent = state.main==='ranking' ? '閲覧数ランキング｜' + (state.ranking?state.ranking.start+'–'+state.ranking.end:'データ未取得') : filterLabel() + '｜' + rows.length + '商品';
     reset.hidden = !(state.main || state.sub || state.virtual);
     more.hidden = state.visible >= rows.length;
     if (!rows.length) {
@@ -135,7 +140,7 @@
     var title = wrap.querySelector('p');
     var rail = wrap.querySelector('.adw-subcategory-rail');
     rail.replaceChildren();
-    if (!state.main) { wrap.hidden = true; return; }
+    if (!state.main || state.main==='ranking') { wrap.hidden = true; return; }
     var main = mainCategories.find(function (cat) { return cat.id === state.main; });
     title.textContent = (main ? main.label : 'カテゴリー') + 'から探す';
     var choices = [{ label: 'すべて', id: '' }];
@@ -182,11 +187,11 @@
     var photoRail = section.querySelector('.adw-cat-photos'); photoRail.replaceChildren();
     mainCategories.forEach(function (cat) {
       var button = document.createElement('button'); button.type = 'button'; button.dataset.adwMainCat = cat.id;
-      var image = document.createElement('img'); image.src = imageForCategory(cat.id, cat.image); image.alt = ''; image.width = 176; image.height = 220; image.loading = 'lazy'; image.decoding = 'async';
+      var image = document.createElement(cat.id==='ranking'?'span':'img'); if(cat.id==='ranking'){image.className='adw-ranking-tile';image.textContent='TOP 10';}else image.src = imageForCategory(cat.id, cat.image); image.alt = ''; image.width = 176; image.height = 220; image.loading = 'lazy'; image.decoding = 'async';
       var label = document.createElement('span'); label.textContent = cat.label;
       button.append(image, label);
       button.onclick = function () {
-        state.main = cat.id; state.sub = ''; state.virtual = ''; state.visible = 8; renderProducts();
+        state.main = cat.id; state.sub = ''; state.virtual = ''; state.visible = cat.id==='ranking'?10:8; renderProducts();
       };
       photoRail.appendChild(button);
     });
@@ -219,11 +224,12 @@
         .then(function (response) { if (!response.ok) throw new Error('catalog'); return response.json(); })
         .catch(function (error) { if (index + 1 < urls.length) return read(index + 1); throw error; });
     }
-    read(0).then(function (data) { installCatalog(area, data); }).catch(function () { area.dataset.adwCatalogFailed = 'true'; }).finally(function () { state.loading = false; });
+    read(0).then(function (data) { return fetch('https://raw.githubusercontent.com/adwens0111/adwens/main/weekly_ranking.json?v='+Math.floor(Date.now()/300000),{cache:'no-cache'}).then(function(r){if(!r.ok)throw Error('ranking');return r.json();}).then(function(r){if(r && Array.isArray(r.items) && r.source==='BASE product views')state.ranking=r;}).catch(function(){}).then(function(){installCatalog(area,data);}); }).catch(function () { area.dataset.adwCatalogFailed = 'true'; }).finally(function () { state.loading = false; });
   }
   function homeCss() {
     if (document.getElementById('adw-home-style')) return;
     var style = document.createElement('style'); style.id = 'adw-home-style'; style.textContent = `
+.adw-ranking-tile{display:flex!important;align-items:center;justify-content:center;width:88px;height:110px;margin:0 0 6px!important;background:#171614;border:1px solid #b7a27b;box-sizing:border-box;color:#d8c6a4;font:16px Georgia,serif!important;letter-spacing:.08em}.adw-home-catalog .image{position:relative}.adw-rank-number{position:absolute;left:8px;top:8px;z-index:2;background:#111e;color:#d8c6a4;padding:4px 7px;font:18px Georgia,serif}@media(min-width:769px){.adw-ranking-tile{width:112px;height:140px}}
 html.adw-home-discovery #oc-plugin-popup{display:none!important}
 .adw-home-discovery .main>.mv-wrap{order:1!important}.adw-home-discovery .main>.topinfo{order:2!important}.adw-home-discovery .main>.ksearch-wrap{order:3!important}.adw-home-discovery .main>.catlist-wrap{order:4!important}.adw-home-discovery .main>.item-list-area{order:5!important}.adw-home-discovery .main>.historyitems{order:6!important}.adw-home-discovery .main>.ranking{order:7!important}.adw-home-discovery .main>.bannerlist{order:8!important}
 .adw-home-discovery .ksearch-wrap,.adw-home-discovery .catlist-wrap,.adw-home-discovery .topinfo{background:#090909!important;color:#f4f4f4!important;opacity:1!important;transform:none!important;max-width:100%;box-sizing:border-box}
