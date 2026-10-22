@@ -1,4 +1,4 @@
-/* ADWENS storefront widgets v3.21 (retain popular search after theme initialization) */
+/* ADWENS storefront widgets v3.22 (place outfit hints directly below the purchase form) */
 (function () {
   'use strict';
   // BASE商品別データ・直近30日の閲覧数上位8型＋指定のOU00019（2026/10/22確認）。
@@ -579,8 +579,8 @@
       anchor = after(anchor, box);
     });
     var gallery = document.querySelector('[data-adw-gallery]');
-    // Keep the outfit album after the full description and size guide.
-    if (gallery && description.lastElementChild !== gallery) description.appendChild(gallery);
+    // Outfit hints are visible directly below the cart, before videos and description.
+    if (gallery) anchor = after(form, gallery);
     var videos = document.querySelector('[data-adw-videos]');
     if (videos) after(anchor, videos);
   }
@@ -1351,8 +1351,8 @@
   function renderGallery() {
     if (!galleryConfig || document.querySelector('[data-adw-gallery]')) return;
     var rows = galleryConfig.rows;
-    var description = document.querySelector('.item-description > .text.markdown');
-    if (!description || !rows.length) return;
+    var form = document.querySelector('#purchase_form');
+    if (!form || !form.parentNode || !rows.length) return;
     var style = document.createElement('style');
     style.textContent = '[data-adwens-coord][data-gallery-hidden]{display:none!important}' +
       '.adw-gallery{margin:26px 0;min-width:0;max-width:100%;clear:both;color:inherit}' +
@@ -1495,7 +1495,7 @@
       update(index);
     }, {passive:true});
     section.append(kicker, heading, rail, controls, caption, details);
-    description.appendChild(section);
+    form.parentNode.insertBefore(section, form.nextSibling);
     update(0);
   }
   function loadGallery() {
