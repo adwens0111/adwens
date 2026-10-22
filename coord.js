@@ -1,10 +1,10 @@
-/* ADWENS storefront widgets v3.27 (mobile discovery and lightweight homepage) */
+/* ADWENS storefront widgets v3.29 (mobile discovery and lightweight homepage) */
 (function () {
   'use strict';
   // Short customer vocabulary; labels can differ from the BASE search query.
   var keywords = [
-    {label:'スキニー',query:'スキニー',href:'/items/88671936'}, {label:'カーゴパンツ',query:'カーゴパンツ'},
-    {label:'ダウン',query:'ダウン'}, {label:'光沢・グロス',query:'シャイニー',href:'/items/163408942'},
+    {label:'スキニー',query:'スキニー'}, {label:'カーゴパンツ',query:'カーゴパンツ'},
+    {label:'ダウン',query:'ダウン'}, {label:'光沢・グロス',query:'光沢'},
     {label:'クロコ',query:'クロコ'}, {label:'チェックシャツ',query:'チェックシャツ'}
   ];
   function updateKeywords() {
@@ -75,18 +75,20 @@ html.adw-home-discovery #oc-plugin-popup{display:none!important}
 .adw-cat-text a{display:flex;align-items:center;justify-content:space-between;gap:4px;box-sizing:border-box;min-height:44px;padding:8px 10px;color:#eee;border:1px solid #555;border-radius:3px;text-decoration:none;font-size:13px;line-height:1.5}
 .adw-cat-text a:last-child{grid-column:1/-1;justify-content:center;gap:12px}
 .adw-cat-text a:after{content:'›';font-size:18px;color:#aaa}
-.adw-home-discovery .topinfo{padding:14px 18px 16px!important;margin:0!important}
+.adw-home-discovery .topinfo{padding:0 18px!important;margin:0!important}
 .adw-home-trust{max-width:960px;margin:auto;color:#f4f4f4}
-.adw-home-trust-title{margin:0 0 10px!important;font-size:15px!important;font-weight:700!important;letter-spacing:.06em!important}
-.adw-home-trust-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:9px}
-.adw-home-trust-card{box-sizing:border-box;min-height:72px;padding:12px 10px;border:1px solid #555;border-radius:4px;background:#121212}
-.adw-home-trust-card strong{display:block;margin-bottom:4px;font-size:14px;line-height:1.45;color:#fff}
-.adw-home-trust-card span{display:block;font-size:11px;line-height:1.5;color:#bdbdbd}
-.adw-home-trust-line{display:flex;align-items:center;gap:12px;box-sizing:border-box;min-height:76px;padding:12px 14px;border:1px solid #17c964;border-radius:4px;background:#0d1711;color:#fff;text-decoration:none}
-.adw-home-trust-line:before{content:'LINE';display:flex;flex:0 0 38px;align-items:center;justify-content:center;width:38px;height:38px;border-radius:10px;background:#06c755;color:#fff;font:700 10px Arial,sans-serif}
-.adw-home-trust-line strong{display:block;font-size:15px;line-height:1.45}
-.adw-home-trust-line span{display:block;margin-top:2px;font-size:11px;line-height:1.5;color:#bde9cc}
-.adw-home-trust-line b{margin-left:auto;font-size:20px;font-weight:400}
+.adw-home-trust-title{display:none!important}
+.adw-home-trust-grid{display:grid;grid-template-columns:1fr 1.15fr;gap:0;margin:0;background:#b7a27b;color:#111}
+.adw-home-trust-card{display:flex;align-items:center;justify-content:center;box-sizing:border-box;min-height:44px;padding:8px 6px;border:0;border-radius:0;background:transparent;text-align:center}
+.adw-home-trust-card+ .adw-home-trust-card{border-left:1px solid rgba(0,0,0,.25)}
+.adw-home-trust-card strong{display:block;margin:0;font-size:12px;line-height:1.5;font-weight:600;color:#111;letter-spacing:0}
+.adw-home-trust-card span{display:none}
+.adw-home-trust-line{display:flex;align-items:center;justify-content:center;gap:10px;box-sizing:border-box;min-height:58px;padding:10px 8px;border:0;border-bottom:1px solid #363636;border-radius:0;background:transparent;color:#fff!important;text-decoration:none}
+.adw-home-trust-line:before{content:'LINE';display:flex;flex:0 0 30px;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;background:#06c755;color:#fff;font:700 9px Arial,sans-serif}
+.adw-home-trust-line strong{display:block;font-size:13px;line-height:1.5;font-weight:500;color:#fff!important}
+.adw-home-trust-line span{display:block;margin:0;color:#fff!important}
+.adw-home-trust-line b{margin-left:4px;font-size:24px;font-weight:400;color:#fff!important}
+@media(max-width:359px){.adw-home-trust-card strong{font-size:11px}.adw-home-trust-line strong{font-size:12px}}
 .adw-home-discovery #item-list{margin-top:18px!important}
 .adw-home-discovery #item-list .item-list-more a{display:flex!important;justify-content:center!important;align-items:center!important;min-height:48px!important;border:1px solid #777!important;border-radius:3px!important;font-size:15px!important;color:inherit!important}
 .adw-home-discovery #item-list .item-list-item[hidden],.adw-home-discovery #item-list [data-adw-local-more][hidden],.adw-home-discovery #item-list[data-adw-has-more] .item-list-more{display:none!important}
@@ -137,10 +139,10 @@ html.adw-home-discovery #oc-plugin-popup{display:none!important}
       });
       var line = document.createElement('a'); line.href = 'https://l.omct.jp/2006632232-Ex9Ye0xv';
       line.className = 'adw-home-trust-line';
-      var lineText = document.createElement('span'); var lineStrong = document.createElement('strong'); lineStrong.textContent = '公式LINE追加で5%OFF';
+      var lineText = document.createElement('span'); var lineStrong = document.createElement('strong'); lineStrong.textContent = 'LINE追加で5%OFF・サイズ相談';
       var lineSmall = document.createElement('span'); lineSmall.textContent = 'サイズ相談・カート商品のご案内もLINEで';
-      lineText.append(lineStrong,lineSmall); var arrow = document.createElement('b'); arrow.textContent = '›';
-      line.append(lineText,arrow); trust.append(titleTrust,grid,line); info.replaceChildren(trust);
+      lineText.append(lineStrong); var arrow = document.createElement('b'); arrow.textContent = '›';
+      line.append(lineText,arrow); trust.append(grid,line); info.replaceChildren(trust);
     }
     var hero = main.querySelector('.mv-wrap');
     function after(anchor, element) { if (anchor && element && anchor.nextElementSibling !== element) anchor.parentNode.insertBefore(element,anchor.nextSibling); }
@@ -217,12 +219,7 @@ html.adw-home-discovery #oc-plugin-popup{display:none!important}
       var input = form.querySelector('input[name="q"]');
       if (!input || !/\/search\/?$/.test(new URL(form.action,location.href).pathname)) return;
       var value = input.value.trim().replace(/[\s　]+/g,'');
-      if (/^(?:スキニー|スキニーカーゴ|スキニーカーゴパンツ|P00007)$/i.test(value)) {
-        event.preventDefault(); window.location.assign('/items/88671936');
-      } else if (/^(?:光沢|グロス|光沢・グロス|光沢ダウン|グロスダウン|シャイニー|シャイニーフードダウン|シャイニーフードダウンジャケット|OU00019)$/i.test(value)) {
-        // BASE's search index currently omits OU00019; use the verified product URL.
-        event.preventDefault(); window.location.assign('/items/163408942');
-      }
+
     }, true);
     jumpToAboutTab();
     window.addEventListener('load', jumpToAboutTab, {once:true});
@@ -1745,3 +1742,50 @@ html.adw-home-discovery #oc-plugin-popup{display:none!important}
   }
 })();
 
+
+
+(function(){
+'use strict';
+if(!/^\/search\/?$/.test(location.pathname))return;
+var query=(new URLSearchParams(location.search).get('q')||'').trim();
+var q=query.replace(/[\s　・]/g,'').toLowerCase();
+var groups=[
+{key:'skinny',re:/^(スキニー|スキニーパンツ|スキニーカーゴ|スキニーカーゴパンツ|スリム|スリムパンツ|細身|細身パンツ)$/,title:'スキニー・スリムパンツ',test:function(n){return /スキニー|スリム/.test(n)&&/パンツ|デニム|トラウザー/.test(n)}},
+{key:'cargo',re:/^(カーゴ|カーゴパンツ)$/,title:'カーゴパンツ',test:function(n){return /カーゴ/.test(n)&&/パンツ|デニム|トラウザー/.test(n)}},
+{key:'down',re:/^(ダウン|ダウンジャケット|ダウンベスト)$/,title:'ダウン',test:function(n){return /ダウン/.test(n)}},
+{key:'gloss',re:/^(光沢|グロス|光沢グロス|シャイニー|光沢ダウン|グロスダウン)$/,title:'光沢・グロス',test:function(n){return /シャイニー|グロス|メタリック|フラッシュシルバー/.test(n)}},
+{key:'croc',re:/^(クロコ|クロコ柄|クロコレザー|クロコレザーダウン)$/,title:'クロコ',test:function(n){return /クロコ/.test(n)}},
+{key:'check',re:/^(チェック|チェックシャツ|グラデーションチェックシャツ)$/,title:'チェックシャツ',test:function(n){return /チェックシャツ/.test(n)}}
+];
+var group=groups.find(function(g){return g.re.test(q)});if(!group)return;
+function start(){
+var area=document.querySelector('#item-list');if(!area||area.hasAttribute('data-adw-search-loading'))return;area.setAttribute('data-adw-search-loading','');
+var style=document.createElement('style');style.textContent='#item-list .item-list[hidden],#item-list .item-list-more[hidden]{display:none!important}.adw-search-collection img{width:100%;height:auto}';document.head.appendChild(style);
+var nativeList=area.querySelector('.item-list');
+var status=document.createElement('p');status.setAttribute('role','status');status.textContent=group.title+'を読み込んでいます…';status.style.cssText='font-size:14px;line-height:1.7;margin:12px 0 20px;color:inherit';
+var existingLabel=area.querySelector('.search-result');if(existingLabel)existingLabel.hidden=true;
+if(nativeList)nativeList.hidden=true;
+area.querySelectorAll('.item-list-more').forEach(function(el){el.hidden=true});
+var main=area.querySelector('.item-list-main')||nativeList&&nativeList.parentNode||area;main.appendChild(status);
+var urls=['https://adwens0111.github.io/adwens/search_catalog.json','https://raw.githubusercontent.com/adwens0111/adwens/main/search_catalog.json'];
+function read(i){return fetch(urls[i]+'?day='+new Date().toISOString().slice(0,10),{cache:'no-cache'}).then(function(r){if(!r.ok)throw Error('catalog');return r.json()}).catch(function(e){if(i+1<urls.length)return read(i+1);throw e})}
+read(0).then(function(data){
+if(!data||!Array.isArray(data.items))throw Error('catalog');
+var rows=data.items.filter(function(it){return /^\d+$/.test(it.id)&&group.test(it.name)});
+var list=document.createElement('div');list.className='item-list adw-search-collection';list.dataset.adwCollection=group.key;
+rows.forEach(function(it){
+var card=document.createElement('div');card.className='item-list-item';
+var imageBox=document.createElement('div');imageBox.className='image';var link=document.createElement('a');link.href='/items/'+it.id;
+var img=document.createElement('img');if(/^https:\/\//.test(it.image))img.src=it.image;img.alt=it.name;img.loading='lazy';img.decoding='async';link.appendChild(img);imageBox.appendChild(link);
+var text=document.createElement('div');text.className='text';var name=document.createElement('div');name.className='name';name.textContent=it.name;
+var price=document.createElement('div');price.className='price';var amount=document.createElement('span');amount.className='default';amount.textContent='¥'+Number(it.price).toLocaleString('ja-JP');price.appendChild(amount);text.append(name,price);
+if(it.stock===0){var sold=document.createElement('span');sold.textContent='SOLD OUT';sold.style.cssText='font-size:11px';text.appendChild(sold)}
+card.append(imageBox,text);list.appendChild(card);
+});
+status.textContent=group.title+'｜'+rows.length+'商品';
+if(!rows.length)status.textContent=group.title+'に該当する公開商品はありません。';
+main.appendChild(list);area.dataset.adwSearchReady='true';
+}).catch(function(){if(nativeList)nativeList.hidden=false;area.querySelectorAll('.item-list-more').forEach(function(el){el.hidden=false});status.textContent='商品一覧を読み込めませんでした。通常の検索結果を表示しています。'});
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
+})();
