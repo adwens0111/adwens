@@ -1,34 +1,161 @@
-/* ADWENS storefront widgets v3.22 (place outfit hints directly below the purchase form) */
+/* ADWENS storefront widgets v3.23 (mobile discovery and lightweight homepage) */
 (function () {
   'use strict';
-  // BASE商品別データ・直近30日の閲覧数上位8型＋指定のOU00019（2026/10/22確認）。
+  // Short customer vocabulary; labels can differ from the BASE search query.
   var keywords = [
-    'スキニーカーゴパンツ', 'マルチラインダウン',
-    'ハイカットブーツ', 'グラデーションチェックシャツ',
-    'スリムカーゴパンツ', 'スリムフィットパンツ',
-    'ワイドカーゴパンツ', 'クロコレザーダウン',
-    'シャイニーフードダウンジャケット'
+    {label:'スキニー',query:'スキニー'}, {label:'カーゴパンツ',query:'カーゴパンツ'},
+    {label:'ダウン',query:'ダウン'}, {label:'光沢・グロス',query:'シャイニー'},
+    {label:'クロコ',query:'クロコ'}, {label:'チェックシャツ',query:'チェックシャツ'}
   ];
   function updateKeywords() {
     document.querySelectorAll('.header-search-wrap > ul, .ksearch-form-wrap > ul').forEach(function (list) {
       var links = Array.from(list.querySelectorAll('li > a'));
       if (links.length === keywords.length && links.every(function (a, index) {
-        return a.textContent === keywords[index] && a.getAttribute('href') === '/search?q=' + encodeURIComponent(keywords[index]);
+        return a.textContent === keywords[index].label && a.getAttribute('href') === '/search?q=' + encodeURIComponent(keywords[index].query);
       })) return;
       if (!list.querySelector('a[href*="/search?q="]')) return;
       var fragment = document.createDocumentFragment();
       keywords.forEach(function (word) {
         var li = document.createElement('li');
         var a = document.createElement('a');
-        a.textContent = word;
-        a.href = '/search?q=' + encodeURIComponent(word);
+        a.textContent = word.label;
+        a.href = '/search?q=' + encodeURIComponent(word.query);
         li.appendChild(a);
         fragment.appendChild(li);
       });
       list.replaceChildren(fragment);
-      list.setAttribute('data-adw-popular-search', '20261021');
+      list.setAttribute('data-adw-popular-search', '20261022');
     });
   }
+  // Mobile discovery: preserve the existing hero and BASE product loading behavior.
+  function homeDiscovery() {
+    var main = document.querySelector('.main');
+    var search = main && main.querySelector('.ksearch-wrap');
+    var cats = main && main.querySelector('.catlist-wrap');
+    var info = main && main.querySelector('.topinfo');
+    var items = main && main.querySelector('#item-list');
+    if (!search || !cats || !items) return;
+    document.documentElement.classList.add('adw-home-discovery');
+    if (!document.getElementById('adw-home-style')) {
+      var style = document.createElement('style');
+      style.id = 'adw-home-style';
+      style.textContent = `
+html.adw-home-discovery #oc-plugin-popup{display:none!important}
+.adw-home-discovery .ksearch-wrap,.adw-home-discovery .catlist-wrap,.adw-home-discovery .topinfo{background:#090909!important;color:#f4f4f4!important;opacity:1!important;transform:none!important;max-width:100%;box-sizing:border-box}
+.adw-home-discovery .ksearch-wrap{margin:0!important;padding:20px 18px 12px!important}
+.adw-home-discovery .ksearch,.adw-home-discovery .ksearch-form-wrap{width:100%!important;max-width:960px!important;margin:0 auto!important;padding:0!important}
+.adw-home-discovery .ksearch-form{display:flex!important;width:100%!important;margin:0 0 16px!important;border:1px solid #656565!important;border-radius:5px!important;background:#141414!important;box-sizing:border-box}
+.adw-home-discovery .ksearch-form input{flex:1!important;width:0!important;min-width:0!important;height:48px!important;box-sizing:border-box!important;font-size:16px!important;color:#fff!important;background:transparent!important;border:0!important;padding:0 12px!important}
+.adw-home-discovery .ksearch-form input::placeholder{color:#b9b9b9!important;font-size:14px!important}
+.adw-home-discovery .ksearch-form button{width:48px!important;min-width:48px!important;height:48px!important;position:relative!important;color:#fff!important;background:transparent!important;border:0!important}
+.adw-home-discovery .ksearch-form button:before{content:''!important;position:absolute;left:14px;top:13px;width:13px;height:13px;border:1.5px solid currentColor;border-radius:50%}
+.adw-home-discovery .ksearch-form button:after{content:''!important;position:absolute;left:28px;top:27px;width:8px;height:1.5px;background:currentColor;transform:rotate(45deg)}
+.adw-home-discovery .ksearch-form-wrap>p{font-size:14px!important;font-weight:600!important;text-align:left!important;letter-spacing:.04em!important;margin:0 0 10px!important;color:#eee!important}
+.adw-home-discovery .ksearch-form-wrap>ul{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px!important;margin:0!important;padding:0!important;list-style:none!important}
+.adw-home-discovery .ksearch-form-wrap>ul>li{display:block!important;margin:0!important;padding:0!important;min-width:0}
+.adw-home-discovery .ksearch-form-wrap>ul>li>a{display:flex!important;align-items:center;justify-content:center;box-sizing:border-box;min-height:44px!important;width:100%;border:1px solid #606060!important;border-radius:24px!important;padding:7px 3px!important;font-size:13px!important;line-height:1.4!important;color:#eee!important;text-decoration:none!important;letter-spacing:0!important;white-space:normal!important}
+.adw-home-discovery .ksearch-form-wrap>ul>li>a:before{content:none!important}
+.adw-home-discovery .catlist-wrap{padding:14px 18px 12px!important;margin:0!important}
+.adw-discovery-cats{max-width:960px;margin:auto}
+.adw-discovery-cats h2{font-size:16px!important;font-weight:600!important;letter-spacing:.04em!important;line-height:1.5!important;margin:0 0 12px!important;color:#f4f4f4!important}
+.adw-cat-photos{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.adw-cat-photos a{display:block;color:#eee;text-align:center;text-decoration:none;min-width:0;min-height:44px;font-size:13px;line-height:1.5}
+.adw-cat-photos img{display:block;width:100%;height:auto;aspect-ratio:4/5;object-fit:cover;background:#202020;margin:0 0 8px;border-radius:2px}
+.adw-cat-text{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:14px}
+.adw-cat-text a{display:flex;align-items:center;justify-content:space-between;gap:4px;box-sizing:border-box;min-height:44px;padding:8px 10px;color:#eee;border:1px solid #555;border-radius:3px;text-decoration:none;font-size:13px;line-height:1.5}
+.adw-cat-text a:last-child{grid-column:1/-1;justify-content:center;gap:12px}
+.adw-cat-text a:after{content:'›';font-size:18px;color:#aaa}
+.adw-home-discovery .topinfo{padding:6px 18px 16px!important;margin:0!important}
+.adw-home-trust{max-width:960px;margin:auto;border-top:1px solid #444;border-bottom:1px solid #444;padding:12px 0;color:#ddd;font-size:12px;line-height:1.6}
+.adw-home-trust p{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 14px;margin:0 0 9px!important;font-size:12px!important;line-height:1.6!important}
+.adw-home-trust a{display:flex;justify-content:center;align-items:center;gap:10px;min-height:44px;text-decoration:none;color:#eee;font-size:14px;border-top:1px solid #333;padding-top:6px}
+.adw-home-trust a:before{content:'LINE';display:flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:7px;background:#06c755;color:#fff;font:700 8px Arial,sans-serif}
+.adw-home-discovery #item-list{margin-top:18px!important}
+.adw-home-discovery #item-list .item-list-more a{display:flex!important;justify-content:center!important;align-items:center!important;min-height:48px!important;border:1px solid #777!important;border-radius:3px!important;font-size:15px!important;color:inherit!important}
+.adw-home-discovery #item-list .item-list-item[hidden],.adw-home-discovery #item-list [data-adw-local-more][hidden],.adw-home-discovery #item-list[data-adw-has-more] .item-list-more{display:none!important}
+.adw-home-discovery #item-list [data-adw-local-more]{display:flex;justify-content:center;align-items:center;width:100%;max-width:450px;min-height:48px;margin:24px auto 0;border:1px solid #777;border-radius:3px;background:transparent;color:inherit;font-size:15px;cursor:pointer}
+.adw-home-discovery a:focus-visible,.adw-home-discovery button:focus-visible,.adw-home-discovery input:focus-visible{outline:2px solid #ddd!important;outline-offset:3px}
+@media(min-width:769px){.adw-home-discovery .ksearch-wrap{padding-top:30px!important}.adw-cat-photos{gap:18px}.adw-cat-photos img{max-height:200px;object-fit:contain}.adw-cat-text{grid-template-columns:repeat(5,minmax(0,1fr))}.adw-cat-text a:last-child{grid-column:auto}.adw-home-discovery .ksearch-form-wrap>ul>li>a{font-size:14px!important}}
+@media(prefers-reduced-motion:reduce){.adw-discovery-cats *{scroll-behavior:auto!important;transition:none!important}}
+`;
+      document.head.appendChild(style);
+    }
+    if (!cats.querySelector('.adw-discovery-cats')) {
+      var section = document.createElement('nav');
+      section.className = 'adw-discovery-cats';
+      section.setAttribute('aria-label', '商品カテゴリー');
+      var title = document.createElement('h2'); title.textContent = 'カテゴリーから探す';
+      var photos = document.createElement('div'); photos.className = 'adw-cat-photos';
+      var imageRoot = 'https://baseec-img-mng.akamaized.net/images/item/origin/';
+      [
+        ['パンツ','6524985','c526d5b03e0f54471257d9cbcad59ef1.png'],
+        ['トップス','6524986','61d4b7730d48ca961c5f09e331beef68.png'],
+        ['アウター','6524987','52a1128b99d8f692fcf965d6104a7fb4.jpg'],
+        ['シューズ','6524989','3268676b206588b80f54cecdac9165f2.png']
+      ].forEach(function (row) {
+        var a = document.createElement('a'); a.href = '/categories/' + row[1];
+        var image = document.createElement('img');
+        image.src = imageRoot + row[2] + '?imformat=generic&q=75&im=Resize,width=256,type=normal';
+        image.alt = ''; image.width = 256; image.height = 320; image.loading = 'lazy'; image.decoding = 'async';
+        var label = document.createElement('span'); label.textContent = row[0];
+        a.append(image,label); photos.appendChild(a);
+      });
+      var text = document.createElement('div'); text.className = 'adw-cat-text';
+      [
+        ['セットアップ','6524988'],['バッグ・アクセサリー','7385759'],
+        ['WOMENS','6704469'],['1点限り・お急ぎ発送','7378925'],['SALE','7460787']
+      ].forEach(function (row) {
+        var a = document.createElement('a'); a.href = '/categories/' + row[1]; a.textContent = row[0]; text.appendChild(a);
+      });
+      section.append(title, photos, text); cats.replaceChildren(section);
+    }
+    if (info && !info.querySelector('.adw-home-trust')) {
+      var trust = document.createElement('div'); trust.className = 'adw-home-trust';
+      var p = document.createElement('p');
+      ['5,000円以上送料無料','サイズ・イメージ違い交換対応'].forEach(function (t) { var span = document.createElement('span'); span.textContent = t; p.appendChild(span); });
+      var line = document.createElement('a'); line.href = 'https://l.omct.jp/2006632232-Ex9Ye0xv';
+      line.textContent = 'LINEでサイズを相談する →'; trust.append(p,line); info.replaceChildren(trust);
+    }
+    var hero = main.querySelector('.mv-wrap');
+    function after(anchor, element) { if (anchor && element && anchor.nextElementSibling !== element) anchor.parentNode.insertBefore(element,anchor.nextSibling); }
+    after(hero, search); after(search,cats); after(cats,info);
+    var history = main.querySelector('.historyitems'); after(items,history);
+    document.querySelectorAll('.ksearch-form-wrap > p').forEach(function (p) { if (p.textContent !== 'キーワードから探す') p.textContent = 'キーワードから探す'; });
+    document.querySelectorAll('.ksearch-form input[name="q"]').forEach(function (input) {
+      var hint = 'スキニー、ダウン、光沢など';
+      if (input.placeholder !== hint) input.placeholder = hint;
+      if (!input.hasAttribute('aria-label')) input.setAttribute('aria-label','商品名・特徴から検索');
+    });
+    items.querySelectorAll('.item-list-more a').forEach(function (a) {
+      if (a.textContent.trim() !== '商品をもっと見る →') a.textContent = '商品をもっと見る →';
+      if (!a.hasAttribute('data-adw-loader-bound')) {
+        a.setAttribute('data-adw-loader-bound','');
+        a.addEventListener('click',function () { items.setAttribute('data-adw-visible-count', String(items.querySelectorAll('.item-list-item').length + 8)); });
+      }
+    });
+    var list = items.querySelector('.item-list');
+    if (list) {
+      var localMore = items.querySelector('[data-adw-local-more]');
+      if (!localMore) {
+        localMore = document.createElement('button'); localMore.type = 'button';
+        localMore.setAttribute('data-adw-local-more',''); localMore.textContent = '商品をもっと見る →';
+        localMore.addEventListener('click',function () { items.setAttribute('data-adw-visible-count', String(Number(items.getAttribute('data-adw-visible-count') || 8) + 8)); homeDiscovery(); });
+        list.parentNode.insertBefore(localMore,list.nextSibling);
+      }
+      var visible = Number(items.getAttribute('data-adw-visible-count') || 8);
+      var rows = Array.from(list.querySelectorAll('.item-list-item'));
+      rows.forEach(function (row,index) { row.hidden = index >= visible; });
+      localMore.hidden = rows.length <= visible;
+      if (rows.length > visible) { if (!items.hasAttribute('data-adw-has-more')) items.setAttribute('data-adw-has-more',''); }
+      else if (items.hasAttribute('data-adw-has-more')) items.removeAttribute('data-adw-has-more');
+    }
+    // Defer below-fold images without changing hero assets or the BASE loader.
+    main.querySelectorAll('#item-list img,.ranking img,.bannerlist img').forEach(function (image) {
+      if (!image.hasAttribute('loading')) image.loading = 'lazy';
+      if (!image.hasAttribute('decoding')) image.decoding = 'async';
+    });
+  }
+
   var jumpToken = 0;
   function jumpToAboutTab() {
     if (!/^\/about\/?$/.test(location.pathname) || !/^#tab[123]$/.test(location.hash)) return;
@@ -49,16 +176,23 @@
   }
   function start() {
     updateKeywords();
+    homeDiscovery();
     // テーマがDOM準備後にキーワード欄を生成し直す場合にも反映する。
     var keywordScheduled = false;
-    new MutationObserver(function () {
+    var discoveryObserver = new MutationObserver(function () {
       if (keywordScheduled) return;
       keywordScheduled = true;
-      requestAnimationFrame(function () {
-        keywordScheduled = false;
-        updateKeywords();
-      });
-    }).observe(document.body, {childList:true, subtree:true});
+      requestAnimationFrame(function () { keywordScheduled = false; updateKeywords(); homeDiscovery(); });
+    });
+    document.querySelectorAll('.main,.header-search-wrap').forEach(function(root) { discoveryObserver.observe(root,{childList:true,subtree:true}); });
+    document.addEventListener('submit', function (event) {
+      var form = event.target;
+      if (!form || form.tagName !== 'FORM') return;
+      var input = form.querySelector('input[name="q"]');
+      if (!input || !/\/search\/?$/.test(new URL(form.action,location.href).pathname)) return;
+      var value = input.value.trim().replace(/[\s　]+/g,'');
+      if (/^(?:光沢|グロス|光沢・グロス|光沢ダウン|グロスダウン|シャイニーフードダウン)$/.test(value)) input.value = 'シャイニー';
+    }, true);
     jumpToAboutTab();
     window.addEventListener('load', jumpToAboutTab, {once:true});
     window.addEventListener('hashchange', jumpToAboutTab);
