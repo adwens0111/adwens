@@ -1,243 +1,282 @@
-/* ADWENS storefront widgets v3.29 (mobile discovery and lightweight homepage) */
+/* ADWENS storefront discovery v3.30: in-page category filtering */
 (function () {
   'use strict';
-  // Short customer vocabulary; labels can differ from the BASE search query.
+
   var keywords = [
-    {label:'スキニー',query:'スキニー'}, {label:'カーゴパンツ',query:'カーゴパンツ'},
-    {label:'ダウン',query:'ダウン'}, {label:'光沢・グロス',query:'光沢'},
-    {label:'クロコ',query:'クロコ'}, {label:'チェックシャツ',query:'チェックシャツ'}
+    { label: 'スキニー', query: 'スキニー', main: '6524985', virtual: 'skinny' },
+    { label: 'カーゴパンツ', query: 'カーゴパンツ', main: '6524985', virtual: 'cargo' },
+    { label: 'ダウン', query: 'ダウン', main: '6524987', virtual: 'down' },
+    { label: '光沢・グロス', query: '光沢', virtual: 'gloss' },
+    { label: 'クロコ', query: 'クロコ', virtual: 'croc' },
+    { label: 'チェックシャツ', query: 'チェックシャツ', main: '6524986', virtual: 'check' }
   ];
+  var mainCategories = [
+    { id: '6524985', label: 'パンツ', image: 'c526d5b03e0f54471257d9cbcad59ef1.png' },
+    { id: '6524986', label: 'トップス', image: '61d4b7730d48ca961c5f09e331beef68.png' },
+    { id: '6524987', label: 'アウター', image: '52a1128b99d8f692fcf965d6104a7fb4.jpg' },
+    { id: '6524989', label: 'シューズ', image: '3268676b206588b80f54cecdac9165f2.png' },
+    { id: '6524988', label: 'セットアップ' },
+    { id: '7385759', label: 'バッグ・アクセサリー' },
+    { id: '6704469', label: 'WOMENS' },
+    { id: '7378925', label: 'お急ぎ発送' },
+    { id: '7460787', label: 'SALE' }
+  ];
+  var virtualTests = {
+    skinny: function (name) { return /スキニー|スリム/.test(name) && /パンツ|デニム|トラウザー/.test(name); },
+    wide: function (name) { return /ワイド|バギー|ルーズ/.test(name) && /パンツ|デニム|トラウザー/.test(name); },
+    cargo: function (name) { return /カーゴ/.test(name) && /パンツ|デニム|トラウザー/.test(name); },
+    down: function (name) { return /ダウン/.test(name); },
+    gloss: function (name) { return /シャイニー|グロス|メタリック|フラッシュシルバー|光沢/.test(name); },
+    croc: function (name) { return /クロコ/.test(name); },
+    check: function (name) { return /チェックシャツ/.test(name); }
+  };
+  var state = { data: null, main: '', sub: '', virtual: '', visible: 8, loading: false };
+
   function updateKeywords() {
     document.querySelectorAll('.header-search-wrap > ul, .ksearch-form-wrap > ul').forEach(function (list) {
-      var links = Array.from(list.querySelectorAll('li > a'));
-      if (links.length === keywords.length && links.every(function (a, index) {
-        return a.textContent === keywords[index].label && a.getAttribute('href') === (keywords[index].href || '/search?q=' + encodeURIComponent(keywords[index].query));
-      })) return;
       if (!list.querySelector('a[href*="/search?q="]')) return;
+      var current = Array.from(list.querySelectorAll('li > a'));
+      if (current.length === keywords.length && current.every(function (link, index) {
+        return link.textContent === keywords[index].label && link.dataset.adwKeyword === keywords[index].virtual;
+      })) return;
       var fragment = document.createDocumentFragment();
       keywords.forEach(function (word) {
         var li = document.createElement('li');
         var a = document.createElement('a');
         a.textContent = word.label;
-        a.href = word.href || '/search?q=' + encodeURIComponent(word.query);
-        li.appendChild(a);
-        fragment.appendChild(li);
+        a.href = '/search?q=' + encodeURIComponent(word.query);
+        a.dataset.adwKeyword = word.virtual;
+        if (word.main) a.dataset.adwMain = word.main;
+        li.appendChild(a); fragment.appendChild(li);
       });
       list.replaceChildren(fragment);
       list.setAttribute('data-adw-popular-search', '20261022');
     });
   }
-  // Mobile discovery: preserve the existing hero and BASE product loading behavior.
-  function homeDiscovery() {
-    var main = document.querySelector('.main');
-    var search = main && main.querySelector('.ksearch-wrap');
-    var cats = main && main.querySelector('.catlist-wrap');
-    var info = main && main.querySelector('.topinfo');
-    var items = main && main.querySelector('#item-list');
-    if (!search || !cats || !items) return;
-    document.documentElement.classList.add('adw-home-discovery');
-    if (!document.getElementById('adw-home-style')) {
-      var style = document.createElement('style');
-      style.id = 'adw-home-style';
-      style.textContent = `
-html.adw-home-discovery #oc-plugin-popup{display:none!important}
-.adw-home-discovery .main>.mv-wrap{order:1!important}
-.adw-home-discovery .main>.topinfo{order:2!important}
-.adw-home-discovery .main>.ksearch-wrap{order:3!important}
-.adw-home-discovery .main>.catlist-wrap{order:4!important}
-.adw-home-discovery .main>.item-list-area{order:5!important}
-.adw-home-discovery .main>.historyitems{order:6!important}
-.adw-home-discovery .main>.ranking{order:7!important}
-.adw-home-discovery .main>.bannerlist{order:8!important}
-.adw-home-discovery .ksearch-wrap,.adw-home-discovery .catlist-wrap,.adw-home-discovery .topinfo{background:#090909!important;color:#f4f4f4!important;opacity:1!important;transform:none!important;max-width:100%;box-sizing:border-box}
-.adw-home-discovery .ksearch-wrap{margin:0!important;padding:20px 18px 12px!important}
-.adw-home-discovery .ksearch,.adw-home-discovery .ksearch-form-wrap{width:100%!important;max-width:960px!important;margin:0 auto!important;padding:0!important}
-.adw-home-discovery .ksearch-form{display:flex!important;width:100%!important;margin:0 0 16px!important;border:1px solid #656565!important;border-radius:5px!important;background:#141414!important;box-sizing:border-box}
-.adw-home-discovery .ksearch-form input{flex:1!important;width:0!important;min-width:0!important;height:48px!important;box-sizing:border-box!important;font-size:16px!important;color:#fff!important;background:transparent!important;border:0!important;padding:0 12px!important}
-.adw-home-discovery .ksearch-form input::placeholder{color:#b9b9b9!important;font-size:14px!important}
-.adw-home-discovery .ksearch-form button{width:48px!important;min-width:48px!important;height:48px!important;position:relative!important;color:#fff!important;background:transparent!important;border:0!important}
-.adw-home-discovery .ksearch-form button{font-size:0!important;background-image:none!important}
-.adw-home-discovery .ksearch-form button>*{display:none!important}
-.adw-home-discovery .ksearch-form button:before{content:''!important;position:absolute!important;left:13px!important;top:12px!important;width:15px!important;height:15px!important;border:1.5px solid #eee!important;border-radius:50%!important;background:none!important;transform:none!important}
-.adw-home-discovery .ksearch-form button:after{content:''!important;position:absolute!important;left:27px!important;top:27px!important;width:8px!important;height:1.5px!important;background:#eee!important;border:0!important;transform:rotate(45deg)!important}
-.adw-home-discovery .ksearch-form-wrap>p{font-size:14px!important;font-weight:600!important;text-align:left!important;letter-spacing:.04em!important;margin:0 0 10px!important;color:#eee!important}
-.adw-home-discovery .ksearch-form-wrap>ul{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px!important;margin:0!important;padding:0!important;list-style:none!important}
-.adw-home-discovery .ksearch-form-wrap>ul>li{display:block!important;margin:0!important;padding:0!important;min-width:0}
-.adw-home-discovery .ksearch-form-wrap>ul>li>a{display:flex!important;align-items:center;justify-content:center;box-sizing:border-box;min-height:44px!important;width:100%;border:1px solid #606060!important;border-radius:24px!important;padding:7px 3px!important;font-size:13px!important;line-height:1.4!important;color:#eee!important;text-decoration:none!important;letter-spacing:0!important;white-space:normal!important}
-.adw-home-discovery .ksearch-form-wrap>ul>li>a:before{content:none!important}
-.adw-home-discovery .catlist-wrap{padding:14px 18px 12px!important;margin:0!important}
-.adw-discovery-cats{max-width:960px;margin:auto}
-.adw-discovery-cats h2{font-size:16px!important;font-weight:600!important;letter-spacing:.04em!important;line-height:1.5!important;margin:0 0 12px!important;color:#f4f4f4!important}
-.adw-cat-photos{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
-.adw-cat-photos a{display:block;color:#eee;text-align:center;text-decoration:none;min-width:0;min-height:44px;font-size:13px;line-height:1.5}
-.adw-cat-photos img{display:block;width:100%;height:auto;aspect-ratio:4/5;object-fit:cover;background:#202020;margin:0 0 8px;border-radius:2px}
-.adw-cat-text{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:14px}
-.adw-cat-text a{display:flex;align-items:center;justify-content:space-between;gap:4px;box-sizing:border-box;min-height:44px;padding:8px 10px;color:#eee;border:1px solid #555;border-radius:3px;text-decoration:none;font-size:13px;line-height:1.5}
-.adw-cat-text a:last-child{grid-column:1/-1;justify-content:center;gap:12px}
-.adw-cat-text a:after{content:'›';font-size:18px;color:#aaa}
-.adw-home-discovery .topinfo{padding:0 18px!important;margin:0!important}
-.adw-home-trust{max-width:960px;margin:auto;color:#f4f4f4}
-.adw-home-trust-title{display:none!important}
-.adw-home-trust-grid{display:grid;grid-template-columns:1fr 1.15fr;gap:0;margin:0;background:#b7a27b;color:#111}
-.adw-home-trust-card{display:flex;align-items:center;justify-content:center;box-sizing:border-box;min-height:44px;padding:8px 6px;border:0;border-radius:0;background:transparent;text-align:center}
-.adw-home-trust-card+ .adw-home-trust-card{border-left:1px solid rgba(0,0,0,.25)}
-.adw-home-trust-card strong{display:block;margin:0;font-size:12px;line-height:1.5;font-weight:600;color:#111;letter-spacing:0}
-.adw-home-trust-card span{display:none}
-.adw-home-trust-line{display:flex;align-items:center;justify-content:center;gap:10px;box-sizing:border-box;min-height:58px;padding:10px 8px;border:0;border-bottom:1px solid #363636;border-radius:0;background:transparent;color:#fff!important;text-decoration:none}
-.adw-home-trust-line:before{content:'LINE';display:flex;flex:0 0 30px;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;background:#06c755;color:#fff;font:700 9px Arial,sans-serif}
-.adw-home-trust-line strong{display:block;font-size:13px;line-height:1.5;font-weight:500;color:#fff!important}
-.adw-home-trust-line span{display:block;margin:0;color:#fff!important}
-.adw-home-trust-line b{margin-left:4px;font-size:24px;font-weight:400;color:#fff!important}
-@media(max-width:359px){.adw-home-trust-card strong{font-size:11px}.adw-home-trust-line strong{font-size:12px}}
-.adw-home-discovery #item-list{margin-top:18px!important}
-.adw-home-discovery #item-list .item-list-more a{display:flex!important;justify-content:center!important;align-items:center!important;min-height:48px!important;border:1px solid #777!important;border-radius:3px!important;font-size:15px!important;color:inherit!important}
-.adw-home-discovery #item-list .item-list-item[hidden],.adw-home-discovery #item-list [data-adw-local-more][hidden],.adw-home-discovery #item-list[data-adw-has-more] .item-list-more{display:none!important}
-.adw-home-discovery #item-list [data-adw-local-more]{display:flex;justify-content:center;align-items:center;width:100%;max-width:450px;min-height:48px;margin:24px auto 0;border:1px solid #777;border-radius:3px;background:transparent;color:inherit;font-size:15px;cursor:pointer}
-.adw-home-discovery a:focus-visible,.adw-home-discovery button:focus-visible,.adw-home-discovery input:focus-visible{outline:2px solid #ddd!important;outline-offset:3px}
-@media(min-width:769px){.adw-home-discovery .ksearch-wrap{padding-top:30px!important}.adw-cat-photos{gap:18px}.adw-cat-photos img{max-height:200px;object-fit:contain}.adw-cat-text{grid-template-columns:repeat(5,minmax(0,1fr))}.adw-cat-text a:last-child{grid-column:auto}.adw-home-discovery .ksearch-form-wrap>ul>li>a{font-size:14px!important}}
-@media(prefers-reduced-motion:reduce){.adw-discovery-cats *{scroll-behavior:auto!important;transition:none!important}}
-`;
-      document.head.appendChild(style);
-    }
-    if (!cats.querySelector('.adw-discovery-cats')) {
-      var section = document.createElement('nav');
-      section.className = 'adw-discovery-cats';
-      section.setAttribute('aria-label', '商品カテゴリー');
-      var title = document.createElement('h2'); title.textContent = 'カテゴリーから探す';
-      var photos = document.createElement('div'); photos.className = 'adw-cat-photos';
-      var imageRoot = 'https://baseec-img-mng.akamaized.net/images/item/origin/';
-      [
-        ['パンツ','6524985','c526d5b03e0f54471257d9cbcad59ef1.png'],
-        ['トップス','6524986','61d4b7730d48ca961c5f09e331beef68.png'],
-        ['アウター','6524987','52a1128b99d8f692fcf965d6104a7fb4.jpg'],
-        ['シューズ','6524989','3268676b206588b80f54cecdac9165f2.png']
-      ].forEach(function (row) {
-        var a = document.createElement('a'); a.href = '/categories/' + row[1];
-        var image = document.createElement('img');
-        image.src = imageRoot + row[2] + '?imformat=generic&q=75&im=Resize,width=256,type=normal';
-        image.alt = ''; image.width = 256; image.height = 320; image.loading = 'lazy'; image.decoding = 'async';
-        var label = document.createElement('span'); label.textContent = row[0];
-        a.append(image,label); photos.appendChild(a);
-      });
-      var text = document.createElement('div'); text.className = 'adw-cat-text';
-      [
-        ['セットアップ','6524988'],['バッグ・アクセサリー','7385759'],
-        ['WOMENS','6704469'],['1点限り・お急ぎ発送','7378925'],['SALE','7460787']
-      ].forEach(function (row) {
-        var a = document.createElement('a'); a.href = '/categories/' + row[1]; a.textContent = row[0]; text.appendChild(a);
-      });
-      section.append(title, photos, text); cats.replaceChildren(section);
-    }
-    if (info && !info.querySelector('.adw-home-trust')) {
-      var trust = document.createElement('div'); trust.className = 'adw-home-trust';
-      var titleTrust = document.createElement('p'); titleTrust.className = 'adw-home-trust-title'; titleTrust.textContent = 'ADWENS 3つの安心';
-      var grid = document.createElement('div'); grid.className = 'adw-home-trust-grid';
-      [['5,000円以上 送料無料','全国どこでも送料0円'],['サイズ・イメージ交換対応','届いてからでも相談できます']].forEach(function (row) {
-        var card = document.createElement('div'); card.className = 'adw-home-trust-card';
-        var strong = document.createElement('strong'); strong.textContent = row[0];
-        var small = document.createElement('span'); small.textContent = row[1]; card.append(strong,small); grid.appendChild(card);
-      });
-      var line = document.createElement('a'); line.href = 'https://l.omct.jp/2006632232-Ex9Ye0xv';
-      line.className = 'adw-home-trust-line';
-      var lineText = document.createElement('span'); var lineStrong = document.createElement('strong'); lineStrong.textContent = 'LINE追加で5%OFF・サイズ相談';
-      var lineSmall = document.createElement('span'); lineSmall.textContent = 'サイズ相談・カート商品のご案内もLINEで';
-      lineText.append(lineStrong); var arrow = document.createElement('b'); arrow.textContent = '›';
-      line.append(lineText,arrow); trust.append(grid,line); info.replaceChildren(trust);
-    }
-    var hero = main.querySelector('.mv-wrap');
-    function after(anchor, element) { if (anchor && element && anchor.nextElementSibling !== element) anchor.parentNode.insertBefore(element,anchor.nextSibling); }
-    after(hero, info); after(info,search); after(search,cats);
-    var history = main.querySelector('.historyitems'); after(items,history);
-    document.querySelectorAll('.ksearch-form-wrap > p').forEach(function (p) { if (p.textContent !== 'キーワードから探す') p.textContent = 'キーワードから探す'; });
-    document.querySelectorAll('.ksearch-form input[name="q"]').forEach(function (input) {
-      var hint = 'スキニー、ダウン、光沢など';
-      if (input.placeholder !== hint) input.placeholder = hint;
-      if (!input.hasAttribute('aria-label')) input.setAttribute('aria-label','商品名・特徴から検索');
-    });
-    items.querySelectorAll('.item-list-more a').forEach(function (a) {
-      if (a.textContent.trim() !== '商品をもっと見る →') a.textContent = '商品をもっと見る →';
-      if (!a.hasAttribute('data-adw-loader-bound')) {
-        a.setAttribute('data-adw-loader-bound','');
-        a.addEventListener('click',function () { items.setAttribute('data-adw-visible-count', String(items.querySelectorAll('.item-list-item').length + 8)); });
-      }
-    });
-    var list = items.querySelector('.item-list');
-    if (list) {
-      var localMore = items.querySelector('[data-adw-local-more]');
-      if (!localMore) {
-        localMore = document.createElement('button'); localMore.type = 'button';
-        localMore.setAttribute('data-adw-local-more',''); localMore.textContent = '商品をもっと見る →';
-        localMore.addEventListener('click',function () { items.setAttribute('data-adw-visible-count', String(Number(items.getAttribute('data-adw-visible-count') || 8) + 8)); homeDiscovery(); });
-        list.parentNode.insertBefore(localMore,list.nextSibling);
-      }
-      var visible = Number(items.getAttribute('data-adw-visible-count') || 8);
-      var rows = Array.from(list.querySelectorAll('.item-list-item'));
-      rows.forEach(function (row,index) { row.hidden = index >= visible; });
-      localMore.hidden = rows.length <= visible;
-      if (rows.length > visible) { if (!items.hasAttribute('data-adw-has-more')) items.setAttribute('data-adw-has-more',''); }
-      else if (items.hasAttribute('data-adw-has-more')) items.removeAttribute('data-adw-has-more');
-    }
-    // Defer below-fold images without changing hero assets or the BASE loader.
-    main.querySelectorAll('#item-list img,.ranking img,.bannerlist img').forEach(function (image) {
-      if (!image.hasAttribute('loading')) image.loading = 'lazy';
-      if (!image.hasAttribute('decoding')) image.decoding = 'async';
+
+  function categoryById(id) {
+    return state.data && state.data.categories.find(function (cat) { return String(cat.id) === String(id); });
+  }
+  function descendantIds(id) {
+    var root = categoryById(id);
+    if (!root) return [String(id)];
+    var prefix = String(root.code || '');
+    return state.data.categories.filter(function (cat) {
+      return String(cat.id) === String(id) || (prefix && String(cat.code || '').indexOf(prefix + '-') === 0);
+    }).map(function (cat) { return String(cat.id); });
+  }
+  function itemInCategory(item, id) {
+    var ids = descendantIds(id);
+    return (item.categories || []).some(function (catId) { return ids.indexOf(String(catId)) >= 0; });
+  }
+  function filteredRows() {
+    if (!state.data) return [];
+    return state.data.items.filter(function (item) {
+      if (state.main && !itemInCategory(item, state.main)) return false;
+      if (state.sub && !itemInCategory(item, state.sub)) return false;
+      if (state.virtual && virtualTests[state.virtual] && !virtualTests[state.virtual](String(item.name || ''))) return false;
+      return true;
     });
   }
-
+  function yen(value) { return '¥' + Number(value || 0).toLocaleString('ja-JP'); }
+  function productCard(item) {
+    var card = document.createElement('div'); card.className = 'item-list-item';
+    var imageBox = document.createElement('div'); imageBox.className = 'image';
+    var link = document.createElement('a'); link.href = '/items/' + item.id;
+    var image = document.createElement('img');
+    if (/^https:\/\//.test(String(item.image || ''))) image.src = item.image;
+    image.alt = item.name || ''; image.loading = 'lazy'; image.decoding = 'async';
+    link.appendChild(image); imageBox.appendChild(link);
+    var text = document.createElement('div'); text.className = 'text';
+    var name = document.createElement('div'); name.className = 'name'; name.textContent = item.name || '';
+    var price = document.createElement('div'); price.className = 'price';
+    var amount = document.createElement('span'); amount.className = 'default'; amount.textContent = yen(item.price);
+    price.appendChild(amount); text.append(name, price);
+    if (Number(item.stock) === 0) { var sold = document.createElement('span'); sold.className = 'adw-soldout'; sold.textContent = 'SOLD OUT'; text.appendChild(sold); }
+    card.append(imageBox, text); return card;
+  }
+  function filterLabel() {
+    if (state.virtual) {
+      var word = keywords.find(function (item) { return item.virtual === state.virtual; });
+      if (word) return word.label;
+      if (state.virtual === 'wide') return 'ワイド';
+    }
+    var cat = categoryById(state.sub || state.main);
+    return cat ? cat.name : 'すべての商品';
+  }
+  function renderProducts() {
+    var area = document.querySelector('#item-list');
+    if (!area || !state.data) return;
+    var list = area.querySelector('.adw-home-catalog');
+    var status = area.querySelector('.adw-catalog-status');
+    var reset = area.querySelector('[data-adw-reset]');
+    var more = area.querySelector('[data-adw-catalog-more]');
+    var rows = filteredRows();
+    list.replaceChildren();
+    rows.slice(0, state.visible).forEach(function (item) { list.appendChild(productCard(item)); });
+    status.textContent = filterLabel() + '｜' + rows.length + '商品';
+    reset.hidden = !(state.main || state.sub || state.virtual);
+    more.hidden = state.visible >= rows.length;
+    if (!rows.length) {
+      var empty = document.createElement('p'); empty.className = 'adw-catalog-empty'; empty.textContent = '該当する公開商品はありません。'; list.appendChild(empty);
+    }
+    renderCategoryState();
+  }
+  function clearFilter() {
+    state.main = ''; state.sub = ''; state.virtual = ''; state.visible = 8; renderProducts();
+  }
+  function childCategories(rootId) {
+    var root = categoryById(rootId);
+    if (!root) return [];
+    return state.data.categories.filter(function (cat) { return Number(cat.parentNumber) === Number(root.number); });
+  }
+  function renderSubcategories(section) {
+    var wrap = section.querySelector('.adw-subcategory-wrap');
+    var title = wrap.querySelector('p');
+    var rail = wrap.querySelector('.adw-subcategory-rail');
+    rail.replaceChildren();
+    if (!state.main) { wrap.hidden = true; return; }
+    var main = mainCategories.find(function (cat) { return cat.id === state.main; });
+    title.textContent = (main ? main.label : 'カテゴリー') + 'から探す';
+    var choices = [{ label: 'すべて', id: '' }];
+    if (state.main === '6524985') {
+      choices.push({ label: 'スキニー', virtual: 'skinny' }, { label: 'ワイド', virtual: 'wide' });
+    }
+    childCategories(state.main).forEach(function (cat) {
+      choices.push({ label: cat.name === 'カーゴパンツ' ? 'カーゴ' : cat.name, id: String(cat.id) });
+    });
+    choices.forEach(function (choice) {
+      var button = document.createElement('button'); button.type = 'button'; button.textContent = choice.label;
+      var pressed = choice.virtual ? state.virtual === choice.virtual : (!choice.id ? !state.sub && !state.virtual : state.sub === choice.id);
+      button.setAttribute('aria-pressed', String(pressed));
+      button.onclick = function () { state.sub = choice.id || ''; state.virtual = choice.virtual || ''; state.visible = 8; renderProducts(); };
+      rail.appendChild(button);
+    });
+    wrap.hidden = choices.length < 2;
+  }
+  function renderCategoryState() {
+    var section = document.querySelector('.adw-discovery-cats');
+    if (!section) return;
+    section.querySelectorAll('[data-adw-main-cat]').forEach(function (button) {
+      button.setAttribute('aria-pressed', String(button.dataset.adwMainCat === state.main));
+    });
+    renderSubcategories(section);
+  }
+  function imageForCategory(id, fixed) {
+    var root = 'https://baseec-img-mng.akamaized.net/images/item/origin/';
+    if (fixed) return root + fixed + '?imformat=generic&q=75&im=Resize,width=256,type=normal';
+    var item = state.data && state.data.items.find(function (row) { return itemInCategory(row, id) && /^https:\/\//.test(String(row.image || '')); });
+    return item ? item.image : '';
+  }
+  function buildCategories(cats) {
+    var section = cats.querySelector('.adw-discovery-cats');
+    if (!section) {
+      section = document.createElement('nav'); section.className = 'adw-discovery-cats'; section.setAttribute('aria-label', '商品カテゴリー');
+      var title = document.createElement('h2'); title.textContent = 'カテゴリーから探す';
+      var rail = document.createElement('div'); rail.className = 'adw-cat-photos';
+      var sub = document.createElement('div'); sub.className = 'adw-subcategory-wrap'; sub.hidden = true;
+      var subTitle = document.createElement('p');
+      var subRail = document.createElement('div'); subRail.className = 'adw-subcategory-rail';
+      sub.append(subTitle, subRail); section.append(title, rail, sub); cats.replaceChildren(section);
+    }
+    var photoRail = section.querySelector('.adw-cat-photos'); photoRail.replaceChildren();
+    mainCategories.forEach(function (cat) {
+      var button = document.createElement('button'); button.type = 'button'; button.dataset.adwMainCat = cat.id;
+      var image = document.createElement('img'); image.src = imageForCategory(cat.id, cat.image); image.alt = ''; image.width = 176; image.height = 220; image.loading = 'lazy'; image.decoding = 'async';
+      var label = document.createElement('span'); label.textContent = cat.label;
+      button.append(image, label);
+      button.onclick = function () {
+        state.main = cat.id; state.sub = ''; state.virtual = ''; state.visible = 8; renderProducts();
+      };
+      photoRail.appendChild(button);
+    });
+    renderCategoryState();
+  }
+  function installCatalog(area, data) {
+    if (!data || !Array.isArray(data.items) || !Array.isArray(data.categories)) throw new Error('catalog');
+    state.data = data;
+    var nativeList = area.querySelector('.item-list:not(.adw-home-catalog)'); if (nativeList) nativeList.hidden = true;
+    area.querySelectorAll('.item-list-more').forEach(function (node) { node.hidden = true; });
+    var layout = area.querySelector('.item-list-layout') || area;
+    var sidebar = layout.querySelector('.sidebar'); if (sidebar) sidebar.hidden = true;
+    var toolbar = document.createElement('div'); toolbar.className = 'adw-catalog-toolbar';
+    var status = document.createElement('p'); status.className = 'adw-catalog-status'; status.setAttribute('role', 'status');
+    var reset = document.createElement('button'); reset.type = 'button'; reset.dataset.adwReset = ''; reset.textContent = 'すべての商品へ'; reset.hidden = true; reset.onclick = clearFilter;
+    toolbar.append(status, reset);
+    var list = document.createElement('div'); list.className = 'item-list adw-home-catalog';
+    var more = document.createElement('button'); more.type = 'button'; more.dataset.adwCatalogMore = ''; more.textContent = '商品をもっと見る →';
+    more.onclick = function () { state.visible += 8; renderProducts(); };
+    layout.append(toolbar, list, more);
+    buildCategories(document.querySelector('.catlist-wrap'));
+    renderProducts();
+  }
+  function loadCatalog(area) {
+    if (state.loading || state.data || area.dataset.adwCatalogFailed) return;
+    state.loading = true;
+    var urls = ['https://adwens0111.github.io/adwens/search_catalog.json','https://raw.githubusercontent.com/adwens0111/adwens/main/search_catalog.json'];
+    function read(index) {
+      return fetch(urls[index] + '?v=' + Math.floor(Date.now() / 300000), { cache: 'no-cache' })
+        .then(function (response) { if (!response.ok) throw new Error('catalog'); return response.json(); })
+        .catch(function (error) { if (index + 1 < urls.length) return read(index + 1); throw error; });
+    }
+    read(0).then(function (data) { installCatalog(area, data); }).catch(function () { area.dataset.adwCatalogFailed = 'true'; }).finally(function () { state.loading = false; });
+  }
+  function homeCss() {
+    if (document.getElementById('adw-home-style')) return;
+    var style = document.createElement('style'); style.id = 'adw-home-style'; style.textContent = `
+html.adw-home-discovery #oc-plugin-popup{display:none!important}
+.adw-home-discovery .main>.mv-wrap{order:1!important}.adw-home-discovery .main>.topinfo{order:2!important}.adw-home-discovery .main>.ksearch-wrap{order:3!important}.adw-home-discovery .main>.catlist-wrap{order:4!important}.adw-home-discovery .main>.item-list-area{order:5!important}.adw-home-discovery .main>.historyitems{order:6!important}.adw-home-discovery .main>.ranking{order:7!important}.adw-home-discovery .main>.bannerlist{order:8!important}
+.adw-home-discovery .ksearch-wrap,.adw-home-discovery .catlist-wrap,.adw-home-discovery .topinfo{background:#090909!important;color:#f4f4f4!important;opacity:1!important;transform:none!important;max-width:100%;box-sizing:border-box}
+.adw-home-discovery .ksearch-wrap{margin:0!important;padding:14px 18px 8px!important}.adw-home-discovery .ksearch,.adw-home-discovery .ksearch-form-wrap{width:100%!important;max-width:960px!important;margin:0 auto!important;padding:0!important}
+.adw-home-discovery .ksearch-form{display:flex!important;width:100%!important;margin:0 0 11px!important;border:1px solid #656565!important;border-radius:5px!important;background:#141414!important;box-sizing:border-box}.adw-home-discovery .ksearch-form input{flex:1!important;width:0!important;min-width:0!important;height:44px!important;box-sizing:border-box!important;font-size:16px!important;color:#fff!important;background:transparent!important;border:0!important;padding:0 12px!important}.adw-home-discovery .ksearch-form input::placeholder{color:#aaa!important;font-size:14px!important}.adw-home-discovery .ksearch-form button{width:44px!important;min-width:44px!important;height:44px!important;position:relative!important;color:#fff!important;background:transparent!important;border:0!important;font-size:0!important;background-image:none!important}.adw-home-discovery .ksearch-form button>*{display:none!important}.adw-home-discovery .ksearch-form button:before{content:''!important;position:absolute!important;left:11px!important;top:10px!important;width:15px!important;height:15px!important;border:1.5px solid #eee!important;border-radius:50%!important;background:none!important;transform:none!important}.adw-home-discovery .ksearch-form button:after{content:''!important;position:absolute!important;left:25px!important;top:25px!important;width:8px!important;height:1.5px!important;background:#eee!important;border:0!important;transform:rotate(45deg)!important}
+.adw-home-discovery .ksearch-form-wrap>p{font-size:14px!important;font-weight:600!important;text-align:left!important;letter-spacing:.04em!important;margin:0 0 8px!important;color:#eee!important}.adw-home-discovery .ksearch-form-wrap>ul{display:flex!important;overflow-x:auto!important;gap:8px!important;margin:0!important;padding:0 0 4px!important;list-style:none!important;scroll-snap-type:x proximity;scrollbar-width:none}.adw-home-discovery .ksearch-form-wrap>ul::-webkit-scrollbar{display:none}.adw-home-discovery .ksearch-form-wrap>ul>li{display:block!important;margin:0!important;padding:0!important;flex:0 0 auto}.adw-home-discovery .ksearch-form-wrap>ul>li>a{display:flex!important;align-items:center;justify-content:center;box-sizing:border-box;min-height:40px!important;min-width:108px;border:1px solid #606060!important;border-radius:22px!important;padding:7px 16px!important;font-size:13px!important;line-height:1.3!important;color:#eee!important;text-decoration:none!important;white-space:nowrap!important}.adw-home-discovery .ksearch-form-wrap>ul>li>a:before{content:none!important}
+.adw-home-discovery .catlist-wrap{padding:10px 18px 8px!important;margin:0!important}.adw-discovery-cats{max-width:960px;margin:auto}.adw-discovery-cats h2{font-size:16px!important;font-weight:600!important;letter-spacing:.04em!important;line-height:1.5!important;margin:0 0 10px!important;color:#f4f4f4!important}.adw-cat-photos{display:flex;overflow-x:auto;gap:10px;padding:0 0 5px;scroll-snap-type:x proximity;scrollbar-width:none}.adw-cat-photos::-webkit-scrollbar,.adw-subcategory-rail::-webkit-scrollbar{display:none}.adw-cat-photos button{display:block;flex:0 0 88px;width:88px;min-height:44px;padding:0 0 3px;border:0;border-bottom:2px solid transparent;background:transparent;color:#eee;text-align:center;font:inherit;scroll-snap-align:start}.adw-cat-photos button[aria-pressed="true"]{border-bottom-color:#b7a27b;color:#dcc89d}.adw-cat-photos img{display:block;width:88px;height:110px;object-fit:cover;background:#202020;margin:0 0 6px;border-radius:2px}.adw-cat-photos span{display:block;font-size:12px;line-height:1.35;min-height:33px;overflow-wrap:anywhere}
+.adw-subcategory-wrap{margin-top:8px}.adw-subcategory-wrap[hidden]{display:none!important}.adw-subcategory-wrap>p{font-size:14px;font-weight:600;margin:0 0 8px}.adw-subcategory-rail{display:flex;overflow-x:auto;gap:8px;padding-bottom:4px;scrollbar-width:none}.adw-subcategory-rail button{flex:0 0 auto;min-width:92px;min-height:40px;padding:7px 15px;border:1px solid #606060;border-radius:22px;background:transparent;color:#eee;font-size:12px}.adw-subcategory-rail button[aria-pressed="true"]{border-color:#b7a27b;background:#b7a27b;color:#111;font-weight:600}
+.adw-home-discovery .topinfo{padding:0 18px!important;margin:0!important}.adw-home-trust{max-width:960px;margin:auto;color:#f4f4f4}.adw-home-trust-title{display:none!important}.adw-home-trust-grid{display:grid;grid-template-columns:1fr 1.15fr;gap:0;margin:0;background:#b7a27b;color:#111}.adw-home-trust-card{display:flex;align-items:center;justify-content:center;box-sizing:border-box;min-height:44px;padding:8px 6px;border:0;border-radius:0;background:transparent;text-align:center}.adw-home-trust-card+.adw-home-trust-card{border-left:1px solid rgba(0,0,0,.25)}.adw-home-trust-card strong{display:block;margin:0;font-size:12px;line-height:1.5;font-weight:600;color:#111}.adw-home-trust-card span{display:none}.adw-home-trust-line{display:flex;align-items:center;justify-content:center;gap:10px;box-sizing:border-box;min-height:54px;padding:9px 8px;border:0;border-bottom:1px solid #363636;border-radius:0;background:transparent;color:#fff!important;text-decoration:none}.adw-home-trust-line:before{content:'LINE';display:flex;flex:0 0 30px;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;background:#06c755;color:#fff;font:700 9px Arial,sans-serif}.adw-home-trust-line strong{display:block;font-size:13px;line-height:1.5;font-weight:500;color:#fff!important}.adw-home-trust-line span{display:block;margin:0;color:#fff!important}.adw-home-trust-line b{margin-left:4px;font-size:24px;font-weight:400;color:#fff!important}
+.adw-home-discovery #item-list{margin-top:10px!important}.adw-home-discovery #item-list>.sec-title{margin-bottom:6px!important}.adw-home-discovery #item-list .item-list[hidden],.adw-home-discovery #item-list .item-list-more[hidden],.adw-home-discovery #item-list .sidebar[hidden]{display:none!important}.adw-catalog-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 12px}.adw-catalog-status{margin:0;font-size:13px;line-height:1.5}.adw-catalog-toolbar button{border:0;background:transparent;color:inherit;text-decoration:underline;text-underline-offset:3px;font-size:12px;min-height:44px;padding:0}.adw-home-catalog{width:100%}.adw-home-catalog .adw-soldout{display:block;margin-top:4px;font-size:10px}.adw-catalog-empty{grid-column:1/-1;font-size:13px}.adw-home-discovery #item-list [data-adw-catalog-more]{display:flex;justify-content:center;align-items:center;width:100%;max-width:450px;min-height:48px;margin:22px auto 0;border:1px solid #777;border-radius:3px;background:transparent;color:inherit;font-size:14px}.adw-home-discovery #item-list [data-adw-catalog-more][hidden]{display:none!important}
+.adw-home-discovery a:focus-visible,.adw-home-discovery button:focus-visible,.adw-home-discovery input:focus-visible{outline:2px solid #ddd!important;outline-offset:3px}@media(max-width:359px){.adw-home-trust-card strong{font-size:11px}.adw-home-trust-line strong{font-size:12px}.adw-cat-photos button{flex-basis:82px;width:82px}.adw-cat-photos img{width:82px;height:103px}}@media(min-width:769px){.adw-home-discovery .ksearch-wrap{padding-top:22px!important}.adw-cat-photos{gap:16px}.adw-cat-photos button{flex-basis:112px;width:112px}.adw-cat-photos img{width:112px;height:140px}.adw-home-discovery .ksearch-form-wrap>ul>li>a{font-size:14px}}@media(prefers-reduced-motion:reduce){.adw-discovery-cats *{scroll-behavior:auto!important;transition:none!important}}
+`;
+    document.head.appendChild(style);
+  }
+  function ensureTrust(info) {
+    if (!info || info.querySelector('.adw-home-trust')) return;
+    var trust = document.createElement('div'); trust.className = 'adw-home-trust';
+    var grid = document.createElement('div'); grid.className = 'adw-home-trust-grid';
+    ['5,000円以上 送料無料','サイズ・イメージ交換対応'].forEach(function (label) { var card = document.createElement('div'); card.className = 'adw-home-trust-card'; var strong = document.createElement('strong'); strong.textContent = label; card.appendChild(strong); grid.appendChild(card); });
+    var line = document.createElement('a'); line.href = 'https://l.omct.jp/2006632232-Ex9Ye0xv'; line.className = 'adw-home-trust-line';
+    var text = document.createElement('span'); var strong = document.createElement('strong'); strong.textContent = 'LINE追加で5%OFF・サイズ相談'; text.appendChild(strong); var arrow = document.createElement('b'); arrow.textContent = '›'; line.append(text, arrow); trust.append(grid, line); info.replaceChildren(trust);
+  }
+  function homeDiscovery() {
+    var main = document.querySelector('.main'); var search = main && main.querySelector('.ksearch-wrap'); var cats = main && main.querySelector('.catlist-wrap'); var info = main && main.querySelector('.topinfo'); var items = main && main.querySelector('#item-list');
+    if (!search || !cats || !items) return;
+    document.documentElement.classList.add('adw-home-discovery'); homeCss(); ensureTrust(info);
+    if (!cats.querySelector('.adw-discovery-cats')) buildCategories(cats);
+    var hero = main.querySelector('.mv-wrap'); function after(anchor, element) { if (anchor && element && anchor.nextElementSibling !== element) anchor.parentNode.insertBefore(element, anchor.nextSibling); }
+    after(hero, info); after(info, search); after(search, cats); var history = main.querySelector('.historyitems'); after(items, history);
+    document.querySelectorAll('.ksearch-form-wrap > p').forEach(function (p) { p.textContent = '人気検索'; });
+    document.querySelectorAll('.ksearch-form input[name="q"]').forEach(function (input) { input.placeholder = 'スキニー、ダウン、光沢など'; if (!input.hasAttribute('aria-label')) input.setAttribute('aria-label','商品名・特徴から検索'); });
+    main.querySelectorAll('#item-list img,.ranking img,.bannerlist img').forEach(function (image) { if (!image.hasAttribute('loading')) image.loading = 'lazy'; if (!image.hasAttribute('decoding')) image.decoding = 'async'; });
+    loadCatalog(items);
+  }
   var jumpToken = 0;
   function jumpToAboutTab() {
     if (!/^\/about\/?$/.test(location.pathname) || !/^#tab[123]$/.test(location.hash)) return;
-    var token = ++jumpToken;
-    var hash = location.hash;
-    function jump() {
-      if (token !== jumpToken || location.hash !== hash) return;
-      var tabs = document.querySelector('.about-main .tab');
-      var link = tabs && tabs.querySelector('a[href="' + hash + '"]');
-      if (!link) return;
-      if (link.getAttribute('aria-expanded') !== 'true') link.click();
-      var header = document.querySelector('header');
-      var offset = header ? Math.min(header.getBoundingClientRect().height, 160) : 80;
-      window.scrollTo({top: Math.max(0, tabs.getBoundingClientRect().top + window.scrollY - offset - 20), behavior: 'instant'});
-    }
-    // テーマのタブ初期化・画像読み込みによる高さ変化の後も目的箇所に合わせる。
-    [0, 350, 1200].forEach(function (delay) { setTimeout(jump, delay); });
+    var token = ++jumpToken, hash = location.hash;
+    function jump() { if (token !== jumpToken || location.hash !== hash) return; var tabs = document.querySelector('.about-main .tab'); var link = tabs && tabs.querySelector('a[href="' + hash + '"]'); if (!link) return; if (link.getAttribute('aria-expanded') !== 'true') link.click(); var header = document.querySelector('header'); var offset = header ? Math.min(header.getBoundingClientRect().height,160) : 80; window.scrollTo({top:Math.max(0,tabs.getBoundingClientRect().top+window.scrollY-offset-20),behavior:'instant'}); }
+    [0,350,1200].forEach(function (delay) { setTimeout(jump,delay); });
   }
   function start() {
-    updateKeywords();
-    homeDiscovery();
-    // テーマがDOM準備後にキーワード欄を生成し直す場合にも反映する。
-    var keywordScheduled = false;
-    var discoveryObserver = new MutationObserver(function () {
-      if (keywordScheduled) return;
-      keywordScheduled = true;
-      requestAnimationFrame(function () { keywordScheduled = false; updateKeywords(); homeDiscovery(); });
-    });
-    document.querySelectorAll('.main,.header-search-wrap').forEach(function(root) { discoveryObserver.observe(root,{childList:true,subtree:true}); });
-    document.addEventListener('submit', function (event) {
-      var form = event.target;
-      if (!form || form.tagName !== 'FORM') return;
-      var input = form.querySelector('input[name="q"]');
-      if (!input || !/\/search\/?$/.test(new URL(form.action,location.href).pathname)) return;
-      var value = input.value.trim().replace(/[\s　]+/g,'');
-
-    }, true);
-    jumpToAboutTab();
-    window.addEventListener('load', jumpToAboutTab, {once:true});
-    window.addEventListener('hashchange', jumpToAboutTab);
-    ['wheel', 'touchstart', 'keydown'].forEach(function (type) {
-      window.addEventListener(type, function () { jumpToken++; }, {passive:true});
-    });
+    updateKeywords(); homeDiscovery();
+    var scheduled = false; var observer = new MutationObserver(function () { if (scheduled) return; scheduled = true; requestAnimationFrame(function () { scheduled = false; updateKeywords(); homeDiscovery(); }); });
+    document.querySelectorAll('.main,.header-search-wrap').forEach(function (root) { observer.observe(root,{childList:true,subtree:true}); });
     document.addEventListener('click', function (event) {
-      var link = event.target.closest && event.target.closest('a[href]');
-      if (!link || !/^\/about\/?$/.test(location.pathname)) return;
-      var target = new URL(link.href, location.href);
-      if (target.origin === location.origin && /^\/about\/?$/.test(target.pathname) && target.hash === location.hash) {
-        jumpToAboutTab();
-      }
+      var keyword = event.target.closest && event.target.closest('.ksearch-form-wrap a[data-adw-keyword]');
+      if (keyword && state.data && /^\/$/.test(location.pathname)) { event.preventDefault(); state.main = keyword.dataset.adwMain || ''; state.sub = ''; state.virtual = keyword.dataset.adwKeyword || ''; state.visible = 8; renderProducts(); return; }
+      var link = event.target.closest && event.target.closest('a[href]'); if (!link || !/^\/about\/?$/.test(location.pathname)) return; var target = new URL(link.href,location.href); if (target.origin === location.origin && /^\/about\/?$/.test(target.pathname) && target.hash === location.hash) jumpToAboutTab();
     });
+    jumpToAboutTab(); window.addEventListener('load',jumpToAboutTab,{once:true}); window.addEventListener('hashchange',jumpToAboutTab); ['wheel','touchstart','keydown'].forEach(function (type) { window.addEventListener(type,function () { jumpToken++; },{passive:true}); });
   }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
-  else start();
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded',start); else start();
 })();
 
 (function () {
