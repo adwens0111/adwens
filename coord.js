@@ -1,4 +1,4 @@
-/* ADWENS storefront widgets v3.24 (mobile discovery and lightweight homepage) */
+/* ADWENS storefront widgets v3.25 (mobile discovery and lightweight homepage) */
 (function () {
   'use strict';
   // Short customer vocabulary; labels can differ from the BASE search query.
@@ -193,7 +193,7 @@ html.adw-home-discovery #oc-plugin-popup{display:none!important}
       var value = input.value.trim().replace(/[\s　]+/g,'');
       if (/^(?:光沢|グロス|光沢・グロス|光沢ダウン|グロスダウン|シャイニー|シャイニーフードダウン|シャイニーフードダウンジャケット|OU00019)$/i.test(value)) {
         // BASE's search index currently omits OU00019; use the verified product URL.
-        form.action = '/items/163408942'; input.removeAttribute('name');
+        event.preventDefault(); window.location.assign('/items/163408942');
       }
     }, true);
     jumpToAboutTab();
