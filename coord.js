@@ -1,4 +1,4 @@
-/* ADWENS storefront discovery v3.31: in-page category filtering */
+/* ADWENS storefront discovery v3.32: in-page category filtering */
 (function () {
   'use strict';
 
@@ -33,6 +33,27 @@
   };
   var state = { data: null, main: '', sub: '', virtual: '', visible: 8, loading: false, ranking: null };
 
+  var discoveryKey = 'adw-discovery-state-v1';
+  var returnPosition = null;
+  try {
+    var savedDiscovery=JSON.parse(sessionStorage.getItem(discoveryKey)||'null');
+    if(savedDiscovery && Date.now()-savedDiscovery.at<7200000 && savedDiscovery.path===location.pathname){
+      state.main=String(savedDiscovery.main||'');state.sub=String(savedDiscovery.sub||'');state.virtual=String(savedDiscovery.virtual||'');state.visible=Math.min(500,Math.max(8,Number(savedDiscovery.visible)||8));
+      var nav=performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
+      if(nav && nav.type==='back_forward') returnPosition=savedDiscovery;
+    }
+  }catch(e){}
+  function saveDiscovery(){
+    if(!/^\/$/.test(location.pathname)||!state.data)return;
+    try{sessionStorage.setItem(discoveryKey,JSON.stringify({path:location.pathname,at:Date.now(),main:state.main,sub:state.sub,virtual:state.virtual,visible:state.visible,y:window.scrollY,rail:(document.querySelector('.adw-cat-photos')||{}).scrollLeft||0}));}catch(e){}
+  }
+  function restoreDiscoveryPosition(){
+    if(!returnPosition)return;
+    var saved=returnPosition;returnPosition=null;
+    var rail=document.querySelector('.adw-cat-photos');if(rail)rail.scrollLeft=saved.rail||0;
+    requestAnimationFrame(function(){window.scrollTo(0,Math.max(0,Number(saved.y)||0));});
+  }
+  window.addEventListener('pagehide',saveDiscovery);
   function updateKeywords() {
     document.querySelectorAll('.header-search-wrap > ul, .ksearch-form-wrap > ul').forEach(function (list) {
       if (!list.querySelector('a[href*="/search?q="]')) return;
@@ -90,7 +111,7 @@
     if (/^https:\/\//.test(String(item.image || ''))) image.src = item.image;
     image.alt = item.name || ''; image.loading = 'lazy'; image.decoding = 'async';
     link.appendChild(image); imageBox.appendChild(link);
-    var text = document.createElement('div'); text.className = 'text';
+    var text = document.createElement('a'); text.className = 'text'; text.href='/items/'+item.id; text.style.cssText='display:block;color:inherit;text-decoration:none';
     var name = document.createElement('div'); name.className = 'name'; name.textContent = item.name || '';
     var price = document.createElement('div'); price.className = 'price';
     var amount = document.createElement('span'); amount.className = 'default'; amount.textContent = yen(item.price);
@@ -126,6 +147,7 @@
       var empty = document.createElement('p'); empty.className = 'adw-catalog-empty'; empty.textContent = '該当する公開商品はありません。'; list.appendChild(empty);
     }
     renderCategoryState();
+    saveDiscovery();
   }
   function clearFilter() {
     state.main = ''; state.sub = ''; state.virtual = ''; state.visible = 8; renderProducts();
@@ -214,6 +236,7 @@
     layout.append(toolbar, list, more);
     buildCategories(document.querySelector('.catlist-wrap'));
     renderProducts();
+    restoreDiscoveryPosition();
   }
   function loadCatalog(area) {
     if (state.loading || state.data || area.dataset.adwCatalogFailed) return;
@@ -379,6 +402,12 @@ html.adw-home-discovery #oc-plugin-popup{display:none!important}
 
   /* おすすめコーデ */
   var itemRequests = {};
+  var coordCatalogRequest=null;
+  function readCoordCatalog(){
+    if(!coordCatalogRequest)coordCatalogRequest=fetch('https://adwens0111.github.io/adwens/search_catalog.json?v='+Math.floor(Date.now()/300000),{cache:'no-cache'}).then(function(r){if(!r.ok)throw Error('catalog');return r.json();}).then(function(data){if(!Array.isArray(data.items))throw Error('catalog');return data.items;});
+    return coordCatalogRequest;
+  }
+
   var coordSequence = 0;
   var coordStates = {};
 
@@ -421,7 +450,7 @@ html.adw-home-discovery #oc-plugin-popup{display:none!important}
       controller.abort();
     }, 12000);
 
-    var request = fetch('/items/' + id, {
+    var request = readCoordCatalog().then(function(rows){var found=rows.find(function(row){return String(row.id)===String(id);});if(!found||!found.name||!found.image)throw Error('missing');return {id:String(id),n:found.name,g:found.image,p:Number(found.price)||0};}).catch(function(){return fetch('/items/' + id, {
       credentials: 'same-origin',
       signal: controller.signal
     })
@@ -458,6 +487,8 @@ html.adw-home-discovery #oc-plugin-popup{display:none!important}
 
         return item;
       });
+
+    });
 
     itemRequests[id] = request.then(
       function (item) {
@@ -1604,7 +1635,7 @@ html.adw-home-discovery #oc-plugin-popup{display:none!important}
       figure.className = 'adw-gallery-slide';
       var image = document.createElement('img');
       image.src = row.imageUrl;
-      image.loading = i ? 'lazy' : 'eager';
+      image.loading = 'lazy';
       image.decoding = 'async';
       image.alt = '着こなし ' + (i + 1);
       image.width = 1080;
@@ -1744,6 +1775,8 @@ html.adw-home-discovery #oc-plugin-popup{display:none!important}
 
     try {
       hideBaseRelated();
+      document.querySelectorAll('.item-description img,.historyitems img,.newitems img,.adw-gallery img').forEach(function(image){if(image.loading!=='lazy')image.loading='lazy';if(image.decoding!=='async')image.decoding='async';});
+
       findMarkers(RE_LINE).forEach(renderLine);
       findMarkers(RE_COORD).forEach(renderCoord);
       findMarkers(RE_FIT).forEach(renderFitMarker);
@@ -1763,8 +1796,9 @@ html.adw-home-discovery #oc-plugin-popup{display:none!important}
     loadVideos();
     loadGallery();
 
+    var renderScheduled=false;
     var observer = new MutationObserver(function () {
-      run();
+      if(renderScheduled)return;renderScheduled=true;requestAnimationFrame(function(){renderScheduled=false;run();});
     });
 
     observer.observe(document.body, {
@@ -1832,5 +1866,12 @@ if(!rows.length)status.textContent=group.title+'に該当する公開商品は�
 main.appendChild(list);area.dataset.adwSearchReady='true';
 }).catch(function(){if(nativeList)nativeList.hidden=false;area.querySelectorAll('.item-list-more').forEach(function(el){el.hidden=false});status.textContent='商品一覧を読み込めませんでした。通常の検索結果を表示しています。'});
 }
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
+})();
+
+
+(function(){'use strict';
+function linkProductText(){document.querySelectorAll('.item-list-item').forEach(function(card){var imageLink=card.querySelector('.image a[href]');if(!imageLink)return;var href=imageLink.getAttribute('href');if(!/^\/items\/\d+/.test(href||''))return;card.querySelectorAll('.text .name,.text .price').forEach(function(node){if(node.closest('a')||node.querySelector('a'))return;var link=document.createElement('a');link.href=href;link.style.cssText='display:block;color:inherit;text-decoration:none';while(node.firstChild)link.appendChild(node.firstChild);node.appendChild(link);});});}
+function start(){linkProductText();var scheduled=false;var root=document.querySelector('.main');if(root)new MutationObserver(function(){if(scheduled)return;scheduled=true;requestAnimationFrame(function(){scheduled=false;linkProductText();});}).observe(root,{childList:true,subtree:true});}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 })();
