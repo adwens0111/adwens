@@ -1,4 +1,4 @@
-/* ADWENS storefront widgets v3.25 (mobile discovery and lightweight homepage) */
+/* ADWENS storefront widgets v3.26 (mobile discovery and lightweight homepage) */
 (function () {
   'use strict';
   // Short customer vocabulary; labels can differ from the BASE search query.
@@ -41,6 +41,14 @@
       style.id = 'adw-home-style';
       style.textContent = `
 html.adw-home-discovery #oc-plugin-popup{display:none!important}
+.adw-home-discovery .main>.mv-wrap{order:1!important}
+.adw-home-discovery .main>.ksearch-wrap{order:2!important}
+.adw-home-discovery .main>.catlist-wrap{order:3!important}
+.adw-home-discovery .main>.topinfo{order:4!important}
+.adw-home-discovery .main>.item-list-area{order:5!important}
+.adw-home-discovery .main>.historyitems{order:6!important}
+.adw-home-discovery .main>.ranking{order:7!important}
+.adw-home-discovery .main>.bannerlist{order:8!important}
 .adw-home-discovery .ksearch-wrap,.adw-home-discovery .catlist-wrap,.adw-home-discovery .topinfo{background:#090909!important;color:#f4f4f4!important;opacity:1!important;transform:none!important;max-width:100%;box-sizing:border-box}
 .adw-home-discovery .ksearch-wrap{margin:0!important;padding:20px 18px 12px!important}
 .adw-home-discovery .ksearch,.adw-home-discovery .ksearch-form-wrap{width:100%!important;max-width:960px!important;margin:0 auto!important;padding:0!important}
