@@ -1,17 +1,17 @@
-/* ADWENS storefront widgets v3.23 (mobile discovery and lightweight homepage) */
+/* ADWENS storefront widgets v3.24 (mobile discovery and lightweight homepage) */
 (function () {
   'use strict';
   // Short customer vocabulary; labels can differ from the BASE search query.
   var keywords = [
     {label:'スキニー',query:'スキニー'}, {label:'カーゴパンツ',query:'カーゴパンツ'},
-    {label:'ダウン',query:'ダウン'}, {label:'光沢・グロス',query:'シャイニー'},
+    {label:'ダウン',query:'ダウン'}, {label:'光沢・グロス',query:'シャイニー',href:'/items/163408942'},
     {label:'クロコ',query:'クロコ'}, {label:'チェックシャツ',query:'チェックシャツ'}
   ];
   function updateKeywords() {
     document.querySelectorAll('.header-search-wrap > ul, .ksearch-form-wrap > ul').forEach(function (list) {
       var links = Array.from(list.querySelectorAll('li > a'));
       if (links.length === keywords.length && links.every(function (a, index) {
-        return a.textContent === keywords[index].label && a.getAttribute('href') === '/search?q=' + encodeURIComponent(keywords[index].query);
+        return a.textContent === keywords[index].label && a.getAttribute('href') === (keywords[index].href || '/search?q=' + encodeURIComponent(keywords[index].query));
       })) return;
       if (!list.querySelector('a[href*="/search?q="]')) return;
       var fragment = document.createDocumentFragment();
@@ -19,7 +19,7 @@
         var li = document.createElement('li');
         var a = document.createElement('a');
         a.textContent = word.label;
-        a.href = '/search?q=' + encodeURIComponent(word.query);
+        a.href = word.href || '/search?q=' + encodeURIComponent(word.query);
         li.appendChild(a);
         fragment.appendChild(li);
       });
@@ -191,7 +191,10 @@ html.adw-home-discovery #oc-plugin-popup{display:none!important}
       var input = form.querySelector('input[name="q"]');
       if (!input || !/\/search\/?$/.test(new URL(form.action,location.href).pathname)) return;
       var value = input.value.trim().replace(/[\s　]+/g,'');
-      if (/^(?:光沢|グロス|光沢・グロス|光沢ダウン|グロスダウン|シャイニーフードダウン)$/.test(value)) input.value = 'シャイニー';
+      if (/^(?:光沢|グロス|光沢・グロス|光沢ダウン|グロスダウン|シャイニー|シャイニーフードダウン|シャイニーフードダウンジャケット|OU00019)$/i.test(value)) {
+        // BASE's search index currently omits OU00019; use the verified product URL.
+        form.action = '/items/163408942'; input.removeAttribute('name');
+      }
     }, true);
     jumpToAboutTab();
     window.addEventListener('load', jumpToAboutTab, {once:true});
