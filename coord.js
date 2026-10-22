@@ -1,15 +1,20 @@
-/* ADWENS storefront widgets v3.20 (popular search, FAQ deep links, P00007 shipping) */
+/* ADWENS storefront widgets v3.21 (retain popular search after theme initialization) */
 (function () {
   'use strict';
-  // BASE販売数・GA4閲覧数 2026/09/23–10/20、直近7日でも主力4型を確認。
+  // BASE商品別データ・直近30日の閲覧数上位8型＋指定のOU00019（2026/10/22確認）。
   var keywords = [
     'スキニーカーゴパンツ', 'マルチラインダウン',
-    'グラデーションチェックシャツ', 'ハイカットブーツ',
-    'クロコレザーダウン', 'ワイドカーゴパンツ', 'ダウン', 'スニーカー'
+    'ハイカットブーツ', 'グラデーションチェックシャツ',
+    'スリムカーゴパンツ', 'スリムフィットパンツ',
+    'ワイドカーゴパンツ', 'クロコレザーダウン',
+    'シャイニーフードダウンジャケット'
   ];
   function updateKeywords() {
     document.querySelectorAll('.header-search-wrap > ul, .ksearch-form-wrap > ul').forEach(function (list) {
-      if (list.getAttribute('data-adw-popular-search') === '20261021') return;
+      var links = Array.from(list.querySelectorAll('li > a'));
+      if (links.length === keywords.length && links.every(function (a, index) {
+        return a.textContent === keywords[index] && a.getAttribute('href') === '/search?q=' + encodeURIComponent(keywords[index]);
+      })) return;
       if (!list.querySelector('a[href*="/search?q="]')) return;
       var fragment = document.createDocumentFragment();
       keywords.forEach(function (word) {
@@ -44,6 +49,16 @@
   }
   function start() {
     updateKeywords();
+    // テーマがDOM準備後にキーワード欄を生成し直す場合にも反映する。
+    var keywordScheduled = false;
+    new MutationObserver(function () {
+      if (keywordScheduled) return;
+      keywordScheduled = true;
+      requestAnimationFrame(function () {
+        keywordScheduled = false;
+        updateKeywords();
+      });
+    }).observe(document.body, {childList:true, subtree:true});
     jumpToAboutTab();
     window.addEventListener('load', jumpToAboutTab, {once:true});
     window.addEventListener('hashchange', jumpToAboutTab);
