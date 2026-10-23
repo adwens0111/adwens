@@ -521,5 +521,33 @@
     ],
     "N": "",
     "I": "https://base-ec2.akamaized.net/images/item/origin/a0b8e4862d293013bcb809492170f523.jpg"
+  },
+  "163923664": {
+    "H": [
+      160,
+      165,
+      170,
+      180,
+      185
+    ],
+    "W": [
+      45,
+      50,
+      55,
+      60,
+      65,
+      70,
+      75
+    ],
+    "R": "H",
+    "G": [
+      "SSMMLXX",
+      "MMMMLXX",
+      "LLLLLXX",
+      "XXXXXXX",
+      "XXXXXXX"
+    ],
+    "N": "",
+    "I": "https://base-ec2.akamaized.net/images/item/origin/359a017841721d01e048609716a2faa6.jpg"
   }
 }
