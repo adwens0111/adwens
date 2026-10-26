@@ -24,7 +24,7 @@
   ];
   var virtualTests = {
     boots: function (name) { return /ブーツ/.test(name); },
-    pants: function (name) { return /パンツ|デニム|トラウザー|ショーツ/.test(name); },
+    pants: function (name) { return /パンツ|トラウザー|ショーツ/.test(name) || (/デニム/.test(name) && !/ジャケット|シャツ|コーデ|セットアップ/.test(name)); },
     skinny: function (name) { return /スキニー|スリム/.test(name) && /パンツ|デニム|トラウザー/.test(name); },
     wide: function (name) { return /ワイド|バギー|ルーズ/.test(name) && /パンツ|デニム|トラウザー/.test(name); },
     cargo: function (name) { return /カーゴ/.test(name) && /パンツ|デニム|トラウザー/.test(name); },
@@ -1832,7 +1832,7 @@ var query=(new URLSearchParams(location.search).get('q')||'').trim();
 var q=query.replace(/[\s　・]/g,'').toLowerCase();
 var groups=[
 {key:'boots',re:/^(ブーツ|ハイカットブーツ)$/,title:'ブーツ',test:function(n){return /ブーツ/.test(n)}},
-{key:'pants',re:/^(パンツ)$/,title:'パンツ',test:function(n){return /パンツ|デニム|トラウザー|ショーツ/.test(n)}},
+{key:'pants',re:/^(パンツ)$/,title:'パンツ',test:function(n){return /パンツ|トラウザー|ショーツ/.test(n)||(/デニム/.test(n)&&!/ジャケット|シャツ|コーデ|セットアップ/.test(n))}},
 {key:'skinny',re:/^(スキニー|スキニーパンツ|スキニーカーゴ|スキニーカーゴパンツ|スリム|スリムパンツ|細身|細身パンツ)$/,title:'スキニー・スリムパンツ',test:function(n){return /スキニー|スリム/.test(n)&&/パンツ|デニム|トラウザー/.test(n)}},
 {key:'cargo',re:/^(カーゴ|カーゴパンツ)$/,title:'カーゴパンツ',test:function(n){return /カーゴ/.test(n)&&/パンツ|デニム|トラウザー/.test(n)}},
 {key:'down',re:/^(ダウン|ダウンジャケット|ダウンベスト)$/,title:'ダウン',test:function(n){return /ダウン/.test(n)}},
