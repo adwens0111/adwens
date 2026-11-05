@@ -1293,6 +1293,12 @@ html.adw-home-discovery #oc-plugin-popup{display:none!important}
       '.adw-video-controls button{padding:8px 14px;background:transparent;' +
       'color:inherit;border:1px solid #888;border-radius:4px}' +
       '.adw-video-controls span{font-size:12px}' +
+      '.adw-player-stage{position:relative;aspect-ratio:9/16;background:#101010;overflow:hidden}' +
+      '.adw-player-stage>img,.adw-player-stage>video,.adw-player-stage>iframe{position:absolute;inset:0;width:100%!important;height:100%!important;aspect-ratio:auto!important;object-fit:contain}' +
+      '.adw-player-stage>[hidden],.adw-player-actions>[hidden]{display:none!important}' +
+      '.adw-player-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:8px 0}' +
+      '.adw-player-actions button{font:inherit;font-size:12px;color:inherit;background:transparent;border:1px solid #777;border-radius:4px;padding:8px 12px;min-height:40px;cursor:pointer}' +
+      '.adw-player-status{font-size:11px;line-height:1.5}' +
       '.adw-cart-dock{display:none}' +
       '@media(max-width:767px){' +
       '.adw-cart-dock{position:fixed;left:0;right:0;bottom:0;z-index:9000;' +
@@ -1306,6 +1312,110 @@ html.adw-home-discovery #oc-plugin-popup{display:none!important}
       '#purchase_form{scroll-margin-top:90px}}';
 
     document.head.appendChild(style);
+  }
+
+  function createVideoPlayer(row, key, stopOthers) {
+    var root = document.createElement('div');
+    root.className = 'adw-player';
+    var stage = document.createElement('div');
+    stage.className = 'adw-player-stage';
+    var poster = document.createElement('img');
+    var mainImage = document.querySelector('meta[property="og:image"]');
+    poster.src = /^https:\/\//.test(row.poster || '') ? row.poster :
+      (key.indexOf('yt:') === 0 ? 'https://i.ytimg.com/vi/' + key.slice(3) + '/hqdefault.jpg' : (mainImage ? mainImage.content : ''));
+    poster.alt = '着用動画のプレビュー';
+    poster.loading = 'lazy';
+    poster.decoding = 'async';
+    stage.appendChild(poster);
+    var actions = document.createElement('div');
+    actions.className = 'adw-player-actions';
+    var toggle = document.createElement('button');
+    toggle.type = 'button';
+    toggle.textContent = '▶ 再生';
+    toggle.setAttribute('aria-label', '着用動画を再生');
+    var mute = document.createElement('button');
+    mute.type = 'button';
+    mute.textContent = '音声ON';
+    mute.hidden = true;
+    var status = document.createElement('span');
+    status.setAttribute('role', 'status');
+    status.className = 'adw-player-status';
+    actions.append(toggle, mute, status);
+    root.append(stage, actions);
+    var media = null;
+    var direct = /^https:\/\/.+\.(mp4|webm)(\?.*)?$/i.test(row.url);
+    function label(playing) {
+      var text = playing ? '一時停止' : '▶ 再生';
+      if (toggle.textContent !== text) toggle.textContent = text;
+      toggle.setAttribute('aria-label', playing ? '着用動画を一時停止' : '着用動画を再生');
+    }
+    function failed() {
+      toggle.disabled = false;
+      status.textContent = '読み込めませんでした。再試行できます。';
+      toggle.textContent = '再試行';
+      toggle.setAttribute('aria-label', '着用動画を再試行');
+      root.dataset.failed = 'true';
+    }
+    root.adwPause = function () {
+      if (!media) return;
+      if (direct) media.pause();
+      else {
+        media.remove();
+        media = null;
+        poster.hidden = false;
+        label(false);
+      }
+    };
+    toggle.onclick = function () {
+      if (media && direct && !media.paused) { media.pause(); return; }
+      if (media && !direct) { root.adwPause(); return; }
+      stopOthers(root);
+      status.textContent = '';
+      if (root.dataset.failed === 'true' && media) {
+        media.remove();
+        media = null;
+      }
+      delete root.dataset.failed;
+      if (!media) {
+        media = document.createElement(direct ? 'video' : 'iframe');
+        if (direct) {
+          media.preload = 'none';
+          media.playsInline = true;
+          media.controls = false;
+          media.addEventListener('play', function () { poster.hidden = true; label(true); });
+          media.addEventListener('pause', function () { label(false); });
+          media.addEventListener('ended', function () { label(false); });
+          media.addEventListener('error', failed);
+          media.addEventListener('loadedmetadata', function () {
+            if (media.videoWidth && media.videoHeight) stage.style.aspectRatio = media.videoWidth + '/' + media.videoHeight;
+          });
+          mute.hidden = false;
+          mute.onclick = function () {
+            media.muted = !media.muted;
+            mute.textContent = media.muted ? '音声OFF' : '音声ON';
+            mute.setAttribute('aria-pressed', String(media.muted));
+          };
+        } else {
+          media.title = '着用動画';
+          media.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+          media.allowFullscreen = true;
+          media.referrerPolicy = 'strict-origin-when-cross-origin';
+          media.addEventListener('error', failed);
+        }
+        stage.appendChild(media);
+        media.src = key.indexOf('yt:') === 0
+          ? 'https://www.youtube.com/embed/' + key.slice(3) + '?rel=0&enablejsapi=1'
+          : row.url;
+      }
+      if (direct) {
+        media.play().catch(failed);
+      } else {
+        poster.hidden = true;
+        toggle.textContent = '閉じる';
+        toggle.setAttribute('aria-label', '着用動画を閉じる');
+      }
+    };
+    return root;
   }
 
   function renderVideos() {
@@ -1379,6 +1489,25 @@ html.adw-home-discovery #oc-plugin-popup{display:none!important}
 
     var rail = section.querySelector('.adw-video-rail');
 
+    function stopOtherVideos(active) {
+      rail.querySelectorAll('.adw-player').forEach(function (player) {
+        if (player !== active && player.adwPause) player.adwPause();
+      });
+    }
+
+    if (!rail.dataset.pauseReady) {
+      rail.dataset.pauseReady = 'true';
+      rail.addEventListener('scroll', function () {
+        var nearest = Array.from(rail.children).reduce(function (best, card) {
+          return !best || Math.abs(card.offsetLeft - rail.children[0].offsetLeft - rail.scrollLeft) <
+            Math.abs(best.offsetLeft - rail.children[0].offsetLeft - rail.scrollLeft) ? card : best;
+        }, null);
+        rail.querySelectorAll('.adw-player').forEach(function (player) {
+          if (nearest && !nearest.contains(player) && player.adwPause) player.adwPause();
+        });
+      }, { passive: true });
+    }
+
     function videoCard(key, element) {
       var figure = document.createElement('figure');
       figure.className = 'adw-video-card';
@@ -1399,8 +1528,10 @@ html.adw-home-discovery #oc-plugin-popup{display:none!important}
       });
 
       if (!found) {
-        element.loading = 'lazy';
-        videoCard(key, element);
+        var url = element.src;
+        element.removeAttribute('src');
+        element.remove();
+        videoCard(key, createVideoPlayer({ url: url }, key, stopOtherVideos));
       } else {
         old.hidden = true;
       }
@@ -1417,40 +1548,11 @@ html.adw-home-discovery #oc-plugin-popup{display:none!important}
       });
 
       if (!found) {
-        var element;
-
-        if (
-          key.indexOf('yt:') === 0 &&
-          /^yt:[\w-]{11}$/.test(key)
-        ) {
-          element = document.createElement('iframe');
-          element.src =
-            'https://www.youtube.com/embed/' + key.slice(3) + '?rel=0';
-          element.title = '着用動画';
-          element.loading = 'lazy';
-          element.allow = 'encrypted-media; picture-in-picture';
-          element.allowFullscreen = true;
-          element.referrerPolicy = 'strict-origin-when-cross-origin';
-        } else if (
-          /^https:\/\/drive\.google\.com\/file\/d\/[A-Za-z0-9_-]{20,}\/preview(?:\?resourcekey=[A-Za-z0-9_-]+)?$/.test(key)
-        ) {
-          element = document.createElement('iframe');
-          element.src = row.url;
-          element.title = '着用動画';
-          element.loading = 'lazy';
-          element.allow = 'fullscreen';
-          element.allowFullscreen = true;
-        } else if (
-          /^https:\/\/.+\.(mp4|webm)(\?.*)?$/i.test(key)
-        ) {
-          element = document.createElement('video');
-          element.src = row.url;
-          element.controls = true;
-          element.playsInline = true;
-          element.preload = 'none';
-        } else {
-          return;
-        }
+        var supported = /^yt:[\w-]{11}$/.test(key) ||
+          /^https:\/\/drive\.google\.com\/file\/d\/[A-Za-z0-9_-]{20,}\/preview(?:\?resourcekey=[A-Za-z0-9_-]+)?$/.test(key) ||
+          /^https:\/\/.+\.(mp4|webm)(\?.*)?$/i.test(key);
+        if (!supported) return;
+        var element = createVideoPlayer(row, key, stopOtherVideos);
 
         found = videoCard(key, element);
       }
