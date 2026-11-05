@@ -1405,6 +1405,7 @@ html.adw-home-discovery #oc-plugin-popup{display:none!important}
         media = document.createElement(direct ? 'video' : 'iframe');
         if (direct) {
           media.preload = 'none';
+          if (/^https:\/\/res\.cloudinary\.com\//.test(row.url)) media.crossOrigin = 'anonymous';
           media.playsInline = true;
           media.controls = false;
           media.addEventListener('play', function () { poster.hidden = true; label(true); });
