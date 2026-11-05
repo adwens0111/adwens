@@ -566,7 +566,7 @@ html.adw-home-discovery #oc-plugin-popup{display:none!important}
       ';margin:2px 0 0;">' + yen(item.p) + '</p></a>';
   }
 
-  function renderCoord(node) {
+  function renderCoord(node, isStylingSuggestion) {
     var match = node.nodeValue.match(RE_COORD);
     if (!match) return;
 
@@ -574,7 +574,9 @@ html.adw-home-discovery #oc-plugin-popup{display:none!important}
       return value.trim();
     }).filter(Boolean).slice(0, 2);
 
-    var heading = '\u25a0 このアイテムと一緒に見られている商品';
+    var heading = isStylingSuggestion === true
+      ? '\u25a0 このアイテムに合わせるなら'
+      : '\u25a0 このアイテムと一緒に見られている商品';
 
     var options = match[3] || '';
     var cropMatch = options.match(/(?:^|\|)C=([^|]*)/);
@@ -1760,6 +1762,33 @@ html.adw-home-discovery #oc-plugin-popup{display:none!important}
     });
   }
 
+  var stylingSuggestions = {
+    '99510835': ['163923664', '146689159'],
+    '163093353': ['163408942', '146689159'],
+    '136825878': ['88671936', '146689159']
+  };
+
+  function loadStylingSuggestion() {
+    var ids = stylingSuggestions[ITEM_ID];
+    if (!ids || document.querySelector('[data-adwens-coord]') || findMarkers(RE_COORD).length) return;
+
+    readCoordCatalog().then(function (items) {
+      if (!ids.every(function (id) {
+        return items.some(function (item) {
+          return String(item.id) === id && Number(item.stock) > 0;
+        });
+      })) return;
+
+      if (document.querySelector('[data-adwens-coord], [data-adw-gallery]') || findMarkers(RE_COORD).length) return;
+      var description = document.querySelector('.item-description > .text.markdown');
+      if (!description) return;
+
+      var marker = document.createTextNode('[COORD:' + ids.join(',') + ']');
+      description.appendChild(marker);
+      renderCoord(marker, true);
+    }).catch(function () {});
+  }
+
   function hideBaseRelated() {
     if (document.getElementById('adw-base-related-style')) return;
     var style = document.createElement('style');
@@ -1796,6 +1825,7 @@ html.adw-home-discovery #oc-plugin-popup{display:none!important}
     loadVerifiedFit();
     loadVideos();
     loadGallery();
+    loadStylingSuggestion();
 
     var renderScheduled=false;
     var observer = new MutationObserver(function () {
