@@ -1296,11 +1296,15 @@ html.adw-home-discovery #oc-plugin-popup{display:none!important}
       '.adw-player-stage{position:relative;aspect-ratio:9/16;background:#101010;overflow:hidden}' +
       '.adw-player-stage>img,.adw-player-stage>video,.adw-player-stage>iframe{position:absolute;inset:0;width:100%!important;height:100%!important;aspect-ratio:auto!important;object-fit:contain}' +
       '.adw-player-stage>[hidden],.adw-player-actions>[hidden]{display:none!important}' +
+      '.adw-player-start{position:absolute;inset:0;z-index:1;display:flex;align-items:center;justify-content:center;width:100%;height:100%;min-width:44px;min-height:44px;padding:0;border:0;background:transparent;color:white;cursor:pointer}' +
+      '.adw-player-start span{display:flex;align-items:center;justify-content:center;width:60px;height:60px;border-radius:50%;background:rgba(0,0,0,.48);font-size:24px;line-height:1;padding-left:4px;box-sizing:border-box}' +
+      '.adw-player-actions[hidden]{display:none!important}' +
       '.adw-player-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:8px 0}' +
-      '.adw-player-actions button{font:inherit;font-size:12px;color:inherit;background:transparent;border:1px solid #777;border-radius:4px;padding:8px 12px;min-height:40px;cursor:pointer}' +
+      '.adw-player-actions button{font:inherit;font-size:12px;color:inherit;background:transparent;border:1px solid #777;border-radius:4px;padding:8px 12px;min-height:44px;cursor:pointer}' +
       '.adw-player-status{font-size:11px;line-height:1.5}' +
       '.adw-cart-dock{display:none}' +
       '@media(max-width:767px){' +
+      '.adw-video-rail{width:65%;max-width:100%;margin-right:auto}' +
       '.adw-cart-dock{position:fixed;left:0;right:0;bottom:0;z-index:9000;' +
       'padding:8px 16px calc(8px + env(safe-area-inset-bottom));' +
       'background:#111;border-top:1px solid #555;box-shadow:0 -3px 12px #0005}' +
@@ -1326,13 +1330,28 @@ html.adw-home-discovery #oc-plugin-popup{display:none!important}
     poster.alt = '着用動画のプレビュー';
     poster.loading = 'lazy';
     poster.decoding = 'async';
+    poster.addEventListener('load', function () {
+      if (poster.naturalWidth && poster.naturalHeight) {
+        stage.style.aspectRatio = poster.naturalWidth + '/' + poster.naturalHeight;
+      }
+    });
     stage.appendChild(poster);
+    var overlay = document.createElement('button');
+    overlay.type = 'button';
+    overlay.className = 'adw-player-start';
+    overlay.setAttribute('aria-label', '着用動画を再生');
+    var playIcon = document.createElement('span');
+    playIcon.textContent = '▶';
+    playIcon.setAttribute('aria-hidden', 'true');
+    overlay.appendChild(playIcon);
+    stage.appendChild(overlay);
     var actions = document.createElement('div');
     actions.className = 'adw-player-actions';
+    actions.hidden = true;
     var toggle = document.createElement('button');
     toggle.type = 'button';
     toggle.textContent = '▶ 再生';
-    toggle.setAttribute('aria-label', '着用動画を再生');
+    toggle.setAttribute('aria-label', '着用動画の再生を再開');
     var mute = document.createElement('button');
     mute.type = 'button';
     mute.textContent = '音声ON';
@@ -1351,6 +1370,8 @@ html.adw-home-discovery #oc-plugin-popup{display:none!important}
     }
     function failed() {
       toggle.disabled = false;
+      actions.hidden = false;
+      overlay.hidden = false;
       status.textContent = '読み込めませんでした。再試行できます。';
       toggle.textContent = '再試行';
       toggle.setAttribute('aria-label', '着用動画を再試行');
@@ -1363,6 +1384,8 @@ html.adw-home-discovery #oc-plugin-popup{display:none!important}
         media.remove();
         media = null;
         poster.hidden = false;
+        overlay.hidden = false;
+        actions.hidden = true;
         label(false);
       }
     };
@@ -1370,6 +1393,8 @@ html.adw-home-discovery #oc-plugin-popup{display:none!important}
       if (media && direct && !media.paused) { media.pause(); return; }
       if (media && !direct) { root.adwPause(); return; }
       stopOthers(root);
+      overlay.hidden = true;
+      actions.hidden = false;
       status.textContent = '';
       if (root.dataset.failed === 'true' && media) {
         media.remove();
@@ -1415,6 +1440,7 @@ html.adw-home-discovery #oc-plugin-popup{display:none!important}
         toggle.setAttribute('aria-label', '着用動画を閉じる');
       }
     };
+    overlay.onclick = function () { toggle.onclick(); };
     return root;
   }
 
