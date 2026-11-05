@@ -574,8 +574,7 @@ html.adw-home-discovery #oc-plugin-popup{display:none!important}
       return value.trim();
     }).filter(Boolean).slice(0, 2);
 
-    var heading = (match[2] || '').trim() ||
-      '\u25a0 このアイテムに合わせるなら';
+    var heading = '\u25a0 このアイテムと一緒に見られている商品';
 
     var options = match[3] || '';
     var cropMatch = options.match(/(?:^|\|)C=([^|]*)/);
