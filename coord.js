@@ -1468,20 +1468,6 @@ html.adw-home-discovery #oc-plugin-popup{display:none!important}
         caption.dataset.caption = text;
       }
 
-      if (
-        row.url.indexOf('https://drive.google.com/') === 0 &&
-        !found.querySelector('.adw-video-fallback')
-      ) {
-        var link = document.createElement('a');
-        link.className = 'adw-video-fallback';
-        link.href = row.url.replace('/preview', '/view');
-        link.target = '_blank';
-        link.rel = 'noopener';
-        link.textContent = '再生できない場合はこちら';
-        link.style.cssText =
-          'display:block;font-size:12px;margin-top:6px';
-        found.appendChild(link);
-      }
     });
 
     var multiple = rail.children.length > 1;
