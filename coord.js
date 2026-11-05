@@ -574,7 +574,7 @@ html.adw-home-discovery #oc-plugin-popup{display:none!important}
       return value.trim();
     }).filter(Boolean).slice(0, 2);
 
-    var heading = isStylingSuggestion === true
+    var heading = isStylingSuggestion === true && ITEM_ID !== '163093353'
       ? '\u25a0 このアイテムに合わせるなら'
       : '\u25a0 このアイテムと一緒に見られている商品';
 
