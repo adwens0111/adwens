@@ -691,6 +691,7 @@ html.adw-home-discovery #oc-plugin-popup{display:none!important}
         '.adw-buy-info{margin:12px 0;font-size:13px;line-height:1.65;color:inherit}' +
         '.adw-shipping{border:1px solid #c9a227;padding:10px 12px;border-radius:4px}' +
         '.adw-shipping strong{display:block;color:#d8b654;font-size:12px}' +
+        'body .adw-shipping[data-adw-shipping-card]{border-color:#b7a27b!important}body .adw-shipping[data-adw-shipping-card] strong{font-weight:700!important}body .adw-shipping .adw-shipping-days{color:#b7a27b!important;font-weight:700!important}' +
         '.adw-shipping p{margin:4px 0 0!important;font-size:12px!important;line-height:1.7!important}' +
         '.adw-model{padding:8px 10px;background:rgba(128,128,128,.12);border-left:3px solid #c9a227;font-size:12px}' +
         '.adw-line{display:block!important;margin:10px 0 14px!important;padding:9px 12px!important;border:1px solid #06c755!important;border-radius:4px!important;background:transparent!important;color:inherit!important;text-decoration:none!important;line-height:1.6!important;font-size:12px!important}' +
@@ -753,6 +754,18 @@ html.adw-home-discovery #oc-plugin-popup{display:none!important}
           guide.appendChild(p);
         });
         guide.setAttribute('data-adw-p00007-shipping', '');
+      }
+    }
+    if (shipping) {
+      var shippingStrong = shipping.querySelector('strong');
+      if (shippingStrong && !shippingStrong.querySelector('.adw-shipping-days')) {
+        var shippingText = shippingStrong.textContent;
+        var daysMatch = shippingText.match(/[^｜|]*発送[^｜|]*$/);
+        if (daysMatch) {
+          shippingStrong.textContent = shippingText.slice(0, daysMatch.index);
+          var daysSpan = document.createElement('span'); daysSpan.className = 'adw-shipping-days';
+          daysSpan.textContent = daysMatch[0]; shippingStrong.appendChild(daysSpan);
+        }
       }
     }
     var model = host.querySelector('[data-adw-model-strip]');
@@ -1288,7 +1301,7 @@ html.adw-home-discovery #oc-plugin-popup{display:none!important}
       'aspect-ratio:4/5;object-fit:contain;border:0;background:#101010}' +
       '.adw-video-card figcaption{font-size:13px;line-height:1.6;' +
       'margin-top:8px;white-space:normal}' +
-      '.adw-video-controls{display:flex;align-items:center;gap:12px;margin:8px 0}' +
+      '.adw-video-controls{display:none!important}.adw-video-pagination{display:flex;justify-content:center;align-items:center;gap:2px;margin:5px 0 0}.adw-video-pagination[hidden]{display:none!important}.adw-video-dot{display:flex;align-items:center;justify-content:center;width:28px;height:28px;padding:0;border:0;background:transparent;cursor:pointer}.adw-video-dot:after{content:"";width:5px;height:5px;border-radius:50%;background:#555}.adw-video-dot[aria-current="true"]:after{background:#b7a27b}' +
       '.adw-video-controls[hidden]{display:none!important}' +
       '.adw-video-controls button{padding:8px 14px;background:transparent;' +
       'color:inherit;border:1px solid #888;border-radius:4px}' +
@@ -1304,7 +1317,7 @@ html.adw-home-discovery #oc-plugin-popup{display:none!important}
       '.adw-player-status{font-size:11px;line-height:1.5}' +
       '.adw-cart-dock{display:none}' +
       '@media(max-width:767px){' +
-      '.adw-video-rail{width:65%;max-width:100%;margin-right:auto}' +
+      '.adw-video-rail{width:100%;max-width:100%;margin:0;gap:8px;padding-bottom:0;scrollbar-width:none}.adw-video-rail::-webkit-scrollbar{display:none}.adw-video-card{flex:0 0 calc((100% - 8px)/2);max-width:none}.adw-video-rail[data-many="true"] .adw-video-card{flex-basis:44%}.adw-video-card:only-child{flex-basis:48%;margin-inline:auto}.adw-video-card figcaption{font-size:11px;line-height:1.5;margin-top:6px}.adw-player-start span{width:44px;height:44px;font-size:20px}' +
       '.adw-cart-dock{position:fixed;left:0;right:0;bottom:0;z-index:9000;' +
       'padding:8px 16px calc(8px + env(safe-area-inset-bottom));' +
       'background:#111;border-top:1px solid #555;box-shadow:0 -3px 12px #0005}' +
@@ -1486,7 +1499,7 @@ html.adw-home-discovery #oc-plugin-popup{display:none!important}
       next.textContent = '→';
       previous.setAttribute('aria-label', '前の動画');
       next.setAttribute('aria-label', '次の動画');
-      note.textContent = '横にスライドして見る';
+      note.textContent = '';
 
       controls.append(previous, note, next);
       section.appendChild(controls);
@@ -1599,8 +1612,28 @@ html.adw-home-discovery #oc-plugin-popup{display:none!important}
 
     });
 
-    var multiple = rail.children.length > 1;
-    section.querySelector('.adw-video-controls').hidden = !multiple;
+    rail.dataset.many = String(rail.children.length > 2);
+    section.querySelector('.adw-video-controls').hidden = true;
+    var pager = section.querySelector('.adw-video-pagination');
+    if (!pager) { pager = document.createElement('div'); pager.className = 'adw-video-pagination'; section.appendChild(pager); }
+    pager.hidden = rail.children.length < 3;
+    if (pager.childElementCount !== rail.childElementCount) {
+      pager.replaceChildren();
+      Array.from(rail.children).forEach(function(card, index) {
+        var dot = document.createElement('button'); dot.type='button'; dot.className='adw-video-dot';
+        dot.setAttribute('aria-label', (index+1)+'本目の動画を表示');
+        dot.onclick=function(){rail.scrollTo({left:card.offsetLeft-rail.children[0].offsetLeft,behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});};
+        pager.appendChild(dot);
+      });
+    }
+    function updateVideoDots(){
+      var first=rail.children[0]; if(!first)return;
+      var index=0,distance=Infinity;
+      Array.from(rail.children).forEach(function(card,i){var d=Math.abs(card.offsetLeft-first.offsetLeft-rail.scrollLeft);if(d<distance){distance=d;index=i;}});
+      Array.from(pager.children).forEach(function(dot,i){var active=String(i===index);if(dot.getAttribute('aria-current')!==active)dot.setAttribute('aria-current',active);});
+    }
+    if(!rail.dataset.dotsReady){rail.dataset.dotsReady='true';rail.addEventListener('scroll',updateVideoDots,{passive:true});}
+    updateVideoDots();
   }
 
   function loadVideos() {
