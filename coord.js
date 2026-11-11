@@ -223,6 +223,20 @@
   }
   function installCatalog(area, data) {
     if (!data || !Array.isArray(data.items) || !Array.isArray(data.categories)) throw new Error('catalog');
+    var nativeRows=[],seen=Object.create(null);
+    area.querySelectorAll('.item-list:not(.adw-home-catalog) .item-list-item').forEach(function(card){
+      var link=card.querySelector('a[href*="/items/"]'),name=card.querySelector('.name'),image=card.querySelector('img'),price=card.querySelector('.price .default');
+      var match=link&&link.getAttribute('href').match(/\/items\/(\d+)/);
+      if(!match||!name||seen[match[1]])return;
+      var id=match[1],existing=data.items.find(function(row){return String(row.id)===id;});
+      var row=Object.assign({},existing||{id:id,categories:[]});
+      row.name=name.textContent.trim();if(image)row.image=image.currentSrc||image.src;
+      if(price){var amount=Number(price.textContent.replace(/[^0-9]/g,''));if(Number.isFinite(amount)&&amount>0)row.price=amount;}
+      if(/SOLD\s*OUT|売り切れ/i.test(card.textContent))row.stock=0;
+      else if(existing&&Number(existing.stock)===0)delete row.stock;
+      nativeRows.push(row);seen[id]=true;
+    });
+    if(nativeRows.length)data=Object.assign({},data,{items:nativeRows.concat(data.items.filter(function(row){return !seen[String(row.id)];}))});
     state.data = data;
     var nativeList = area.querySelector('.item-list:not(.adw-home-catalog)'); if (nativeList) nativeList.hidden = true;
     area.querySelectorAll('.item-list-more').forEach(function (node) { node.hidden = true; });
