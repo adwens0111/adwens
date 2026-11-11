@@ -962,11 +962,63 @@ html.adw-home-discovery #oc-plugin-popup{display:none!important}
     return note;
   }
 
+  /* Shared size-to-purchase UI. Recommendation calculation remains unchanged. */
+  function sizeToken(label, size) {
+    function normal(s) { return String(s).normalize('NFKC').toUpperCase().replace(/XXXL/g,'3XL').replace(/XXL/g,'2XL').replace(/サイズ/g,'').trim(); }
+    var target=normal(size), tokens=normal(label).split(/[\s\/／|｜,、:：()（）\[\]・]+/);
+    return tokens.indexOf(target)>=0;
+  }
+  function sizeOptionAvailable(option) {
+    var stock=option.getAttribute('data-stock');
+    return !option.disabled && stock!==null && stock.trim()!=='' && Number.isFinite(Number(stock)) && Number(stock)>0;
+  }
+  function updateSizePurchase() {
+    var root=document.querySelector('[data-adw-size-purchase-root]'),form=document.querySelector('#purchase_form');
+    if(!form)return;
+    var select=form.querySelector('#valiationSelect');
+    function text(node,value){if(node.textContent!==value)node.textContent=value;}
+    if(!document.getElementById('adw-size-purchase-style')){
+      var css=document.createElement('style');css.id='adw-size-purchase-style';css.textContent='[data-adw-size-action]{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px}[data-adw-size-action] button{background:#c6b187!important;color:#111!important;border:0!important;border-radius:4px!important;min-height:44px!important;padding:9px 12px!important;font-weight:700!important;font-size:13px!important}[data-adw-size-action] button:disabled{opacity:.5;cursor:not-allowed}.adw-size-status{font-size:12px;line-height:1.6;color:#d5c197;margin:6px 0}.adw-purchase-fit{border-left:2px solid #b7a27b;padding:5px 10px;margin:8px 0 12px;color:#d5c197;font-size:13px;line-height:1.7}.adw-size-details{border-top:1px solid #514735;margin-top:10px;font-size:12px}.adw-size-details summary{cursor:pointer;min-height:44px;padding:10px 0;color:#d5c197;font-weight:700}.adw-size-details img{display:block;width:100%;height:auto}.adw-size-details[hidden],.adw-purchase-fit[hidden]{display:none!important}';document.head.appendChild(css);
+    }
+    if(root){
+      var recommended=root.getAttribute('data-adw-recommendation')||'',out=root.querySelector('[data-out]');
+      var action=out&&out.querySelector('[data-adw-size-action]');
+      if(recommended&&select&&out&&out.firstElementChild){
+        if(!action){action=document.createElement('div');action.setAttribute('data-adw-size-action','');var button=document.createElement('button');button.type='button';var status=document.createElement('p');status.className='adw-size-status';status.setAttribute('role','status');action.append(button,status);out.firstElementChild.insertBefore(action,out.firstElementChild.children[2]||null);}
+        var choices=Array.from(select.options).filter(function(o){return sizeToken(o.textContent,recommended);});
+        var available=choices.filter(sizeOptionAvailable),button=action.querySelector('button'),status=action.querySelector('p');
+        var simple=choices.length===1&&choices[0].textContent.trim().toUpperCase().replace(/サイズ/g,'')===recommended.toUpperCase();
+        button.disabled=!available.length;
+        text(button,!available.length?'選択できる在庫がありません':simple?recommended+'サイズを選択':recommended+'のカラー・種類を選択');
+        if(!available.length)text(status,choices.length?'欠品または在庫未確認です。購入欄をご確認ください。':'推奨サイズを購入欄で確認してください。');
+        button.onclick=function(){
+          var live=Array.from(select.options).filter(function(o){return sizeToken(o.textContent,recommended)&&sizeOptionAvailable(o);});
+          function apply(option){if(!option.isConnected||!sizeOptionAvailable(option)||!sizeToken(option.textContent,recommended)){text(status,'在庫が変わりました。購入欄をご確認ください。');updateSizePurchase();return;}select.value=option.value;select.dispatchEvent(new Event('change',{bubbles:true}));text(status,'選択中：'+option.textContent.trim());var old=action.querySelector('[data-adw-size-choices]');if(old)old.remove();updateSizePurchase();}
+          if(simple&&live.length===1){apply(live[0]);return;}
+          var old=action.querySelector('[data-adw-size-choices]');if(old)old.remove();var list=document.createElement('div');list.setAttribute('data-adw-size-choices','');
+          live.forEach(function(o){var b=document.createElement('button');b.type='button';b.textContent=o.textContent.trim();b.onclick=function(){apply(o);};list.appendChild(b);});action.appendChild(list);text(status,live.length?'カラー・種類を選んでください。':'在庫を確認できません。購入欄をご確認ください。');
+        };
+      }else if(action)action.remove();
+      var summary=form.querySelector('[data-adw-purchase-fit]');
+      if(recommended&&select){if(!summary){summary=document.createElement('div');summary.className='adw-purchase-fit';summary.setAttribute('data-adw-purchase-fit','');summary.setAttribute('role','status');form.insertBefore(summary,form.firstChild);}text(summary,'診断結果：'+recommended+' ／ 選択中：'+(select.selectedOptions[0]?.textContent.trim()||'未選択'));summary.hidden=false;}else if(summary)summary.hidden=true;
+      if(!root.hasAttribute('data-adw-fit-events')){root.setAttribute('data-adw-fit-events','');root.querySelectorAll('input').forEach(function(input){input.addEventListener('input',function(){root.removeAttribute('data-adw-recommendation');if(out)out.innerHTML='';updateSizePurchase();});});}
+      if(select&&!select.hasAttribute('data-adw-fit-events')){select.setAttribute('data-adw-fit-events','');select.addEventListener('change',function(){var status=root.querySelector('.adw-size-status');if(status)text(status,'選択中：'+(select.selectedOptions[0]?.textContent.trim()||'未選択'));updateSizePurchase();});}
+      var description=document.querySelector('.item-description > .text.markdown');
+      if(description){var walker=document.createTreeWalker(description,NodeFilter.SHOW_TEXT);var nodes=[];while(walker.nextNode())nodes.push(walker.currentNode);nodes.forEach(function(node){if(node.parentElement.closest('script,style'))return;var value=node.nodeValue.replace(/身長を基準にお選びください/g,'身長・体重による診断を目安に、商品実寸もご確認ください');if(value!==node.nodeValue)node.nodeValue=value;});}
+    }
+    var guide=document.querySelector('[data-adwens-sizeguide] img')||document.querySelector('.item-description img[alt="サイズ表"]');
+    var host=root||form,details=document.querySelector('[data-adw-size-details]');
+    if(details&&details.parentElement!==host){if(root)host.appendChild(details);else host.insertBefore(details,host.firstChild);}
+    if(guide&&guide.getAttribute('src')&&!details){details=document.createElement('details');details.className='adw-size-details';details.setAttribute('data-adw-size-details','');var title=document.createElement('summary');title.textContent='サイズ表・実寸を見る';var img=document.createElement('img');img.src=guide.src;img.alt=guide.alt||'サイズ表';img.loading='lazy';img.decoding='async';var note=document.createElement('p');note.textContent='生産ロットにより１～３ｃｍ程度サイズが異なる場合がございます。';details.append(title,img,note);img.onerror=function(){details.hidden=true;};if(root)host.appendChild(details);else host.insertBefore(details,host.firstChild);}
+  }
+
   function buildFitBox(fit) {
     var box = document.createElement('div');
-    var note = publicFitNote(fit.N);
+    var note = publicFitNote(fit.N).replace(/身長と体重の両方を基準にお選びください。|身長を基準にお選びください。|身長と体重を目安におすすめサイズを診断します。/g, '');
+    note = '身長・体重をもとにした目安です。' + note;
 
     box.setAttribute('data-adwens-sizefit', '');
+    box.setAttribute('data-adw-size-purchase-root', '');
     box.style.cssText =
       'margin:24px 0;padding:16px 14px;border:1px solid #333;';
 
@@ -1075,10 +1127,14 @@ html.adw-home-discovery #oc-plugin-popup{display:none!important}
         LINE_URL + '" target="_blank" rel="noopener" style="color:' +
         GOLD + ';">LINEでサイズ相談（初回5%OFF）</a></p></div>';
 
+      box.setAttribute('data-adw-recommendation', main);
+      updateSizePurchase();
       out.querySelector('[data-sizefit-close]').addEventListener(
         'click',
         function () {
           out.innerHTML = '';
+          box.removeAttribute('data-adw-recommendation');
+          updateSizePurchase();
         }
       );
     }
@@ -1983,6 +2039,7 @@ html.adw-home-discovery #oc-plugin-popup{display:none!important}
       setupCartDock();
       hydrateCoords();
       placeCoord();
+      updateSizePurchase();
     } finally {
       busy = false;
     }
@@ -2090,3 +2147,4 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
  function start(){new MutationObserver(function(ms){if(ms.some(function(m){return Array.from(m.addedNodes).some(function(n){return n.nodeType===1&&!n.matches('.adw-manual-label,.adw-low-stock');});}))schedule();}).observe(document.body,{childList:true,subtree:true});load();setInterval(function(){if(document.hidden)return;schedule();if(Date.now()-lastFetch>=3600000)load();},60000);document.addEventListener('visibilitychange',function(){if(!document.hidden){schedule();if(Date.now()-lastFetch>=300000)load();}});}
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 })();
+
