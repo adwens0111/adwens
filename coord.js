@@ -1616,23 +1616,29 @@ html.adw-home-discovery #oc-plugin-popup{display:none!important}
     section.querySelector('.adw-video-controls').hidden = true;
     var pager = section.querySelector('.adw-video-pagination');
     if (!pager) { pager = document.createElement('div'); pager.className = 'adw-video-pagination'; section.appendChild(pager); }
-    pager.hidden = rail.children.length < 3;
-    if (pager.childElementCount !== rail.childElementCount) {
-      pager.replaceChildren();
-      Array.from(rail.children).forEach(function(card, index) {
-        var dot = document.createElement('button'); dot.type='button'; dot.className='adw-video-dot';
-        dot.setAttribute('aria-label', (index+1)+'本目の動画を表示');
-        dot.onclick=function(){rail.scrollTo({left:card.offsetLeft-rail.children[0].offsetLeft,behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});};
-        pager.appendChild(dot);
-      });
-    }
     function updateVideoDots(){
       var first=rail.children[0]; if(!first)return;
+      var max=Math.max(0,rail.scrollWidth-rail.clientWidth), targets=[];
+      Array.from(rail.children).forEach(function(card){
+        var target=Math.min(max,Math.max(0,card.offsetLeft-first.offsetLeft));
+        if(!targets.length||Math.abs(target-targets[targets.length-1])>2)targets.push(target);
+      });
+      pager.hidden=rail.children.length<3||max<2;
+      var key=targets.map(function(n){return Math.round(n);}).join(',');
+      if(pager.dataset.positions!==key){
+        pager.dataset.positions=key; pager.replaceChildren();
+        targets.forEach(function(target,index){
+          var dot=document.createElement('button');dot.type='button';dot.className='adw-video-dot';
+          dot.setAttribute('aria-label','動画一覧の'+(index+1)+'ページ目を表示');
+          dot.onclick=function(){rail.scrollTo({left:target,behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});};
+          pager.appendChild(dot);
+        });
+      }
       var index=0,distance=Infinity;
-      Array.from(rail.children).forEach(function(card,i){var d=Math.abs(card.offsetLeft-first.offsetLeft-rail.scrollLeft);if(d<distance){distance=d;index=i;}});
+      targets.forEach(function(target,i){var d=Math.abs(target-rail.scrollLeft);if(d<distance){distance=d;index=i;}});
       Array.from(pager.children).forEach(function(dot,i){var active=String(i===index);if(dot.getAttribute('aria-current')!==active)dot.setAttribute('aria-current',active);});
     }
-    if(!rail.dataset.dotsReady){rail.dataset.dotsReady='true';rail.addEventListener('scroll',updateVideoDots,{passive:true});}
+    if(!rail.dataset.dotsReady){rail.dataset.dotsReady='true';rail.addEventListener('scroll',updateVideoDots,{passive:true});window.addEventListener('resize',updateVideoDots,{passive:true});}
     updateVideoDots();
   }
 
