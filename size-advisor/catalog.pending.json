@@ -16,7 +16,82 @@
       "material": {
         "stretch": "unknown"
       },
-      "fitEvidence": []
+      "fitEvidence": [
+        {
+          "type": "merchant_observation",
+          "source": "ユーザー確認",
+          "date": "2026-11-13",
+          "note": "細めの作り。普段の1つ上も比較候補。ただしブランド間換算や一律サイズアップはしない。",
+          "notWearTest": true
+        }
+      ],
+      "supplierChartConfirmation": {
+        "confirmedBy": "merchant",
+        "date": "2026-11-13",
+        "scope": "掲載サイズ表は仕入れ先・製造元と一致",
+        "doesNotConfirmBodyFit": true
+      },
+      "rawChart": {
+        "sourceUrl": "https://github.com/adwens0111/adwens/blob/main/sizecharts/88671936.png",
+        "sourceBlobSha": "10eda60594fe46f4b6ff8e2870e90ceb79e0a22b",
+        "unit": "cm",
+        "labels": [
+          "S",
+          "M",
+          "L",
+          "XL",
+          "2XL"
+        ],
+        "waistRanges": [
+          [
+            70,
+            88
+          ],
+          [
+            74,
+            90
+          ],
+          [
+            78,
+            96
+          ],
+          [
+            80,
+            98
+          ],
+          [
+            86,
+            102
+          ]
+        ],
+        "hip": [
+          102,
+          108,
+          112,
+          116,
+          120
+        ],
+        "thigh": [
+          56,
+          58,
+          61,
+          64,
+          67
+        ],
+        "outseam": [
+          99,
+          101,
+          103,
+          105,
+          107
+        ],
+        "status": "transcribed_not_normalized",
+        "openQuestions": [
+          "平置き採寸という表記と、ウエスト・ヒップ・太ももの数値の測定基準の照合",
+          "ウエスト範囲の測定状態の確認"
+        ],
+        "excludeHeightWeightGrid": true
+      }
     },
     "90653359": {
       "id": "90653359",
@@ -543,7 +618,21 @@
       "material": {
         "stretch": "unknown"
       },
-      "fitEvidence": []
+      "fitEvidence": [
+        {
+          "type": "merchant_observation",
+          "source": "ユーザー確認",
+          "date": "2026-11-13",
+          "note": "身幅ゆったり、着丈は少し短め。アジャスターあり。丈そのものを伸ばせるとは解釈しない。",
+          "notWearTest": true
+        }
+      ],
+      "supplierChartConfirmation": {
+        "confirmedBy": "merchant",
+        "date": "2026-11-13",
+        "scope": "掲載サイズ表は仕入れ先・製造元と一致",
+        "doesNotConfirmBodyFit": true
+      }
     },
     "124964412": {
       "id": "124964412",
