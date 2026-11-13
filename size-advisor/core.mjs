@@ -22,7 +22,7 @@ export function reviewProduct(p) {
       if (!FIELDS[p.category].includes(key) || !m || m.unit !== 'cm' ||
           !['flatWidth', 'circumference', 'length'].includes(m.kind) ||
           !Number.isFinite(m.value) || m.value <= 0 || m.value > 300 ||
-          !m.method || !m.sourceText || !Number.isFinite(m.toleranceCm) || m.toleranceCm < 0) issues.push('measurement');
+          !m.method || !m.sourceText || (m.toleranceCm !== null && (!Number.isFinite(m.toleranceCm) || m.toleranceCm < 0))) issues.push('measurement');
     }
   }
   return [...new Set(issues)];
@@ -37,15 +37,17 @@ export function normalizeProfile(raw, category) {
     if (raw[key] === '' || raw[key] == null || !Number.isFinite(value) || value < min || value > max) throw Error(key);
     output[key] = value;
   }
-  const allowed = category === 'bottoms' ? ['thigh','hip','waist'] : category === 'footwear' ? ['wide','highInstep'] : ['shoulder','chest','waist'];
+  const allowed = category === 'bottoms' ? ['thigh','calf','hip','waist'] : category === 'footwear' ? ['wide','highInstep'] : ['shoulder','chest','waist'];
   if (!Array.isArray(raw.features) || raw.features.some(f=>!allowed.includes(f))) throw Error('features');
-  output.features = [...new Set(raw.features)].slice(0,3);
+  output.features = [...new Set(raw.features)];
   output.layers = category === 'outerwear' && raw.layers === 'thick' ? 'thick' : 'thin';
   output.note = String(raw.note || '').trim().slice(0,300);
   // Brand entries are advisory only until a versioned product-specific reference exists.
   output.brand = String(raw.brand || '').trim().slice(0,40);
   output.usualSize = String(raw.usualSize || '').trim().slice(0,20);
   output.followup = String(raw.followup || '').trim().slice(0,80);
+  output.followupQuestion = String(raw.followupQuestion || '').trim().slice(0,120);
+  if (Boolean(output.followup) !== Boolean(output.followupQuestion)) throw Error('followup_context');
   return output;
 }
 export function compareSizes(product, first, second) {
@@ -58,7 +60,7 @@ export function compareSizes(product, first, second) {
     return [{key, from:x.value, to:y.value, difference:Math.round((y.value-x.value)*10)/10, unit:'cm', kind:x.kind}];
   });
 }
-export function validateAdvice(result, product) {
+export function validateAdvice(result, product, profile = {}) {
   const labels=new Set(product.measurements.map(r=>r.size));
   if (!result || !['estimate','question','insufficient'].includes(result.status) ||
       !Array.isArray(result.candidates) || result.candidates.length>2 ||
@@ -68,8 +70,11 @@ export function validateAdvice(result, product) {
       !Array.isArray(result.options) || result.options.length>3 || result.options.some(s=>typeof s!=='string'||s.length>40)) throw Error('invalid_advice');
   if (result.status==='estimate' && !result.candidates.length) throw Error('no_candidates');
   if (result.status==='question' && (!result.question || result.options.length<2)) throw Error('no_question');
-  if (result.status==='insufficient' && result.candidates.length) throw Error('unsupported_candidates');
-  if (/絶対|必ず合|ぴったりです|確実に合|保証します/.test(result.explanation)) throw Error('guarantee');
+  if (result.status!=='estimate' && result.candidates.length) throw Error('unsupported_candidates');
+  if (profile.followup && result.status==='question') throw Error('repeated_question');
+  if (result.status!=='question' && (result.question || result.options.length)) throw Error('unexpected_question');
+  if (result.options.some(s=>s.includes('わからない') && s!=='わからない')) throw Error('mixed_unknown_option');
+  if (/絶対|必ず合|ぴったりです|確実に合|保証します/.test([result.explanation,result.question,...result.options].join(' '))) throw Error('guarantee');
   return {status:result.status, candidates:result.candidates, explanation:result.explanation,
     question:result.question, options:result.options,
     caveat:'商品実寸と入力内容に基づく推定です。身体の実測・試着による判定ではありません。',
@@ -80,3 +85,4 @@ export const ADVICE_SCHEMA = {
   properties:{status:{type:'string',enum:['estimate','question','insufficient']},candidates:{type:'array',items:{type:'string'}},explanation:{type:'string'},question:{type:'string'},options:{type:'array',items:{type:'string'}}},
   required:['status','candidates','explanation','question','options']
 };
+
