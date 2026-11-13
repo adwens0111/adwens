@@ -12,7 +12,153 @@
         "url": "https://shop.adwens.com/items/88671936"
       },
       "textTableCandidate": false,
-      "measurements": [],
+      "measurements": [
+        {
+          "size": "S",
+          "values": {
+            "hip": {
+              "value": 102,
+              "unit": "cm",
+              "kind": "circumference",
+              "method": "garment circumference",
+              "sourceText": "hip 一周分（運営者確認）",
+              "toleranceCm": 3
+            },
+            "thigh": {
+              "value": 56,
+              "unit": "cm",
+              "kind": "circumference",
+              "method": "garment circumference",
+              "sourceText": "thigh 一周分（運営者確認）",
+              "toleranceCm": 3
+            },
+            "outseam": {
+              "value": 99,
+              "unit": "cm",
+              "kind": "length",
+              "method": "total garment length",
+              "sourceText": "パンツ丈（総丈）",
+              "toleranceCm": 3
+            }
+          }
+        },
+        {
+          "size": "M",
+          "values": {
+            "hip": {
+              "value": 108,
+              "unit": "cm",
+              "kind": "circumference",
+              "method": "garment circumference",
+              "sourceText": "hip 一周分（運営者確認）",
+              "toleranceCm": 3
+            },
+            "thigh": {
+              "value": 58,
+              "unit": "cm",
+              "kind": "circumference",
+              "method": "garment circumference",
+              "sourceText": "thigh 一周分（運営者確認）",
+              "toleranceCm": 3
+            },
+            "outseam": {
+              "value": 101,
+              "unit": "cm",
+              "kind": "length",
+              "method": "total garment length",
+              "sourceText": "パンツ丈（総丈）",
+              "toleranceCm": 3
+            }
+          }
+        },
+        {
+          "size": "L",
+          "values": {
+            "hip": {
+              "value": 112,
+              "unit": "cm",
+              "kind": "circumference",
+              "method": "garment circumference",
+              "sourceText": "hip 一周分（運営者確認）",
+              "toleranceCm": 3
+            },
+            "thigh": {
+              "value": 61,
+              "unit": "cm",
+              "kind": "circumference",
+              "method": "garment circumference",
+              "sourceText": "thigh 一周分（運営者確認）",
+              "toleranceCm": 3
+            },
+            "outseam": {
+              "value": 103,
+              "unit": "cm",
+              "kind": "length",
+              "method": "total garment length",
+              "sourceText": "パンツ丈（総丈）",
+              "toleranceCm": 3
+            }
+          }
+        },
+        {
+          "size": "XL",
+          "values": {
+            "hip": {
+              "value": 116,
+              "unit": "cm",
+              "kind": "circumference",
+              "method": "garment circumference",
+              "sourceText": "hip 一周分（運営者確認）",
+              "toleranceCm": 3
+            },
+            "thigh": {
+              "value": 64,
+              "unit": "cm",
+              "kind": "circumference",
+              "method": "garment circumference",
+              "sourceText": "thigh 一周分（運営者確認）",
+              "toleranceCm": 3
+            },
+            "outseam": {
+              "value": 105,
+              "unit": "cm",
+              "kind": "length",
+              "method": "total garment length",
+              "sourceText": "パンツ丈（総丈）",
+              "toleranceCm": 3
+            }
+          }
+        },
+        {
+          "size": "2XL",
+          "values": {
+            "hip": {
+              "value": 120,
+              "unit": "cm",
+              "kind": "circumference",
+              "method": "garment circumference",
+              "sourceText": "hip 一周分（運営者確認）",
+              "toleranceCm": 3
+            },
+            "thigh": {
+              "value": 67,
+              "unit": "cm",
+              "kind": "circumference",
+              "method": "garment circumference",
+              "sourceText": "thigh 一周分（運営者確認）",
+              "toleranceCm": 3
+            },
+            "outseam": {
+              "value": 107,
+              "unit": "cm",
+              "kind": "length",
+              "method": "total garment length",
+              "sourceText": "パンツ丈（総丈）",
+              "toleranceCm": 3
+            }
+          }
+        }
+      ],
       "material": {
         "stretch": "unknown"
       },
@@ -87,11 +233,20 @@
         ],
         "status": "transcribed_not_normalized",
         "openQuestions": [
-          "平置き採寸という表記と、ウエスト・ヒップ・太ももの数値の測定基準の照合",
-          "ウエスト範囲の測定状態の確認"
+          "ウエスト範囲の下限・上限の測定状態は未確認（無伸長・伸長時など）"
         ],
-        "excludeHeightWeightGrid": true
-      }
+        "excludeHeightWeightGrid": true,
+        "circumferenceConfirmedBy": "merchant 2026-11-13: ウエスト・ヒップ・太ももは一周分"
+      },
+      "measurementNotes": [
+        "ウエストは元表の範囲をrawChartに保持。単一値・身体寸法・快適に履ける範囲に変換しない。",
+        "toleranceCm=3は掲載の個体差注意の上限で、個別実測精度を示さない。"
+      ],
+      "dataReviewStatus": "transcription_confirmed_partial",
+      "releaseBlockers": [
+        "AI接続と実回答の検証未完了",
+        "商品別の適合判断・在庫選択連動の検証未完了"
+      ]
     },
     "90653359": {
       "id": "90653359",
@@ -614,7 +769,156 @@
         "url": "https://shop.adwens.com/items/124620244"
       },
       "textTableCandidate": false,
-      "measurements": [],
+      "measurements": [
+        {
+          "size": "S",
+          "values": {
+            "length": {
+              "value": 56,
+              "unit": "cm",
+              "kind": "length",
+              "method": "garment length",
+              "sourceText": "着丈",
+              "toleranceCm": 3
+            },
+            "chest": {
+              "value": 62,
+              "unit": "cm",
+              "kind": "flatWidth",
+              "method": "garment flat width",
+              "sourceText": "身幅",
+              "toleranceCm": 3
+            },
+            "shoulder": {
+              "value": 54,
+              "unit": "cm",
+              "kind": "length",
+              "method": "garment shoulder",
+              "sourceText": "肩幅",
+              "toleranceCm": 3
+            },
+            "sleeve": {
+              "value": 57,
+              "unit": "cm",
+              "kind": "length",
+              "method": "garment sleeve",
+              "sourceText": "袖丈",
+              "toleranceCm": 3
+            }
+          }
+        },
+        {
+          "size": "M",
+          "values": {
+            "length": {
+              "value": 59,
+              "unit": "cm",
+              "kind": "length",
+              "method": "garment length",
+              "sourceText": "着丈",
+              "toleranceCm": 3
+            },
+            "chest": {
+              "value": 67,
+              "unit": "cm",
+              "kind": "flatWidth",
+              "method": "garment flat width",
+              "sourceText": "身幅",
+              "toleranceCm": 3
+            },
+            "shoulder": {
+              "value": 57,
+              "unit": "cm",
+              "kind": "length",
+              "method": "garment shoulder",
+              "sourceText": "肩幅",
+              "toleranceCm": 3
+            },
+            "sleeve": {
+              "value": 59,
+              "unit": "cm",
+              "kind": "length",
+              "method": "garment sleeve",
+              "sourceText": "袖丈",
+              "toleranceCm": 3
+            }
+          }
+        },
+        {
+          "size": "L",
+          "values": {
+            "length": {
+              "value": 62,
+              "unit": "cm",
+              "kind": "length",
+              "method": "garment length",
+              "sourceText": "着丈",
+              "toleranceCm": 3
+            },
+            "chest": {
+              "value": 72,
+              "unit": "cm",
+              "kind": "flatWidth",
+              "method": "garment flat width",
+              "sourceText": "身幅",
+              "toleranceCm": 3
+            },
+            "shoulder": {
+              "value": 60,
+              "unit": "cm",
+              "kind": "length",
+              "method": "garment shoulder",
+              "sourceText": "肩幅",
+              "toleranceCm": 3
+            },
+            "sleeve": {
+              "value": 61,
+              "unit": "cm",
+              "kind": "length",
+              "method": "garment sleeve",
+              "sourceText": "袖丈",
+              "toleranceCm": 3
+            }
+          }
+        },
+        {
+          "size": "XL",
+          "values": {
+            "length": {
+              "value": 65,
+              "unit": "cm",
+              "kind": "length",
+              "method": "garment length",
+              "sourceText": "着丈",
+              "toleranceCm": 3
+            },
+            "chest": {
+              "value": 75,
+              "unit": "cm",
+              "kind": "flatWidth",
+              "method": "garment flat width",
+              "sourceText": "身幅",
+              "toleranceCm": 3
+            },
+            "shoulder": {
+              "value": 63,
+              "unit": "cm",
+              "kind": "length",
+              "method": "garment shoulder",
+              "sourceText": "肩幅",
+              "toleranceCm": 3
+            },
+            "sleeve": {
+              "value": 63,
+              "unit": "cm",
+              "kind": "length",
+              "method": "garment sleeve",
+              "sourceText": "袖丈",
+              "toleranceCm": 3
+            }
+          }
+        }
+      ],
       "material": {
         "stretch": "unknown"
       },
@@ -632,7 +936,52 @@
         "date": "2026-11-13",
         "scope": "掲載サイズ表は仕入れ先・製造元と一致",
         "doesNotConfirmBodyFit": true
-      }
+      },
+      "rawChart": {
+        "sourceAttachment": "IMG_3684.jpeg",
+        "receivedAt": "2026-11-13",
+        "labels": [
+          "S",
+          "M",
+          "L",
+          "XL"
+        ],
+        "length": [
+          56,
+          59,
+          62,
+          65
+        ],
+        "chest": [
+          62,
+          67,
+          72,
+          75
+        ],
+        "shoulder": [
+          54,
+          57,
+          60,
+          63
+        ],
+        "sleeve": [
+          57,
+          59,
+          61,
+          63
+        ],
+        "excludeHeightWeightGrid": true
+      },
+      "measurementNotes": [
+        "身幅は服の平置き幅。身体の胸囲や、中綿を除いた内周とは別。",
+        "アジャスターは裾の絞り調整。着丈が伸びるとは案内しない。",
+        "toleranceCm=3は掲載の個体差注意の上限。"
+      ],
+      "dataReviewStatus": "transcription_confirmed",
+      "releaseBlockers": [
+        "AI接続と実回答の検証未完了",
+        "商品別の適合判断・在庫選択連動の検証未完了"
+      ]
     },
     "124964412": {
       "id": "124964412",
