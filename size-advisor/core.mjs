@@ -45,6 +45,13 @@ export function normalizeProfile(raw, category) {
   // Brand entries are advisory only until a versioned product-specific reference exists.
   output.brand = String(raw.brand || '').trim().slice(0,40);
   output.usualSize = String(raw.usualSize || '').trim().slice(0,20);
+  output.usualPantsSize = String(raw.usualPantsSize || 'unknown').normalize('NFKC').trim().slice(0,30);
+  if (!['','often','rare','unknown'].includes(raw.calfHabit || '')) throw Error('calfHabit');
+  output.calfHabit = raw.calfHabit || '';
+  if (!output.calfHabit && /ふくらはぎ/.test(output.note) && /きつ|張/.test(output.note)) {
+    if (/あまり.*ない|ほとんど.*ない/.test(output.note)) output.calfHabit='rare';
+    else if (/よく|いつも|毎回/.test(output.note)) output.calfHabit='often';
+  }
   output.followup = String(raw.followup || '').trim().slice(0,80);
   output.followupQuestion = String(raw.followupQuestion || '').trim().slice(0,120);
   if (Boolean(output.followup) !== Boolean(output.followupQuestion)) throw Error('followup_context');
@@ -86,3 +93,34 @@ export const ADVICE_SCHEMA = {
   required:['status','candidates','explanation','question','options']
 };
 
+
+
+export const CALF_QUESTION = '普段、細身のパンツを履くとふくらはぎがきつく感じますか？';
+export function approvedGuidance(product, profile) {
+  const rule=product.serviceGuidance;
+  if(product.id!=='88671936'||rule?.id!=='skinny-calf-one-up-v1'||rule.status!=='operator_approved')return null;
+  const answers={'よくある':'often','あまりない':'rare','わからない':'unknown'};
+  const habit=profile.calfHabit||(profile.followupQuestion===CALF_QUESTION?answers[profile.followup]:'');
+  const base={candidates:[],question:'',options:[],caveat:'接客上の目安であり、適合を保証するものではありません。',comparisons:[],guidanceBasis:'operator_approved_service_guidance'};
+  if(!habit&&profile.features?.includes('calf')&&!profile.followup)return {...base,status:'question',explanation:'ふくらはぎの着用感を1つだけ教えてください。',question:CALF_QUESTION,options:['よくある','あまりない','わからない']};
+  if(habit!=='often')return null;
+  const labels=['XS','S','M','L','XL','2XL','3XL'];
+  const usual=String(profile.usualPantsSize||'').normalize('NFKC').trim().toUpperCase().replace(/^XXXL$/,'3XL').replace(/^XXL$/,'2XL');
+  const index=labels.indexOf(usual),sizes=product.measurements.map(r=>r.size),next=labels[index+1];
+  if(index<0)return {...base,status:'insufficient',explanation:'普段よりワンサイズ上を目安におすすめします。このパンツは細めのためです。お尻・太ももには少しゆとりが出ます。',caveat:'普段のサイズ表記が確認できないため、具体的なサイズ名は出していません。'};
+  if(!next||!sizes.includes(next))return {...base,status:'insufficient',explanation:'この商品の展開サイズでは、ワンサイズ上をご案内できません。このパンツは細めのためです。',caveat:'最大サイズでもふくらはぎに合うとは限りません。'};
+  return {...base,status:'estimate',candidates:[next],explanation:`普段${usual}なら、${next}を目安におすすめします。このパンツは細めのためです。お尻・太ももには少しゆとりが出ます。`};
+}
+
+export function withAdviceDetails(advice, product) {
+  const details=[];
+  if(advice.guidanceBasis)details.push('運営者承認の接客上の目安です。実寸から計算した適合判定ではありません。');
+  const labels={hip:'ヒップ（一周）',thigh:'太もも（一周）',outseam:'総丈',chest:'身幅（平置き）',shoulder:'肩幅',length:'着丈',sleeve:'袖丈'};
+  for(const row of product.measurements||[])details.push(row.size+'：'+Object.entries(row.values).map(([k,m])=>(labels[k]||k)+' '+m.value+'cm').join('／'));
+  details.push(...(product.measurementNotes||[]));
+  for(const e of product.fitEvidence||[]) {
+    if(e.type==='operator_confirmed_wear')details.push('運営者が確認した着用例：'+e.heightCm+'cm・'+e.weightKg+'kg。'+e.trials.map(t=>t.size+'：'+(t.overall||'ふくらはぎ '+t.calf+'、お尻 '+t.hip+'、太もも '+t.thigh)).join('。')+(e.operatorReportedRequiredSize?'。運営者報告では'+e.operatorReportedRequiredSize+'が必要だった。':'')+' 未確認：'+e.unknowns.join('、'));
+    else if(e.note)details.push('補助コメント：'+e.note);
+  }
+  return {...advice,details};
+}
