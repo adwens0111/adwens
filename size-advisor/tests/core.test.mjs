@@ -1,0 +1,11 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {reviewProduct,normalizeProfile,compareSizes,validateAdvice} from '../core.mjs';
+import {createAdvisorServer} from '../server.mjs';
+const m=v=>({value:v,unit:'cm',kind:'length',method:'flat',sourceText:'test fixture',toleranceCm:1});
+const p={category:'bottoms',reviewStatus:'verified',source:{url:'https://example.test'},reviewedBy:'test',reviewedAt:'2026-11-13',measurements:[{size:'M',values:{inseam:m(70)}},{size:'L',values:{inseam:m(72)}}]};
+test('legacy guessed grids cannot qualify',()=>assert.ok(reviewProduct({category:'bottoms',H:[170],W:[60],G:[['M']]}).length));
+test('verified dimensions compare; incompatible methods excluded',()=>{assert.equal(compareSizes(p,'M','L')[0].difference,2);const q=structuredClone(p);q.measurements[1].values.inseam.method='different';assert.deepEqual(compareSizes(q,'M','L'),[])});
+test('reject invalid input and hallucinated sizes',()=>{assert.throws(()=>normalizeProfile({height:0,weight:60,preference:'tight',features:[]},'bottoms'));assert.throws(()=>validateAdvice({status:'estimate',candidates:['XL'],explanation:'',question:'',options:[]},p))});
+test('reject guaranteed fit',()=>assert.throws(()=>validateAdvice({status:'estimate',candidates:['M'],explanation:'絶対に合う',question:'',options:[]},p)));
+test('server gates origin, consent, review and missing AI config',async()=>{const s=createAdvisorServer({catalog:{items:{ok:p,pending:{...p,reviewStatus:'pending'}}},origin:'https://shop.test'});await new Promise(r=>s.listen(0,'127.0.0.1',r));const endpoint=`http://127.0.0.1:${s.address().port}/api/size-advice`;const send=(body,origin='https://shop.test')=>fetch(endpoint,{method:'POST',headers:{origin,'Content-Type':'application/json'},body:JSON.stringify(body)});const body={productId:'ok',consent:true,profile:{height:170,weight:60,preference:'regular',features:[]}};try{assert.equal((await send(body,'https://bad.test')).status,403);assert.equal((await send({...body,consent:false})).status,400);assert.equal((await send({...body,productId:'pending'})).status,422);assert.equal((await send(body)).status,503)}finally{await new Promise(r=>s.close(r))}});
