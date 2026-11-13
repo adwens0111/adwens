@@ -1,0 +1,2470 @@
+{
+  "schema": 1,
+  "items": {
+    "88671936": {
+      "id": "88671936",
+      "name": "スキニーカーゴパンツ(P00007)",
+      "category": "bottoms",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/88671936"
+      },
+      "textTableCandidate": false,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "90653359": {
+      "id": "90653359",
+      "name": "【お急ぎ発送】ベロアトラックジャケット(ST00006)",
+      "category": "outerwear",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/90653359"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "91551279": {
+      "id": "91551279",
+      "name": "エコレザーパーカー(PK00022)",
+      "category": "tops",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/91551279"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "95182794": {
+      "id": "95182794",
+      "name": "【単品】スカルクロージャー(AC00001)",
+      "category": "accessory",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/95182794"
+      },
+      "textTableCandidate": false,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "96104276": {
+      "id": "96104276",
+      "name": "脚長設計｜ブラッシュフレアデニム(D00030)",
+      "category": "bottoms",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/96104276"
+      },
+      "textTableCandidate": false,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "99510835": {
+      "id": "99510835",
+      "name": "【最短翌日発送】マルチジップデニムパンツ(P00006)",
+      "category": "bottoms",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/99510835"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "101166634": {
+      "id": "101166634",
+      "name": "脚長設計｜バックジップデニム(D00042)",
+      "category": "bottoms",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/101166634"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "101871103": {
+      "id": "101871103",
+      "name": "ヴィンテージスニーカー(SHS00010)",
+      "category": "footwear",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/101871103"
+      },
+      "textTableCandidate": false,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "109586328": {
+      "id": "109586328",
+      "name": "【お急ぎ発送】マルチポケットルーズショーツ(SP00010)",
+      "category": "bottoms",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/109586328"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "109741716": {
+      "id": "109741716",
+      "name": "レザーウルトラショーツ(WSP00001)",
+      "category": "bottoms",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/109741716"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "110383468": {
+      "id": "110383468",
+      "name": "【お急ぎ発送】ダッドホールサンダル(SHS00019)",
+      "category": "footwear",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/110383468"
+      },
+      "textTableCandidate": false,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "111003095": {
+      "id": "111003095",
+      "name": "【お急ぎ発送】ウォッシュレイヤードLS (LS00007)",
+      "category": "accessory",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/111003095"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "118182121": {
+      "id": "118182121",
+      "name": "【お急ぎ発送】ルーズホローニットパーカー(N00003)",
+      "category": "tops",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/118182121"
+      },
+      "textTableCandidate": false,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "118184476": {
+      "id": "118184476",
+      "name": "【お急ぎ発送】カーブドワイドデニム(D00024)",
+      "category": "bottoms",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/118184476"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "118186176": {
+      "id": "118186176",
+      "name": "【お急ぎ発送】S925 グランドリンクブレスレット(RINB0001)",
+      "category": "accessory",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/118186176"
+      },
+      "textTableCandidate": false,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "118198340": {
+      "id": "118198340",
+      "name": "【お急ぎ発送】S925プラスペンダント(AC00038)",
+      "category": "accessory",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/118198340"
+      },
+      "textTableCandidate": false,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "119633275": {
+      "id": "119633275",
+      "name": "【お急ぎ発送】ダメージペイントニット(N00008)",
+      "category": "tops",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/119633275"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "119640894": {
+      "id": "119640894",
+      "name": "【お急ぎ発送】ハイトップレースアップスニーカー(SHS000049)",
+      "category": "footwear",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/119640894"
+      },
+      "textTableCandidate": false,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "119644474": {
+      "id": "119644474",
+      "name": "スタンドカラーダウンジャケット(OU00002)",
+      "category": "outerwear",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/119644474"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "120090848": {
+      "id": "120090848",
+      "name": "サイドジップカーゴパンツ(P00003)",
+      "category": "bottoms",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/120090848"
+      },
+      "textTableCandidate": false,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "121726857": {
+      "id": "121726857",
+      "name": "マルチラインダウン(OU00011)",
+      "category": "outerwear",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/121726857"
+      },
+      "textTableCandidate": false,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "121793705": {
+      "id": "121793705",
+      "name": "【最短翌日発送】着るだけで完成設計｜存在感で差がつくオールブラックコーデ(P00006×OU00002)",
+      "category": "accessory",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/121793705"
+      },
+      "textTableCandidate": false,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "122106886": {
+      "id": "122106886",
+      "name": "【お急ぎ発送】フライトデニムジャケット(OU00012)",
+      "category": "outerwear",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/122106886"
+      },
+      "textTableCandidate": false,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "122107439": {
+      "id": "122107439",
+      "name": "【お急ぎ発送】クラックダウンジャケット(OU0008)",
+      "category": "outerwear",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/122107439"
+      },
+      "textTableCandidate": false,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "122107494": {
+      "id": "122107494",
+      "name": "【お急ぎ発送】クラックダウンベスト(OU0007)",
+      "category": "outerwear",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/122107494"
+      },
+      "textTableCandidate": false,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "122107655": {
+      "id": "122107655",
+      "name": "【お急ぎ発送】マルチラインダウン(OU00011)",
+      "category": "outerwear",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/122107655"
+      },
+      "textTableCandidate": false,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "122645712": {
+      "id": "122645712",
+      "name": "【お急ぎ発送】ベロアトラックパンツ(ST00021)",
+      "category": "bottoms",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/122645712"
+      },
+      "textTableCandidate": false,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "122645764": {
+      "id": "122645764",
+      "name": "【お急ぎ発送】ベロアパーカー(ST00020)",
+      "category": "tops",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/122645764"
+      },
+      "textTableCandidate": false,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "122647012": {
+      "id": "122647012",
+      "name": "【お急ぎ発送】リンクルバイカージャケット(OU00013)",
+      "category": "outerwear",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/122647012"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "123803674": {
+      "id": "123803674",
+      "name": "ライニングシャギーコーデュロイパンツ(P00001)",
+      "category": "bottoms",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/123803674"
+      },
+      "textTableCandidate": false,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "124284207": {
+      "id": "124284207",
+      "name": "【お急ぎ発送】シャギーユニフォームLS T(LS00001)",
+      "category": "accessory",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/124284207"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "124620244": {
+      "id": "124620244",
+      "name": "【最短翌日発送】クロコレザーダウン(OU00005)",
+      "category": "outerwear",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/124620244"
+      },
+      "textTableCandidate": false,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "124964412": {
+      "id": "124964412",
+      "name": "レターソックス(SC00002)",
+      "category": "accessory",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/124964412"
+      },
+      "textTableCandidate": false,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "124964867": {
+      "id": "124964867",
+      "name": "クロスソックス(SC00003)",
+      "category": "accessory",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/124964867"
+      },
+      "textTableCandidate": false,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "125071902": {
+      "id": "125071902",
+      "name": "【お急ぎ発送】ソードストレッチデニム(D00002)",
+      "category": "bottoms",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/125071902"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "125650121": {
+      "id": "125650121",
+      "name": "ゴツくなりすぎない防寒コーデ(P00001×OU00002)",
+      "category": "accessory",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/125650121"
+      },
+      "textTableCandidate": false,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "126696093": {
+      "id": "126696093",
+      "name": "【最短翌日発送】ジップリラックスパンツ(P00005)",
+      "category": "bottoms",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/126696093"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "126979419": {
+      "id": "126979419",
+      "name": "【お急ぎ発送】ジップリラックスパンツ(P00005)",
+      "category": "bottoms",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/126979419"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "132583947": {
+      "id": "132583947",
+      "name": "【お急ぎ発送】クロスバックルベルト(BL00007)",
+      "category": "accessory",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/132583947"
+      },
+      "textTableCandidate": false,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "132690123": {
+      "id": "132690123",
+      "name": "【お急ぎ発送】ダメージショートチェックシャツ(SH00001)",
+      "category": "tops",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/132690123"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "132690330": {
+      "id": "132690330",
+      "name": "【お急ぎ発送】ワクスドジップデニム(D00004)",
+      "category": "bottoms",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/132690330"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "136825878": {
+      "id": "136825878",
+      "name": "【最短翌日発送】グラデーションチェックシャツ(SH00002)",
+      "category": "tops",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/136825878"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "136836807": {
+      "id": "136836807",
+      "name": "アロウローカットスニーカー(SHS00050)",
+      "category": "footwear",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/136836807"
+      },
+      "textTableCandidate": false,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "136837031": {
+      "id": "136837031",
+      "name": "アロウハイカットスニーカー(SHS00051)",
+      "category": "footwear",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/136837031"
+      },
+      "textTableCandidate": false,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "137578955": {
+      "id": "137578955",
+      "name": "フーディ＆カーブドスウェットセットアップ",
+      "category": "tops",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/137578955"
+      },
+      "textTableCandidate": false,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "138394877": {
+      "id": "138394877",
+      "name": "存在感設計｜サイドポケットダメージデニム(D00006)",
+      "category": "bottoms",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/138394877"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "138813163": {
+      "id": "138813163",
+      "name": "サイドボタンカーゴパンツ(P00012)",
+      "category": "bottoms",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/138813163"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "138817492": {
+      "id": "138817492",
+      "name": "サイドポケットスリムフィットパンツ(P00013)",
+      "category": "bottoms",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/138817492"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "139024498": {
+      "id": "139024498",
+      "name": "エクストラボリュームソールスニーカー(SHS00061)",
+      "category": "footwear",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/139024498"
+      },
+      "textTableCandidate": false,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "140213577": {
+      "id": "140213577",
+      "name": "【限定入荷】ドレープフレアパンツ(FD816)",
+      "category": "bottoms",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/140213577"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "140215909": {
+      "id": "140215909",
+      "name": "【限定入荷】ヴィンテージカーブラインカーゴデニム(OR-E6663)",
+      "category": "bottoms",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/140215909"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "140216471": {
+      "id": "140216471",
+      "name": "【限定入荷】クロスベルトワイドデニム(OR-E6680)",
+      "category": "bottoms",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/140216471"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "140301622": {
+      "id": "140301622",
+      "name": "【限定入荷】スモークウォッシュフレアデニム(OR-H6676)",
+      "category": "bottoms",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/140301622"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "140303568": {
+      "id": "140303568",
+      "name": "【限定入荷】ミニマルジップカーゴパンツ(OR-H6676)",
+      "category": "bottoms",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/140303568"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "140307855": {
+      "id": "140307855",
+      "name": "【限定入荷】ダブルジップカーブラインデニム(OR-E5806)",
+      "category": "bottoms",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/140307855"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "140308775": {
+      "id": "140308775",
+      "name": "【限定入荷】ジップヘムワイドカーゴデニム(OR-H6673)",
+      "category": "bottoms",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/140308775"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "140309118": {
+      "id": "140309118",
+      "name": "【限定入荷】デストロイレイヤードデニム(OR-H6677)",
+      "category": "bottoms",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/140309118"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "140309620": {
+      "id": "140309620",
+      "name": "【限定入荷】スタッズジップフレアデニム(OR-H6610)",
+      "category": "bottoms",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/140309620"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "140436798": {
+      "id": "140436798",
+      "name": "【限定入荷】カットアウトバルーンデニム(OR-5778)",
+      "category": "bottoms",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/140436798"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "141101177": {
+      "id": "141101177",
+      "name": "ボリュームソールレースアップブーツ(SHS00001)",
+      "category": "footwear",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/141101177"
+      },
+      "textTableCandidate": false,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "141103618": {
+      "id": "141103618",
+      "name": "ローファットスニーカー(SHS00003)",
+      "category": "footwear",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/141103618"
+      },
+      "textTableCandidate": false,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "141106557": {
+      "id": "141106557",
+      "name": "ハイトップスウェードブーツ(SHS00006)",
+      "category": "footwear",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/141106557"
+      },
+      "textTableCandidate": false,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "141106833": {
+      "id": "141106833",
+      "name": "ハイトップレザーブーツ(SHS00005)",
+      "category": "footwear",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/141106833"
+      },
+      "textTableCandidate": false,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "141112923": {
+      "id": "141112923",
+      "name": "ジップポケットカーゴパンツ(P00016)",
+      "category": "bottoms",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/141112923"
+      },
+      "textTableCandidate": false,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "141116603": {
+      "id": "141116603",
+      "name": "センタージップスリムカーゴパンツ(P00019)",
+      "category": "bottoms",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/141116603"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "144396046": {
+      "id": "144396046",
+      "name": "シアーレースカーディガン(WTP00005)",
+      "category": "tops",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/144396046"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "144747932": {
+      "id": "144747932",
+      "name": "スラッシュシアーロングスリーブ(WTP00006)",
+      "category": "accessory",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/144747932"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "144830125": {
+      "id": "144830125",
+      "name": "ショートレースアップブーツ(WSHS00001)",
+      "category": "footwear",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/144830125"
+      },
+      "textTableCandidate": false,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "144830415": {
+      "id": "144830415",
+      "name": "ミドルレースアップブーツ(WSHS00002)",
+      "category": "footwear",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/144830415"
+      },
+      "textTableCandidate": false,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "144837444": {
+      "id": "144837444",
+      "name": "ダブルバックル レザーミドルブーツ(WSHS00003)",
+      "category": "footwear",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/144837444"
+      },
+      "textTableCandidate": false,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "144840731": {
+      "id": "144840731",
+      "name": "ビッグヘッドレースアップブーツ(WSHS00004)",
+      "category": "footwear",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/144840731"
+      },
+      "textTableCandidate": false,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "144914881": {
+      "id": "144914881",
+      "name": "ビッグポケットミディアムスカート(WSK00001)",
+      "category": "bottoms",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/144914881"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "144915308": {
+      "id": "144915308",
+      "name": "ビッグポケットロングスカート(WSK00002)",
+      "category": "bottoms",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/144915308"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "145038976": {
+      "id": "145038976",
+      "name": "【お急ぎ発送】サルエルショートパンツ(SP00001)",
+      "category": "bottoms",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/145038976"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "145039350": {
+      "id": "145039350",
+      "name": "【お急ぎ発送】リベットファイブポケットショーツ(SP00003)",
+      "category": "bottoms",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/145039350"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "145039423": {
+      "id": "145039423",
+      "name": "【お急ぎ発送】ハイトップスウェードブーツ(SHS00006)",
+      "category": "footwear",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/145039423"
+      },
+      "textTableCandidate": false,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "145357989": {
+      "id": "145357989",
+      "name": "キャンバスウエッジブーツ(WSHS00008)",
+      "category": "footwear",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/145357989"
+      },
+      "textTableCandidate": false,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "146206409": {
+      "id": "146206409",
+      "name": "【お急ぎ発送】レザーウルトラショーツ(WSP00001)",
+      "category": "bottoms",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/146206409"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "146207136": {
+      "id": "146207136",
+      "name": "【お急ぎ発送】フーディ＆カーブドスウェットセットアップ",
+      "category": "tops",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/146207136"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "146207553": {
+      "id": "146207553",
+      "name": "【お急ぎ発送】ヴィンテージチェックシャツ(SH00005)",
+      "category": "tops",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/146207553"
+      },
+      "textTableCandidate": false,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "146476444": {
+      "id": "146476444",
+      "name": "【お急ぎ発送】マルチジップショーツ(SP00007)",
+      "category": "bottoms",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/146476444"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "146480180": {
+      "id": "146480180",
+      "name": "【お急ぎ発送】ミッドトップレザーブーツ",
+      "category": "footwear",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/146480180"
+      },
+      "textTableCandidate": false,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "146484324": {
+      "id": "146484324",
+      "name": "【お急ぎ発送】ビッグポケットカーゴパンツ",
+      "category": "bottoms",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/146484324"
+      },
+      "textTableCandidate": false,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "146487819": {
+      "id": "146487819",
+      "name": "【お急ぎ発送】カーブドワイドデニム",
+      "category": "bottoms",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/146487819"
+      },
+      "textTableCandidate": false,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "146675050": {
+      "id": "146675050",
+      "name": "【数量限定】マルチクロスケリーバッグ(WBG00001)",
+      "category": "accessory",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/146675050"
+      },
+      "textTableCandidate": false,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "146685503": {
+      "id": "146685503",
+      "name": "シックプラットフォーム スニーカー(SHS00008)",
+      "category": "footwear",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/146685503"
+      },
+      "textTableCandidate": false,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "146689159": {
+      "id": "146689159",
+      "name": "ボリュームソール ハイカットブーツ(SHS00011)",
+      "category": "footwear",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/146689159"
+      },
+      "textTableCandidate": false,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "147536051": {
+      "id": "147536051",
+      "name": "ナポレオンポロT(WT00005)",
+      "category": "accessory",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/147536051"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "147536791": {
+      "id": "147536791",
+      "name": "ナポレオンウルトラショーツ(WSP00014)",
+      "category": "bottoms",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/147536791"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "147662531": {
+      "id": "147662531",
+      "name": "【お急ぎ発送】ボリュームソールレースアップブーツ(SHS00001)",
+      "category": "footwear",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/147662531"
+      },
+      "textTableCandidate": false,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "149902858": {
+      "id": "149902858",
+      "name": "【数量限定】チェーンチェストバッグ(WBG00002)",
+      "category": "accessory",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/149902858"
+      },
+      "textTableCandidate": false,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "149904763": {
+      "id": "149904763",
+      "name": "【数量限定】クロコチェストバッグ(WBG00004)",
+      "category": "accessory",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/149904763"
+      },
+      "textTableCandidate": false,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "150100974": {
+      "id": "150100974",
+      "name": "アーチジップデニム(D00009)",
+      "category": "bottoms",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/150100974"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "150102783": {
+      "id": "150102783",
+      "name": "グロスフレアデニム(D00010)",
+      "category": "bottoms",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/150102783"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "150685901": {
+      "id": "150685901",
+      "name": "バンジーコード ジップワイドパンツ(P00017)",
+      "category": "bottoms",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/150685901"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "150692626": {
+      "id": "150692626",
+      "name": "リフレクティブ ホースグラフィックトラックジャケット(LS00002)",
+      "category": "outerwear",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/150692626"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "150701421": {
+      "id": "150701421",
+      "name": "レースアップ 厚底ハイトップスニーカー(SHS00002)",
+      "category": "footwear",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/150701421"
+      },
+      "textTableCandidate": false,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "150702880": {
+      "id": "150702880",
+      "name": "サテン スクリプト刺繍 フットボールジャージ(LS00003)",
+      "category": "accessory",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/150702880"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "150782195": {
+      "id": "150782195",
+      "name": "カテドラルプリント ヘンリーネックロンT(LS00005)",
+      "category": "accessory",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/150782195"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "150786493": {
+      "id": "150786493",
+      "name": "スプレースモーク スタッズトラックジャケット(LS00008)",
+      "category": "outerwear",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/150786493"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "150787470": {
+      "id": "150787470",
+      "name": "クロスリベット レザーバミューダショーツ(SP00023)",
+      "category": "bottoms",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/150787470"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "150798754": {
+      "id": "150798754",
+      "name": "テックジップ カーゴトラウザー(P00018)",
+      "category": "accessory",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/150798754"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "150807030": {
+      "id": "150807030",
+      "name": "メタリックワイドカーゴパンツ(P00020)",
+      "category": "bottoms",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/150807030"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "150812365": {
+      "id": "150812365",
+      "name": "ブラックグレー ストレッチフレアデニム(D00013)",
+      "category": "bottoms",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/150812365"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "150839089": {
+      "id": "150839089",
+      "name": "フーデッド レザーショートブルゾン(OU00009)",
+      "category": "outerwear",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/150839089"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "150842850": {
+      "id": "150842850",
+      "name": "ベロア ショートパンツ(WSP00015)",
+      "category": "bottoms",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/150842850"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "150846985": {
+      "id": "150846985",
+      "name": "カラークロス オーバーサイズスウェット(WTP00011)",
+      "category": "tops",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/150846985"
+      },
+      "textTableCandidate": false,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "151587891": {
+      "id": "151587891",
+      "name": "ダブルニー スナップワークパンツ(P00023)",
+      "category": "bottoms",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/151587891"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "152602386": {
+      "id": "152602386",
+      "name": "パッチワーク イージーデニムショートパンツ(WSP00017)",
+      "category": "bottoms",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/152602386"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "152609940": {
+      "id": "152609940",
+      "name": "ヴィンテージコーデュロイ 切替ショーツ(WSP00018)",
+      "category": "bottoms",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/152609940"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "152631844": {
+      "id": "152631844",
+      "name": "スキニーカーゴパンツブラック(P00027)",
+      "category": "bottoms",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/152631844"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "153460522": {
+      "id": "153460522",
+      "name": "【お急ぎ発送】サイドボタンカーゴパンツ(P00012)",
+      "category": "bottoms",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/153460522"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "156024803": {
+      "id": "156024803",
+      "name": "【お急ぎ発送】ダッドホールサンダル(SHS00019)",
+      "category": "footwear",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/156024803"
+      },
+      "textTableCandidate": false,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "157492276": {
+      "id": "157492276",
+      "name": "レザーエンブロイダリーパーカー(PK00006)",
+      "category": "tops",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/157492276"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "157497995": {
+      "id": "157497995",
+      "name": "フェイクレザーSSシャツ(SH00003)",
+      "category": "tops",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/157497995"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "157501327": {
+      "id": "157501327",
+      "name": "スキニーフェイクレザーLS (T00018)",
+      "category": "accessory",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/157501327"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "157555069": {
+      "id": "157555069",
+      "name": "ウィンドランナーパーカー(PK00007)",
+      "category": "tops",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/157555069"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "157556890": {
+      "id": "157556890",
+      "name": "マルチジップパーカー(PK00007)",
+      "category": "tops",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/157556890"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "157557275": {
+      "id": "157557275",
+      "name": "2PC LSポロ (T00020)",
+      "category": "accessory",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/157557275"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "157558251": {
+      "id": "157558251",
+      "name": "パイソンフェイクレザージャケット (OU00017)",
+      "category": "outerwear",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/157558251"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "157559587": {
+      "id": "157559587",
+      "name": "レザースリーブファーカラースウェット (OU00018)",
+      "category": "tops",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/157559587"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "157560000": {
+      "id": "157560000",
+      "name": "レザーキルトワクスドデニム (P00028)",
+      "category": "bottoms",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/157560000"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "157570700": {
+      "id": "157570700",
+      "name": "フェイクレザーバギールーズパンツ (P00029)",
+      "category": "bottoms",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/157570700"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "157571882": {
+      "id": "157571882",
+      "name": "キルティングフェイクレザーHP (SP00024)",
+      "category": "accessory",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/157571882"
+      },
+      "textTableCandidate": false,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "157572756": {
+      "id": "157572756",
+      "name": "ウエストジップレザーダブルショーツ (SP00025)",
+      "category": "bottoms",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/157572756"
+      },
+      "textTableCandidate": false,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "157737214": {
+      "id": "157737214",
+      "name": "【お急ぎ発送】スモークロゴTシャツ(T00001)",
+      "category": "tops",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/157737214"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "158152561": {
+      "id": "158152561",
+      "name": "ベルベットシャイニーセットアップ（トップス）(ST00008)",
+      "category": "tops",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/158152561"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "158152955": {
+      "id": "158152955",
+      "name": "ベルベットシャイニーセットアップ（パンツ）(ST00009)",
+      "category": "accessory",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/158152955"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "158156042": {
+      "id": "158156042",
+      "name": "フラッシュシルバーセットアップ（トップス）(ST00010)",
+      "category": "tops",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/158156042"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "158156761": {
+      "id": "158156761",
+      "name": "フラッシュシルバーセットアップ（パンツ）(ST00011)",
+      "category": "accessory",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/158156761"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "158682561": {
+      "id": "158682561",
+      "name": "ダブルウエストレザーデニム (P00030)",
+      "category": "bottoms",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/158682561"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "158686336": {
+      "id": "158686336",
+      "name": "ルーズフェイクレザーパンツ (P00031)",
+      "category": "bottoms",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/158686336"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "158686940": {
+      "id": "158686940",
+      "name": "マルチポケットワイドカーゴパンツ (P00032)",
+      "category": "bottoms",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/158686940"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "158690043": {
+      "id": "158690043",
+      "name": "マルチポケットスリムカーゴパンツ (P00033)",
+      "category": "bottoms",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/158690043"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "162929356": {
+      "id": "162929356",
+      "name": "ゴシックレターワイドスウェットパンツ(SWP00009)",
+      "category": "bottoms",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/162929356"
+      },
+      "textTableCandidate": false,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "162939111": {
+      "id": "162939111",
+      "name": "オールドイングリッシュアーチロゴパーカー(PK00035)",
+      "category": "tops",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/162939111"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "163093353": {
+      "id": "163093353",
+      "name": "マルチZIPカーゴパンツ(P00052)",
+      "category": "bottoms",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/163093353"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "163408942": {
+      "id": "163408942",
+      "name": "シャイニーフードダウンジャケット（OU00019）",
+      "category": "outerwear",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/163408942"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "163891631": {
+      "id": "163891631",
+      "name": "シャイニーフードダウンベスト（OU00087）",
+      "category": "outerwear",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/163891631"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "163915290": {
+      "id": "163915290",
+      "name": "ファーフード・バックストラップジャケット（OU00088）",
+      "category": "outerwear",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/163915290"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "163923664": {
+      "id": "163923664",
+      "name": "トーンステッチ・ブルゾン（OU00089）",
+      "category": "outerwear",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/163923664"
+      },
+      "textTableCandidate": true,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "165233618": {
+      "id": "165233618",
+      "name": "ワイドレース ハイカットスニーカー（SHS00065）",
+      "category": "footwear",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/165233618"
+      },
+      "textTableCandidate": false,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "165238716": {
+      "id": "165238716",
+      "name": "スタッズライン ハイカットスニーカー（SHS00066）",
+      "category": "footwear",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/165238716"
+      },
+      "textTableCandidate": false,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "165241786": {
+      "id": "165241786",
+      "name": "ボリュームウェーブ スニーカー（SHS00067）",
+      "category": "footwear",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/165241786"
+      },
+      "textTableCandidate": false,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    },
+    "165245805": {
+      "id": "165245805",
+      "name": "クロスコード ローカットスニーカー（SHS00068）",
+      "category": "footwear",
+      "reviewStatus": "pending",
+      "source": {
+        "kind": "BASE description snapshot",
+        "checkedAt": "2026-11-12 7:48",
+        "url": "https://shop.adwens.com/items/165245805"
+      },
+      "textTableCandidate": false,
+      "measurements": [],
+      "material": {
+        "stretch": "unknown"
+      },
+      "fitEvidence": []
+    }
+  }
+}
