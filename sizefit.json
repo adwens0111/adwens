@@ -560,16 +560,15 @@
     ],
     "R": "H",
     "G": [
-      "AAASMMLXX22",
-      "SSSMMLLXX22",
+      "AASMMLXX222",
+      "SSMMLLXX222",
       "SSMMLLXXX22",
-      "MMMLLXXX222",
-      "LLLLLXX2222",
+      "MMMLXXXX222",
+      "LLLLXXX2222",
       "XXXXX222222",
       "22222222222"
     ],
-    "N": "",
-    "I": "https://base-ec2.akamaized.net/images/item/origin/f4d0e682e6e8e7d0658858ff842f8ca8.jpg"
+    "N": ""
   },
   "163891631": {
     "H": [
