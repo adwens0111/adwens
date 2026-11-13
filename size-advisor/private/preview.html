@@ -1,0 +1,213 @@
+<!doctype html><html lang="ja"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ADWENS サイズ相談・非公開表示例</title><style>body{margin:0;background:#080808;color:white;font-family:sans-serif}main{max-width:390px;margin:auto;padding:12px}.notice{font-size:12px;color:#ccc}select{max-width:100%}.adw-advisor{--gold:#c3af87;--line:#484640;background:#101010;color:#f3f0e9;padding:14px;border:1px solid var(--line);font:14px/1.65 -apple-system,BlinkMacSystemFont,"Noto Sans JP",sans-serif;box-sizing:border-box}.adw-advisor *{box-sizing:border-box}.adw-advisor [hidden]{display:none!important}.adw-advisor h3{font-size:19px;margin:14px 0 4px}.adw-advisor h4{font-size:16px;margin:16px 0 8px}.adw-advisor button,.adw-advisor input,.adw-advisor textarea{font:inherit}.adw-advisor button{min-height:44px;padding:9px 14px;border:1px solid var(--gold);border-radius:6px;background:#171717;color:#f3f0e9;cursor:pointer}.adw-advisor>button{width:100%}.adw-advisor button:disabled{opacity:.5;cursor:default}.adw-advisor label{display:block;margin:10px 0}.adw-advisor input:not([type=checkbox]):not([type=radio]),.adw-advisor textarea{display:block;width:100%;min-height:44px;background:#191919;border:1px solid #777;color:#fff;border-radius:6px;padding:10px;font-size:16px}.adw-advisor fieldset{padding:0;border:0;margin:16px 0}.adw-advisor legend{font-weight:600}.adw-numbers{display:grid;grid-template-columns:1fr 1fr;gap:12px}.adw-choices{display:flex;flex-wrap:wrap;gap:8px}.adw-choices label{position:relative;margin:4px 0}.adw-choices input{position:absolute;opacity:0;width:1px;height:1px}.adw-choices span{display:block;border:1px solid #777;border-radius:24px;padding:9px 14px;min-height:44px}.adw-choices input:checked+span{background:var(--gold);color:#111;border-color:var(--gold)}.adw-choices input:focus-visible+span{outline:3px solid white;outline-offset:3px}.adw-advisor .adw-primary{width:100%;background:var(--gold);color:#111;font-weight:700;margin-top:12px}.adw-advisor details{border-top:1px solid var(--line);margin-top:14px;padding-top:8px}.adw-advisor summary{cursor:pointer;min-height:44px;padding:8px 0}.adw-advisor .adw-note{font-size:12px;color:#c1beb7}.adw-advisor .adw-consent{display:flex;gap:9px;align-items:flex-start;font-size:12px}.adw-consent input{width:18px;height:18px;flex-shrink:0}.adw-product{color:#cbc5b9}.adw-advisor table{width:100%;border-collapse:collapse;font-size:12px}.adw-advisor th,.adw-advisor td{padding:8px 4px;border-bottom:1px solid var(--line);text-align:left}
+
+
+.adw-advisor select{display:block;width:100%;min-height:44px;padding:10px;font-size:16px;background:#191919;color:#fff;border:1px solid #777;border-radius:6px}.adw-advisor p{overflow-wrap:anywhere}
+</style><main><p class="notice">非公開表示例／API送信なし／在庫は模擬</p><div id="host"></div><form id="purchase_form"><label>購入欄（模擬在庫）<select id="valiationSelect"><option value="">選択してください</option><option value="black-L" data-stock="2">ブラック / L</option><option value="gray-L" data-stock="0">グレー / L</option><option value="black-XL" data-stock="1">ブラック / XL</option></select></label><button type="submit">カートに入れる</button></form><p id="cart">カート送信：0</p></main><script>// No legacy H/W/G recommendation grid is consumed by this module.
+const CATEGORIES = ['bottoms', 'tops', 'outerwear', 'footwear', 'accessory'];
+const FIELDS = {
+  bottoms: ['waist', 'hip', 'thigh', 'inseam', 'rise', 'outseam'],
+  tops: ['chest', 'shoulder', 'length', 'sleeve'],
+  outerwear: ['chest', 'shoulder', 'length', 'sleeve'],
+  footwear: ['footLength', 'footWidth'],
+  accessory: ['length', 'width', 'circumference']
+};
+function reviewProduct(p) {
+  const issues = [];
+  if (!p || !CATEGORIES.includes(p.category)) return ['category'];
+  if (p.reviewStatus !== 'verified') issues.push('review');
+  if (!p.source?.url || !p.reviewedAt || !p.reviewedBy) issues.push('provenance');
+  if (!Array.isArray(p.measurements) || !p.measurements.length) return [...issues, 'measurements'];
+  const labels = new Set();
+  for (const row of p.measurements) {
+    if (!row.size || labels.has(row.size)) issues.push('size');
+    labels.add(row.size);
+    if (!row.values || !Object.keys(row.values).length) issues.push('empty');
+    for (const [key, m] of Object.entries(row.values || {})) {
+      if (!FIELDS[p.category].includes(key) || !m || m.unit !== 'cm' ||
+          !['flatWidth', 'circumference', 'length'].includes(m.kind) ||
+          !Number.isFinite(m.value) || m.value <= 0 || m.value > 300 ||
+          !m.method || !m.sourceText || (m.toleranceCm !== null && (!Number.isFinite(m.toleranceCm) || m.toleranceCm < 0))) issues.push('measurement');
+    }
+  }
+  return [...new Set(issues)];
+}
+function normalizeProfile(raw, category) {
+  if (!raw || typeof raw !== 'object') throw Error('profile');
+  const output = { category, preference: raw.preference, features: [], note: '' };
+  if (!['tight','regular','loose'].includes(output.preference)) throw Error('preference');
+  const bounds = category === 'footwear' ? { usualShoeSize: [15,40] } : category === 'accessory' ? {} : {height:[120,220], weight:[25,200]};
+  for (const [key,[min,max]] of Object.entries(bounds)) {
+    const value = Number(raw[key]);
+    if (raw[key] === '' || raw[key] == null || !Number.isFinite(value) || value < min || value > max) throw Error(key);
+    output[key] = value;
+  }
+  const allowed = category === 'bottoms' ? ['thigh','calf','hip','waist'] : category === 'footwear' ? ['wide','highInstep'] : ['shoulder','chest','waist'];
+  if (!Array.isArray(raw.features) || raw.features.some(f=>!allowed.includes(f))) throw Error('features');
+  output.features = [...new Set(raw.features)];
+  output.layers = category === 'outerwear' && raw.layers === 'thick' ? 'thick' : 'thin';
+  output.note = String(raw.note || '').trim().slice(0,300);
+  // Brand entries are advisory only until a versioned product-specific reference exists.
+  output.brand = String(raw.brand || '').trim().slice(0,40);
+  output.usualSize = String(raw.usualSize || '').trim().slice(0,20);
+  output.usualPantsSize = String(raw.usualPantsSize || 'unknown').normalize('NFKC').trim().slice(0,30);
+  if (!['','often','rare','unknown'].includes(raw.calfHabit || '')) throw Error('calfHabit');
+  output.calfHabit = raw.calfHabit || '';
+  if (!output.calfHabit && /ふくらはぎ/.test(output.note) && /きつ|張/.test(output.note)) {
+    if (/あまり.*ない|ほとんど.*ない/.test(output.note)) output.calfHabit='rare';
+    else if (/よく|いつも|毎回/.test(output.note)) output.calfHabit='often';
+  }
+  output.followup = String(raw.followup || '').trim().slice(0,80);
+  output.followupQuestion = String(raw.followupQuestion || '').trim().slice(0,120);
+  if (Boolean(output.followup) !== Boolean(output.followupQuestion)) throw Error('followup_context');
+  return output;
+}
+function compareSizes(product, first, second) {
+  if (reviewProduct(product).length) return [];
+  const a = product.measurements.find(r=>r.size===first), b = product.measurements.find(r=>r.size===second);
+  if (!a || !b) return [];
+  return Object.keys(a.values).flatMap(key=>{
+    const x=a.values[key], y=b.values[key];
+    if (!y || x.unit!==y.unit || x.kind!==y.kind || x.method!==y.method) return [];
+    return [{key, from:x.value, to:y.value, difference:Math.round((y.value-x.value)*10)/10, unit:'cm', kind:x.kind}];
+  });
+}
+function validateAdvice(result, product, profile = {}) {
+  const labels=new Set(product.measurements.map(r=>r.size));
+  if (!result || !['estimate','question','insufficient'].includes(result.status) ||
+      !Array.isArray(result.candidates) || result.candidates.length>2 ||
+      new Set(result.candidates).size!==result.candidates.length || result.candidates.some(s=>!labels.has(s)) ||
+      typeof result.explanation!=='string' || result.explanation.length>400 ||
+      typeof result.question!=='string' || result.question.length>120 ||
+      !Array.isArray(result.options) || result.options.length>3 || result.options.some(s=>typeof s!=='string'||s.length>40)) throw Error('invalid_advice');
+  if (result.status==='estimate' && !result.candidates.length) throw Error('no_candidates');
+  if (result.status==='question' && (!result.question || result.options.length<2)) throw Error('no_question');
+  if (result.status!=='estimate' && result.candidates.length) throw Error('unsupported_candidates');
+  if (profile.followup && result.status==='question') throw Error('repeated_question');
+  if (result.status!=='question' && (result.question || result.options.length)) throw Error('unexpected_question');
+  if (result.options.some(s=>s.includes('わからない') && s!=='わからない')) throw Error('mixed_unknown_option');
+  if (/絶対|必ず合|ぴったりです|確実に合|保証します/.test([result.explanation,result.question,...result.options].join(' '))) throw Error('guarantee');
+  return {status:result.status, candidates:result.candidates, explanation:result.explanation,
+    question:result.question, options:result.options,
+    caveat:'商品実寸と入力内容に基づく推定です。身体の実測・試着による判定ではありません。',
+    comparisons:result.candidates.length===2?compareSizes(product,...result.candidates):[]};
+}
+const ADVICE_SCHEMA = {
+  type:'object', additionalProperties:false,
+  properties:{status:{type:'string',enum:['estimate','question','insufficient']},candidates:{type:'array',items:{type:'string'}},explanation:{type:'string'},question:{type:'string'},options:{type:'array',items:{type:'string'}}},
+  required:['status','candidates','explanation','question','options']
+};
+
+
+
+const CALF_QUESTION = '普段、細身のパンツを履くとふくらはぎがきつく感じますか？';
+function approvedGuidance(product, profile) {
+  const rule=product.serviceGuidance;
+  if(product.id!=='88671936'||rule?.id!=='skinny-calf-one-up-v1'||rule.status!=='operator_approved')return null;
+  const answers={'よくある':'often','あまりない':'rare','わからない':'unknown'};
+  const habit=profile.calfHabit||(profile.followupQuestion===CALF_QUESTION?answers[profile.followup]:'');
+  const base={candidates:[],question:'',options:[],caveat:'接客上の目安であり、適合を保証するものではありません。',comparisons:[],guidanceBasis:'operator_approved_service_guidance'};
+  if(!habit&&profile.features?.includes('calf')&&!profile.followup)return {...base,status:'question',explanation:'ふくらはぎの着用感を1つだけ教えてください。',question:CALF_QUESTION,options:['よくある','あまりない','わからない']};
+  if(habit!=='often')return null;
+  const labels=['XS','S','M','L','XL','2XL','3XL'];
+  const usual=String(profile.usualPantsSize||'').normalize('NFKC').trim().toUpperCase().replace(/^XXXL$/,'3XL').replace(/^XXL$/,'2XL');
+  const index=labels.indexOf(usual),sizes=product.measurements.map(r=>r.size),next=labels[index+1];
+  if(index<0)return {...base,status:'insufficient',explanation:'普段よりワンサイズ上を目安におすすめします。このパンツは細めのためです。お尻・太ももには少しゆとりが出ます。',caveat:'普段のサイズ表記が確認できないため、具体的なサイズ名は出していません。'};
+  if(!next||!sizes.includes(next))return {...base,status:'insufficient',explanation:'この商品の展開サイズでは、ワンサイズ上をご案内できません。このパンツは細めのためです。',caveat:'最大サイズでもふくらはぎに合うとは限りません。'};
+  return {...base,status:'estimate',candidates:[next],explanation:`普段${usual}なら、${next}を目安におすすめします。このパンツは細めのためです。お尻・太ももには少しゆとりが出ます。`};
+}
+
+function withAdviceDetails(advice, product) {
+  const details=[];
+  if(advice.guidanceBasis)details.push('運営者承認の接客上の目安です。実寸から計算した適合判定ではありません。');
+  const labels={hip:'ヒップ（一周）',thigh:'太もも（一周）',outseam:'総丈',chest:'身幅（平置き）',shoulder:'肩幅',length:'着丈',sleeve:'袖丈'};
+  for(const row of product.measurements||[])details.push(row.size+'：'+Object.entries(row.values).map(([k,m])=>(labels[k]||k)+' '+m.value+'cm').join('／'));
+  details.push(...(product.measurementNotes||[]));
+  for(const e of product.fitEvidence||[]) {
+    if(e.type==='operator_confirmed_wear')details.push('運営者が確認した着用例：'+e.heightCm+'cm・'+e.weightKg+'kg。'+e.trials.map(t=>t.size+'：'+(t.overall||'ふくらはぎ '+t.calf+'、お尻 '+t.hip+'、太もも '+t.thigh)).join('。')+(e.operatorReportedRequiredSize?'。運営者報告では'+e.operatorReportedRequiredSize+'が必要だった。':'')+' 未確認：'+e.unknowns.join('、'));
+    else if(e.note)details.push('補助コメント：'+e.note);
+  }
+  return {...advice,details};
+}
+
+(function () {
+  'use strict';
+  var words={tight:'タイト',regular:'ほどよく',loose:'ゆったり',thigh:'太もも',calf:'ふくらはぎ',hip:'お尻',waist:'お腹まわり',shoulder:'肩',chest:'胸',wide:'幅広',highInstep:'甲高'};
+  var fields={waist:'ウエスト',hip:'ヒップ',thigh:'太もも',inseam:'股下',rise:'股上',outseam:'総丈',chest:'胸囲／身幅',shoulder:'肩幅',length:'着丈',sleeve:'袖丈',footLength:'足長',footWidth:'足幅'};
+  function el(tag,text,cls){var n=document.createElement(tag);if(text)n.textContent=text;if(cls)n.className=cls;return n;}
+  function button(text,fn){var b=el('button',text);b.type='button';b.addEventListener('click',fn);return b;}
+  window.ADWSizeAdvisor={mount:function(host,product,config){
+    if(!host||host.querySelector('[data-adw-advisor]'))return;
+    var root=el('section',null,'adw-advisor');root.dataset.adwAdvisor='';root.setAttribute('aria-label','サイズ選び');
+    var open=button('体型・好みからサイズを相談する',function(){panel.hidden=!panel.hidden;open.setAttribute('aria-expanded',String(!panel.hidden));});open.setAttribute('aria-expanded','false');
+    var panel=el('div');panel.hidden=true;root.append(open,panel);host.append(root);
+    panel.append(el('h3','あなたに合うサイズを探す'),el('p',product.name,'adw-product'));
+    var form=el('form');form.setAttribute('data-clarity-mask','true');panel.append(form);
+    var profile={preference:'regular',features:[],layers:'thin'},inputs={},result=el('div');result.setAttribute('aria-live','polite');
+    var requestId=0,controller=null,followup='',followupQuestion='';
+    function invalidate(){requestId++;if(controller)controller.abort();result.replaceChildren();followup='';followupQuestion='';}
+    function number(key,label,min,max,step){var wrap=el('label',label),input=el('input');input.type='number';input.inputMode='decimal';input.min=min;input.max=max;input.step=step;input.required=true;input.autocomplete='off';wrap.append(input);inputs[key]=input;return wrap;}
+    if(product.category==='footwear')form.append(number('usualShoeSize','普段の靴のサイズ（cm）',15,40,.5));
+    else if(product.category!=='accessory'){var row=el('div',null,'adw-numbers');row.append(number('height','身長（cm）',120,220,.1),number('weight','体重（kg）',25,200,.1));form.append(row);}
+    function choices(title,key,values,multiple){var fs=el('fieldset');fs.append(el('legend',title));var row=el('div',null,'adw-choices');values.forEach(function(v){var l=el('label'),i=el('input');i.type=multiple?'checkbox':'radio';i.name=key;i.value=v;i.checked=!multiple&&profile[key]===v;l.append(i,el('span',words[v]||({thin:'薄手',thick:'スウェット・ニット'}[v])||v));row.append(l);i.addEventListener('change',function(){profile[key]=multiple?Array.from(fs.querySelectorAll('input:checked')).map(function(x){return x.value;}):v;});});fs.append(row);form.append(fs);}
+    choices('どう着たい？','preference',['tight','regular','loose']);
+    if(product.category!=='accessory')choices('気になるところ（任意）','features',product.category==='bottoms'?['thigh','calf','hip','waist']:product.category==='footwear'?['wide','highInstep']:['shoulder','chest','waist'],true);
+    if(product.category==='outerwear')choices('中に着るもの','layers',['thin','thick']);
+    if(product.category==='bottoms'){
+      var pantsLabel=el('label','普段履くパンツのサイズ'),pants=el('select');
+      [['unknown','わからない'],['XS','XS'],['S','S'],['M','M'],['L','L'],['XL','XL'],['2XL','2XL／XXL'],['3XL','3XL／XXXL'],['other','数値サイズ・その他']].forEach(function(v){var o=el('option',v[1]);o.value=v[0];pants.append(o);});inputs.usualPantsSize=pants;pantsLabel.append(pants);form.append(pantsLabel);
+      if(product.id==='88671936'){var habitLabel=el('label','細身パンツでふくらはぎがきついことは？（任意）'),habit=el('select');[['','未回答'],['often','よくある'],['rare','あまりない'],['unknown','わからない']].forEach(function(v){var o=el('option',v[1]);o.value=v[0];habit.append(o);});inputs.calfHabit=habit;habitLabel.append(habit);form.append(habitLabel);}
+    }
+    var detail=el('details');detail.append(el('summary','普段のブランド・サイズ（任意）'));
+    ['brand','usualSize'].forEach(function(key){var label=el('label',key==='brand'?'ブランド名':'普段のサイズ'),input=el('input');input.maxLength=key==='brand'?40:20;label.append(input);inputs[key]=input;detail.append(label);});
+    detail.append(el('p','参考情報として使用します。ブランドのサイズをそのまま換算しません。','adw-note'));form.append(detail);
+    var noteLabel=el('label','ひとこと相談（任意）'),note=el('textarea');note.maxLength=300;note.rows=2;note.placeholder='がっちり体型だけど、細身に着たい';noteLabel.append(note);inputs.note=note;form.append(noteLabel);
+    form.append(el('p','お名前・連絡先などは入力しないでください。','adw-note'));
+    var consent=el('label',null,'adw-consent'),check=el('input');check.type='checkbox';check.required=true;
+    consent.append(check,el('span','診断のため、入力内容をOpenAIへ送信することに同意する'));form.append(consent);
+    var submit=el('button','おすすめを確認する','adw-primary');submit.type='submit';form.append(submit);panel.append(result);
+    form.addEventListener('input',invalidate);
+    function selection(size){
+      // Always inspect the live BASE selector; never add to cart automatically.
+      var select=document.querySelector('#purchase_form #valiationSelect');if(!select)return;
+      function norm(v){return String(v).normalize('NFKC').toUpperCase().replace(/XXXL/g,'3XL').replace(/XXL/g,'2XL').replace(/サイズ/g,'').trim();}
+      var variants=Array.from(select.options).filter(function(o){return norm(o.textContent).split(/[\s/／|｜,、:：()（）・]+/).includes(norm(size));});
+      var group=el('div',null,'adw-choices');
+      variants.forEach(function(o){var b=button(o.textContent,function(){if(!o.isConnected||o.disabled||!(Number(o.getAttribute('data-stock'))>0)){b.disabled=true;return;}select.value=o.value;select.dispatchEvent(new Event('change',{bubbles:true}));select.focus();});b.disabled=o.disabled||!(Number(o.getAttribute('data-stock'))>0);group.append(b);});
+      if(!variants.length)group.append(el('p','カラー・サイズ・在庫は購入欄でご確認ください。'));
+      result.append(group);
+    }
+    function compare(rows){if(!rows?.length)return;var box=el('details');box.append(el('summary','サイズごとの実寸差を見る'));var table=el('table');rows.forEach(function(r){var tr=el('tr');tr.append(el('th',fields[r.key]||r.key),el('td',r.from+' → '+r.to+' cm'),el('td',(r.difference>0?'+':'')+r.difference+' cm'));table.append(tr);});box.append(table);box.append(el('p','商品実寸の比較です。身体上の裾位置を示す図ではありません。','adw-note'));result.append(box);}
+    async function diagnose(){
+      if(!form.reportValidity())return;
+      var id=++requestId;if(controller)controller.abort();controller=new AbortController();var current=controller;
+      submit.disabled=true;submit.textContent='確認しています…';result.replaceChildren();
+      var values=Object.assign({},profile,{followup:followup,followupQuestion:followupQuestion});Object.keys(inputs).forEach(function(k){values[k]=inputs[k].value;});
+      var timeout=setTimeout(function(){current.abort();},20000);
+      try{
+        var response=await fetch(config.endpoint,{method:'POST',headers:{'Content-Type':'application/json'},signal:current.signal,body:JSON.stringify({productId:product.id,profile:values,consent:check.checked})});
+        var data=await response.json();if(id!==requestId)return;
+        if(!response.ok)throw Error(data.message||'現在診断を利用できません。サイズ表をご確認ください。');
+        if(!Array.isArray(data.candidates)||!['estimate','question','insufficient'].includes(data.status))throw Error('診断結果を確認できませんでした。');
+        if(data.status!=='estimate'&&data.candidates.length)throw Error('診断結果を確認できませんでした。');
+        if(data.status==='question'&&followup)throw Error('追加回答だけでは絞り込めません。サイズ表をご確認ください。');
+        if(data.status==='estimate')result.append(el('h4',data.candidates.join('・')+'を目安に'));
+        result.append(el('p',data.explanation),el('p',data.caveat,'adw-note'));
+        if(data.status==='question'&&!followup){result.append(el('h4',data.question));var row=el('div',null,'adw-choices');data.options.forEach(function(answer){row.append(button(answer,function(){followup=answer;followupQuestion=data.question;diagnose();}));});result.append(row);}
+        else if(data.status==='question')result.append(el('p','入力内容だけでは絞り込めません。サイズ表またはLINEでご確認ください。'));
+        var more=el('details');more.append(el('summary','実寸・着用例など詳しく見る'));
+        (data.details||[]).forEach(function(t){more.append(el('p',t,'adw-note'));});
+        result.append(more);
+        compare(data.comparisons);
+        if(data.status==='estimate')data.candidates.forEach(selection);
+      }catch(e){if(id===requestId)result.append(el('p',current.signal.aborted?'診断に時間がかかっています。サイズ表をご確認ください。':e.message));}
+      finally{clearTimeout(timeout);if(id===requestId){submit.disabled=false;submit.textContent='おすすめを確認する';}}
+    }
+    // Input edits invalidate old results and cancel stale responses.
+    form.addEventListener('input',function(){submit.disabled=false;submit.textContent='おすすめを確認する';});
+    form.addEventListener('submit',function(e){e.preventDefault();diagnose();});
+  }};
+})();
+
+
+
+const previewProduct={"id":"88671936","name":"スキニーカーゴパンツ(P00007)","category":"bottoms","reviewStatus":"pending","source":{"kind":"BASE description snapshot","checkedAt":"2026-11-12 7:48","url":"https://shop.adwens.com/items/88671936"},"textTableCandidate":false,"measurements":[{"size":"S","values":{"hip":{"value":102,"unit":"cm","kind":"circumference","method":"garment circumference","sourceText":"hip 一周分（運営者確認）","toleranceCm":null},"thigh":{"value":56,"unit":"cm","kind":"circumference","method":"garment circumference","sourceText":"thigh 一周分（運営者確認）","toleranceCm":null},"outseam":{"value":99,"unit":"cm","kind":"length","method":"total garment length","sourceText":"パンツ丈（総丈）","toleranceCm":null}}},{"size":"M","values":{"hip":{"value":108,"unit":"cm","kind":"circumference","method":"garment circumference","sourceText":"hip 一周分（運営者確認）","toleranceCm":null},"thigh":{"value":58,"unit":"cm","kind":"circumference","method":"garment circumference","sourceText":"thigh 一周分（運営者確認）","toleranceCm":null},"outseam":{"value":101,"unit":"cm","kind":"length","method":"total garment length","sourceText":"パンツ丈（総丈）","toleranceCm":null}}},{"size":"L","values":{"hip":{"value":112,"unit":"cm","kind":"circumference","method":"garment circumference","sourceText":"hip 一周分（運営者確認）","toleranceCm":null},"thigh":{"value":61,"unit":"cm","kind":"circumference","method":"garment circumference","sourceText":"thigh 一周分（運営者確認）","toleranceCm":null},"outseam":{"value":103,"unit":"cm","kind":"length","method":"total garment length","sourceText":"パンツ丈（総丈）","toleranceCm":null}}},{"size":"XL","values":{"hip":{"value":116,"unit":"cm","kind":"circumference","method":"garment circumference","sourceText":"hip 一周分（運営者確認）","toleranceCm":null},"thigh":{"value":64,"unit":"cm","kind":"circumference","method":"garment circumference","sourceText":"thigh 一周分（運営者確認）","toleranceCm":null},"outseam":{"value":105,"unit":"cm","kind":"length","method":"total garment length","sourceText":"パンツ丈（総丈）","toleranceCm":null}}},{"size":"2XL","values":{"hip":{"value":120,"unit":"cm","kind":"circumference","method":"garment circumference","sourceText":"hip 一周分（運営者確認）","toleranceCm":null},"thigh":{"value":67,"unit":"cm","kind":"circumference","method":"garment circumference","sourceText":"thigh 一周分（運営者確認）","toleranceCm":null},"outseam":{"value":107,"unit":"cm","kind":"length","method":"total garment length","sourceText":"パンツ丈（総丈）","toleranceCm":null}}}],"material":{"stretch":"unknown"},"fitEvidence":[{"type":"merchant_observation","source":"ユーザー確認","date":"2026-11-13","note":"細めの作り。普段の1つ上も比較候補。ただしブランド間換算や一律サイズアップはしない。","notWearTest":true},{"id":"operator-wear-174-58-S-20261113","type":"operator_confirmed_wear","source":"運営者の実着用確認・2026-11-13報告","heightCm":174,"weightKg":58,"bodyDescription":"細身","trials":[{"size":"S","overall":"かなりゆとりがあった","bodyPartFit":"未確認"}],"unknowns":["部位別のゆとり","身体実寸"],"notWearTest":false},{"id":"operator-wear-169-74-L-XL-20261113","type":"operator_confirmed_wear","source":"運営者の実着用確認・2026-11-13報告","heightCm":169,"weightKg":74,"trials":[{"size":"L","calf":"きつかった","hip":"ゆとりがあった","thigh":"ゆとりがあった"},{"size":"XL","calf":"きつかった","hip":"ゆとりがあった","thigh":"ゆとりがあった"}],"operatorReportedRequiredSize":"2XL","originalSizeLabel":"XXL","unknowns":["2XLでのふくらはぎの具体的なゆとり","身体実寸","ふくらはぎの商品実寸"],"notWearTest":false}],"supplierChartConfirmation":{"confirmedBy":"merchant","date":"2026-11-13","scope":"掲載サイズ表は仕入れ先・製造元と一致","doesNotConfirmBodyFit":true},"rawChart":{"sourceUrl":"https://github.com/adwens0111/adwens/blob/main/sizecharts/88671936.png","sourceBlobSha":"10eda60594fe46f4b6ff8e2870e90ceb79e0a22b","unit":"cm","labels":["S","M","L","XL","2XL"],"waistRanges":[[70,88],[74,90],[78,96],[80,98],[86,102]],"hip":[102,108,112,116,120],"thigh":[56,58,61,64,67],"outseam":[99,101,103,105,107],"status":"transcribed_not_normalized","openQuestions":["ウエスト範囲の下限・上限の測定状態は未確認（無伸長・伸長時など）","ふくらはぎの商品実寸は未取得。2XLでのふくらはぎの具体的なゆとりは未確認。"],"excludeHeightWeightGrid":true,"circumferenceConfirmedBy":"merchant 2026-11-13: ウエスト・ヒップ・太ももは一周分"},"measurementNotes":["ウエストは元表の範囲をrawChartに保持。単一値・身体寸法・快適に履ける範囲に変換しない。","掲載注意文の「個体差が１～３ｃｍ程」は一般的な注意であり、各部位の±3cmの実測公差ではない。"],"dataReviewStatus":"transcription_confirmed_partial","releaseBlockers":["AI接続と実回答の検証未完了","商品別の適合判断・在庫選択連動の検証未完了"],"sizeAliases":{"XXL":"2XL"},"serviceGuidance":{"id":"skinny-calf-one-up-v1","status":"operator_approved","approvedAt":"2026-11-13","scope":"88671936 only","trigger":"細身パンツでふくらはぎがきついことがよくある","text":"このパンツは細めのため、普段よりワンサイズ上を目安におすすめします。お尻・太ももには少しゆとりが出ます。","basis":"運営者承認の接客上の目安。適合保証でも実寸計算でもない。","restrictions":["あまりない・わからないでは自動サイズアップしない","数値・ブランド独自表記を換算しない","通常サイズ不明では具体的サイズ名を出さない","展開上限を超える場合は最大サイズへ丸めない","在庫を理由に小さいサイズへ変更しない"]}};window.fetch=async(url,opts)=>{if(url!=='/preview-only')throw Error('preview_only');const input=JSON.parse(opts.body);if(input.consent!==true)return {ok:false,json:async()=>({message:'同意を確認してください。'})};const p=normalizeProfile(input.profile,previewProduct.category);const a=approvedGuidance(previewProduct,p)||{status:'insufficient',candidates:[],explanation:'今回は、ふくらはぎを理由にワンサイズ上げる案内はしません。',caveat:'具体的なサイズ候補は、今の情報だけでは絞れません。',question:'',options:[]};return {ok:true,json:async()=>withAdviceDetails(a,previewProduct)};};document.querySelector('#purchase_form').onsubmit=e=>{e.preventDefault();document.querySelector('#cart').textContent='カート送信：1（模擬）'};ADWSizeAdvisor.mount(document.querySelector('#host'),previewProduct,{endpoint:'/preview-only'});</script></html>
