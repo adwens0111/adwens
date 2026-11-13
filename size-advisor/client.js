@@ -21,6 +21,11 @@
     choices('どう着たい？','preference',['tight','regular','loose']);
     if(product.category!=='accessory')choices('気になるところ（任意）','features',product.category==='bottoms'?['thigh','calf','hip','waist']:product.category==='footwear'?['wide','highInstep']:['shoulder','chest','waist'],true);
     if(product.category==='outerwear')choices('中に着るもの','layers',['thin','thick']);
+    if(product.category==='bottoms'){
+      var pantsLabel=el('label','普段履くパンツのサイズ'),pants=el('select');
+      [['unknown','わからない'],['XS','XS'],['S','S'],['M','M'],['L','L'],['XL','XL'],['2XL','2XL／XXL'],['3XL','3XL／XXXL'],['other','数値サイズ・その他']].forEach(function(v){var o=el('option',v[1]);o.value=v[0];pants.append(o);});inputs.usualPantsSize=pants;pantsLabel.append(pants);form.append(pantsLabel);
+      if(product.id==='88671936'){var habitLabel=el('label','細身パンツでふくらはぎがきついことは？（任意）'),habit=el('select');[['','未回答'],['often','よくある'],['rare','あまりない'],['unknown','わからない']].forEach(function(v){var o=el('option',v[1]);o.value=v[0];habit.append(o);});inputs.calfHabit=habit;habitLabel.append(habit);form.append(habitLabel);}
+    }
     var detail=el('details');detail.append(el('summary','普段のブランド・サイズ（任意）'));
     ['brand','usualSize'].forEach(function(key){var label=el('label',key==='brand'?'ブランド名':'普段のサイズ'),input=el('input');input.maxLength=key==='brand'?40:20;label.append(input);inputs[key]=input;detail.append(label);});
     detail.append(el('p','参考情報として使用します。ブランドのサイズをそのまま換算しません。','adw-note'));form.append(detail);
@@ -54,10 +59,13 @@
         if(!Array.isArray(data.candidates)||!['estimate','question','insufficient'].includes(data.status))throw Error('診断結果を確認できませんでした。');
         if(data.status!=='estimate'&&data.candidates.length)throw Error('診断結果を確認できませんでした。');
         if(data.status==='question'&&followup)throw Error('追加回答だけでは絞り込めません。サイズ表をご確認ください。');
-        if(data.status==='estimate')result.append(el('h4','サイズ候補：'+data.candidates.join('・')));
+        if(data.status==='estimate')result.append(el('h4',data.candidates.join('・')+'を目安に'));
         result.append(el('p',data.explanation),el('p',data.caveat,'adw-note'));
         if(data.status==='question'&&!followup){result.append(el('h4',data.question));var row=el('div',null,'adw-choices');data.options.forEach(function(answer){row.append(button(answer,function(){followup=answer;followupQuestion=data.question;diagnose();}));});result.append(row);}
         else if(data.status==='question')result.append(el('p','入力内容だけでは絞り込めません。サイズ表またはLINEでご確認ください。'));
+        var more=el('details');more.append(el('summary','実寸・着用例など詳しく見る'));
+        (data.details||[]).forEach(function(t){more.append(el('p',t,'adw-note'));});
+        result.append(more);
         compare(data.comparisons);
         if(data.status==='estimate')data.candidates.forEach(selection);
       }catch(e){if(id===requestId)result.append(el('p',current.signal.aborted?'診断に時間がかかっています。サイズ表をご確認ください。':e.message));}
@@ -68,4 +76,5 @@
     form.addEventListener('submit',function(e){e.preventDefault();diagnose();});
   }};
 })();
+
 
