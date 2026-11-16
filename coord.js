@@ -1528,7 +1528,121 @@ html.adw-home-discovery #oc-plugin-popup{display:none!important}
     return root;
   }
 
+  /* Croco-only video-first pilot. Native photos, purchase form and diagnosis stay intact. */
+  function setupCrocoHero(row) {
+    if (ITEM_ID !== '124620244' || !row || !row.url) return;
+    var gallery = document.querySelector('.item-image-list');
+    var thumbs = document.querySelector('.item-image-thumbnail');
+    var form = document.querySelector('#purchase_form');
+    if (!gallery || !thumbs || !form || gallery.dataset.adwHero) return;
+    var swiper = gallery.swiper;
+    if (!swiper || typeof swiper.prependSlide !== 'function') return;
+    if (!/^https:\/\/res\.cloudinary\.com\/heffp68z\/video\/upload\/.+\.mp4$/.test(row.url)) return;
+    gallery.dataset.adwHero = 'croco-v1';
+    var style = document.createElement('style');
+    style.textContent = '.adw-hero-slide{position:relative;background:#111;aspect-ratio:4/5;overflow:hidden}' +
+      '.adw-hero-slide video{display:block;width:100%;height:100%;position:absolute;inset:0;object-fit:contain;background:#111}' +
+      '.adw-hero-controls{position:absolute;bottom:22px;left:12px;right:12px;display:flex;align-items:center;justify-content:space-between;gap:8px;z-index:2}' +
+      '.adw-hero-controls button{font:12px/1.4 sans-serif!important;min-height:44px;min-width:44px;padding:10px 14px!important;border:1px solid #ffffff70!important;border-radius:24px!important;color:#fff!important;background:#111c!important;cursor:pointer}' +
+      '.adw-hero-controls span{font:11px/1.5 sans-serif;color:#fff;background:#111c;padding:7px 10px;border-radius:20px}' +
+      '.adw-hero-thumb{position:relative}.adw-hero-thumb:after{content:"▶ 動画";position:absolute;bottom:3px;left:3px;padding:3px 5px;color:#fff;background:#111d;font:10px/1.3 sans-serif}' +
+      '.adw-croco-stock{margin:12px 0 16px;padding:10px 12px;border:1px solid #a89570;color:#d0bd94;background:#a895700d;font-size:12px;line-height:1.6;letter-spacing:.025em}' +
+      '.adw-hero-fallback{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#111;color:#fff;padding:24px;text-align:center}.adw-hero-fallback[hidden]{display:none}';
+    document.head.appendChild(style);
+    var slide = document.createElement('div');
+    slide.className = 'swiper-slide adw-hero-slide';
+    var video = document.createElement('video');
+    video.muted = true;
+    video.defaultMuted = true;
+    video.playsInline = true;
+    video.loop = true;
+    video.preload = 'none';
+    video.setAttribute('muted', '');
+    video.setAttribute('playsinline', '');
+    video.setAttribute('aria-label', 'クロコレザーダウンの着用動画（音声なし）');
+    video.poster = row.poster || '';
+    var controls = document.createElement('div');
+    controls.className = 'adw-hero-controls swiper-no-swiping';
+    var play = document.createElement('button');
+    play.type = 'button';
+    play.textContent = '▶ 再生';
+    play.setAttribute('aria-label', '着用動画を再生');
+    var hint = document.createElement('span');
+    hint.textContent = '音声なし · スワイプで写真 →';
+    controls.append(play, hint);
+    var fallback = document.createElement('div');
+    fallback.className = 'adw-hero-fallback';
+    fallback.hidden = true;
+    fallback.textContent = '動画を読み込めませんでした。スワイプして商品写真をご覧ください。';
+    slide.append(video, fallback, controls);
+    var thumb = document.createElement('div');
+    thumb.className = 'adw-hero-thumb';
+    var preview = document.createElement('img');
+    preview.src = video.poster;
+    preview.alt = 'クロコレザーダウン 着用動画';
+    thumb.appendChild(preview);
+    thumbs.prepend(thumb);
+    swiper.prependSlide(slide);
+    swiper.slideTo(0, 0);
+    swiper.update();
+    var stock = document.createElement('p');
+    stock.className = 'adw-croco-stock';
+    stock.textContent = '在庫限り｜なくなり次第、販売終了';
+    form.parentNode.insertBefore(stock, form);
+    var visible = false, manualPause = false, failed = false;
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var saveData = navigator.connection && navigator.connection.saveData;
+    function start() {
+      if (failed) return;
+      if (!video.getAttribute('src')) video.src = row.url;
+      var promise = video.play();
+      if (promise && promise.catch) promise.catch(function () { /* tap-to-play stays available */ });
+    }
+    function syncPlayback() {
+      var active = swiper.activeIndex === 0 && visible && !document.hidden;
+      if (!active) video.pause();
+      else if (!manualPause && !reduceMotion && !saveData) start();
+    }
+    function syncThumbs() {
+      Array.from(thumbs.children).forEach(function (node, index) {
+        node.classList.toggle('active', index === swiper.activeIndex);
+        node.setAttribute('aria-current', index === swiper.activeIndex ? 'true' : 'false');
+      });
+      syncPlayback();
+    }
+    // Capture thumbnails so the theme's original photo indices do not shift by one.
+    thumbs.addEventListener('click', function (event) {
+      var node = event.target.closest('.item-image-thumbnail > div');
+      if (!node) return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      swiper.slideTo(Array.from(thumbs.children).indexOf(node));
+    }, true);
+    Array.from(thumbs.children).forEach(function (node, index) {
+      node.tabIndex = 0;
+      node.setAttribute('role', 'button');
+      node.setAttribute('aria-label', index === 0 ? '着用動画を表示' : '商品写真' + index + 'を表示');
+      node.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); swiper.slideTo(index); }
+      });
+    });
+    play.addEventListener('click', function () {
+      if (video.paused) { manualPause = false; start(); }
+      else { manualPause = true; video.pause(); }
+    });
+    video.addEventListener('play', function () { play.textContent = 'Ⅱ 一時停止'; play.setAttribute('aria-label', '着用動画を一時停止'); });
+    video.addEventListener('pause', function () { play.textContent = '▶ 再生'; play.setAttribute('aria-label', '着用動画を再生'); });
+    video.addEventListener('error', function () { failed = true; fallback.hidden = false; play.hidden = true; });
+    swiper.on('slideChange', syncThumbs);
+    document.addEventListener('visibilitychange', syncPlayback);
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (entries) { visible = entries[0].isIntersecting; syncPlayback(); }, {threshold:0.25}).observe(slide);
+    }
+    syncThumbs();
+  }
+
   function renderVideos() {
+    setupCrocoHero(videoRows[0]);
     var description = document.querySelector(
       '.item-description > .text.markdown'
     );
@@ -2147,4 +2261,5 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
  function start(){new MutationObserver(function(ms){if(ms.some(function(m){return Array.from(m.addedNodes).some(function(n){return n.nodeType===1&&!n.matches('.adw-manual-label,.adw-low-stock');});}))schedule();}).observe(document.body,{childList:true,subtree:true});load();setInterval(function(){if(document.hidden)return;schedule();if(Date.now()-lastFetch>=3600000)load();},60000);document.addEventListener('visibilitychange',function(){if(!document.hidden){schedule();if(Date.now()-lastFetch>=300000)load();}});}
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 })();
+
 
