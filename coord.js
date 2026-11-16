@@ -2270,3 +2270,71 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 
 
 
+
+
+/* Diagnosis coupon draft. No changes to diagnosis calculations or cart submission. */
+(function () {
+  'use strict';
+  var id=(location.pathname.match(/^\/items\/(\d+)/)||[])[1];
+  if(id!=='124620244'&&id!=='88671936')return;
+  var schedule=[
+    ['2026-11-19','88671936','ALHQ9FUP'],['2026-11-20','124620244','LN63FDHC'],
+    ['2026-11-21','88671936','ETM6B745'],['2026-11-22','124620244','HZJM9YN3'],
+    ['2026-11-23','88671936','U4AYRCVQ'],['2026-11-24','124620244','ZXY9CFRP'],
+    ['2026-11-25','88671936','ND9Z2MYW']
+  ];
+  var shown={},current=null,modal=null,reopen=null,returnFocus=null,selectedByUser=false;
+  function active(){var now=Date.now();return schedule.find(function(r){return r[1]===id&&now>=Date.parse(r[0]+'T00:00:00+09:00')&&now<Date.parse(r[0]+'T23:59:00+09:00');})||null;}
+  function norm(s){return String(s).normalize('NFKC').toUpperCase().replace(/XXXL/g,'3XL').replace(/XXL/g,'2XL').replace(/サイズ/g,'').trim();}
+  function matches(o,s){return norm(o.textContent).split(/[\s\/／|｜,、:：()（）\[\]・]+/).indexOf(norm(s))>=0;}
+  function state(){
+    var root=document.querySelector('[data-adw-size-purchase-root]'),select=document.querySelector('#purchase_form #valiationSelect');
+    var size=root&&root.getAttribute('data-adw-recommendation');
+    var out=root&&root.querySelector('[data-out]');
+    if(!size||!select||!out||!out.textContent.trim())return null;
+    var opts=Array.from(select.options).filter(function(o){return matches(o,size);});
+    var simple=opts.length===1&&norm(opts[0].textContent)===norm(size);
+    var option=simple?opts[0]:selectedByUser&&select.selectedOptions[0];
+    if(!option||!matches(option,size)||option.disabled)return null;
+    var raw=option.getAttribute('data-stock');
+    if(raw===null||!raw.trim()||!Number.isFinite(Number(raw))||Number(raw)<=0)return null;
+    return {root:root,select:select,option:option,size:size};
+  }
+  function close(){if(modal){modal.remove();modal=null;}if(returnFocus&&returnFocus.isConnected)returnFocus.focus();}
+  function text(el,value){if(el.textContent!==value)el.textContent=value;}
+  function open(){
+    var row=active(),s=state();if(!row||!s)return;
+    close();returnFocus=document.activeElement;
+    modal=document.createElement('div');modal.className='adw-coupon-overlay';
+    modal.innerHTML='<section role="dialog" aria-modal="true" aria-labelledby="adw-coupon-title" class="adw-coupon-card"><button type="button" class="adw-coupon-close" aria-label="クーポンを閉じる">×</button><p id="adw-coupon-title">本日限定ゲリラクーポン</p><p class="adw-coupon-limited">この商品限定</p><p class="adw-coupon-discount">1,000<span>円OFF</span></p><p class="adw-coupon-expiry"></p><label>クーポンコード<input class="adw-coupon-code" readonly aria-label="クーポンコード"></label><button type="button" class="adw-coupon-copy"></button><p role="status" class="adw-coupon-status"></p></section>';
+    modal.querySelector('.adw-coupon-expiry').textContent=Number(row[0].slice(5,7))+'月'+Number(row[0].slice(8))+'日 23:59まで';
+    modal.querySelector('input').value=row[2];
+    var button=modal.querySelector('.adw-coupon-copy');button.textContent='コードをコピーして'+s.option.textContent.trim()+'を選ぶ';
+    modal.querySelector('.adw-coupon-close').onclick=close;
+    modal.addEventListener('click',function(e){if(e.target===modal)close();});
+    modal.addEventListener('keydown',function(e){if(e.key==='Escape'){e.preventDefault();close();return;}if(e.key==='Tab'){var nodes=modal.querySelectorAll('button,input'),first=nodes[0],last=nodes[nodes.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}});
+    button.onclick=async function(){
+      var live=state(),r=active();if(!live||!r||r[2]!==row[2]||live.option.value!==s.option.value){close();update();return;}
+      var dialog=modal,ok=false;
+      try{await navigator.clipboard.writeText(row[2]);ok=true;}catch(e){}
+      if(modal!==dialog)return;
+      live=state();r=active();if(!live||!r||r[2]!==row[2]||live.option.value!==s.option.value){close();update();return;}
+      if(!ok){dialog.querySelector('input').select();text(dialog.querySelector('[role="status"]'),'コードを長押ししてコピーしてください。');return;}
+      live.select.value=live.option.value;live.select.dispatchEvent(new Event('change',{bubbles:true}));
+      text(dialog.querySelector('[role="status"]'),'コピーしました。購入手続きのクーポン欄に入力してください。');
+      text(button,live.option.textContent.trim()+'を選択済み');
+    };
+    document.body.appendChild(modal);modal.querySelector('button').focus();shown[row[2]]=true;current=row[2]+'|'+s.option.value;
+  }
+  function update(){
+    var row=active(),s=state(),valid=row&&s;
+    if(modal&&(!valid||current!==row[2]+'|'+s.option.value))close();
+    if(!valid){if(reopen){reopen.remove();reopen=null;}return;}
+    if(!reopen){reopen=document.createElement('button');reopen.type='button';reopen.className='adw-coupon-reopen';reopen.textContent='クーポンを確認';reopen.onclick=open;s.root.appendChild(reopen);}
+    if(!shown[row[2]])open();
+  }
+  var css=document.createElement('style');css.textContent='.adw-coupon-overlay{position:fixed;inset:0;z-index:2147483000;background:#000b;display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box}.adw-coupon-card{box-sizing:border-box;position:relative;width:100%;max-width:380px;max-height:90dvh;overflow:auto;background:#151513;color:#eee;border:1px solid #b7a27b;border-radius:12px;text-align:center;padding:36px 24px 20px;font-family:Arial,sans-serif;box-shadow:0 16px 60px #0008}.adw-coupon-card p{margin:0 0 14px!important}.adw-coupon-card #adw-coupon-title{font-size:18px!important;font-weight:bold;color:#d5c197}.adw-coupon-limited{font-size:15px!important}.adw-coupon-card .adw-coupon-discount{font-size:56px!important;line-height:1.2!important;font-weight:700;color:#d5c197}.adw-coupon-discount span{font-size:23px}.adw-coupon-expiry{font-size:13px!important;color:#ddd}.adw-coupon-card label{display:block;font-size:11px;color:#bbb}.adw-coupon-card input{box-sizing:border-box;display:block;width:100%;background:#222;color:#fff;border:1px dashed #8b7b5e;text-align:center;font-size:23px;letter-spacing:3px;padding:12px;margin:7px 0 18px}.adw-coupon-card button{cursor:pointer}.adw-coupon-card .adw-coupon-close{position:absolute;right:8px;top:8px;width:44px;height:44px;background:none;border:0;color:#ddd;font-size:26px;padding:0}.adw-coupon-card .adw-coupon-copy{width:100%;min-height:48px;background:#b7a27b;color:#111;border:0;border-radius:5px;font-size:14px;font-weight:bold;padding:12px}.adw-coupon-card .adw-coupon-status{font-size:12px!important;line-height:1.6;margin-top:12px!important}.adw-coupon-reopen{min-height:44px;border:1px solid #b7a27b;background:#171715;color:#d5c197;border-radius:22px;padding:8px 18px;margin-top:12px;font-size:13px;cursor:pointer}';document.head.appendChild(css);
+  document.addEventListener('change',function(e){if(e.target.matches('#valiationSelect')){selectedByUser=true;update();}});
+  var queued=false;new MutationObserver(function(){if(queued)return;queued=true;requestAnimationFrame(function(){queued=false;update();});}).observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['data-adw-recommendation','data-stock','disabled']});
+  document.addEventListener('visibilitychange',update);setInterval(update,1000);update();
+})();
