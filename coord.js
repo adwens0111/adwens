@@ -1528,17 +1528,21 @@ html.adw-home-discovery #oc-plugin-popup{display:none!important}
     return root;
   }
 
-  /* Croco-only video-first pilot. Native photos, purchase form and diagnosis stay intact. */
-  function setupCrocoHero(row) {
-    if (ITEM_ID !== '124620244' || !row || !row.url) return;
+  /* Video-first products. Native photos, purchase form and diagnosis stay intact. */
+  function setupProductHero(row) {
+    if (ITEM_ID !== '124620244' && ITEM_ID !== '88671936') return;
+    var isSkinny = ITEM_ID === '88671936';
+    if (isSkinny) row = {url:'https://adwens0111.github.io/adwens/p00007-hero-c6c6431e.mp4',poster:'https://adwens0111.github.io/adwens/p00007-hero-c6c6431e.jpg'};
+    if (!row || !row.url) return;
+    var heroName = isSkinny ? 'スキニーカーゴパンツ' : 'クロコレザーダウン';
     var gallery = document.querySelector('.item-image-list');
     var thumbs = document.querySelector('.item-image-thumbnail');
     var form = document.querySelector('#purchase_form');
     if (!gallery || !thumbs || !form || gallery.dataset.adwHero) return;
     var swiper = gallery.swiper;
     if (!swiper || typeof swiper.prependSlide !== 'function') return;
-    if (!/^https:\/\/res\.cloudinary\.com\/heffp68z\/video\/upload\/.+\.mp4$/.test(row.url)) return;
-    gallery.dataset.adwHero = 'croco-v1';
+    if (!isSkinny && !/^https:\/\/res\.cloudinary\.com\/heffp68z\/video\/upload\/.+\.mp4$/.test(row.url)) return;
+    gallery.dataset.adwHero = isSkinny ? 'skinny-v1' : 'croco-v1';
     var style = document.createElement('style');
     style.textContent = '.adw-hero-slide{position:relative;background:#111;aspect-ratio:4/5;overflow:hidden}' +
       '.adw-hero-slide video{display:block;width:100%;height:100%;position:absolute;inset:0;object-fit:contain;background:#111}' +
@@ -1559,7 +1563,7 @@ html.adw-home-discovery #oc-plugin-popup{display:none!important}
     video.preload = 'none';
     video.setAttribute('muted', '');
     video.setAttribute('playsinline', '');
-    video.setAttribute('aria-label', 'クロコレザーダウンの着用動画（音声なし）');
+    video.setAttribute('aria-label', heroName + 'の着用動画（音声なし）');
     video.poster = row.poster || '';
     var controls = document.createElement('div');
     controls.className = 'adw-hero-controls swiper-no-swiping';
@@ -1579,16 +1583,18 @@ html.adw-home-discovery #oc-plugin-popup{display:none!important}
     thumb.className = 'adw-hero-thumb';
     var preview = document.createElement('img');
     preview.src = video.poster;
-    preview.alt = 'クロコレザーダウン 着用動画';
+    preview.alt = heroName + ' 着用動画';
     thumb.appendChild(preview);
     thumbs.prepend(thumb);
     swiper.prependSlide(slide);
     swiper.slideTo(0, 0);
     swiper.update();
+    if (!isSkinny) {
     var stock = document.createElement('p');
     stock.className = 'adw-croco-stock';
     stock.textContent = '在庫限り｜なくなり次第、販売終了';
     form.parentNode.insertBefore(stock, form);
+    }
     var visible = false, manualPause = false, failed = false;
     var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     var saveData = navigator.connection && navigator.connection.saveData;
@@ -1642,7 +1648,7 @@ html.adw-home-discovery #oc-plugin-popup{display:none!important}
   }
 
   function renderVideos() {
-    setupCrocoHero(videoRows[0]);
+    setupProductHero(videoRows[0]);
     var description = document.querySelector(
       '.item-description > .text.markdown'
     );
@@ -2261,5 +2267,6 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
  function start(){new MutationObserver(function(ms){if(ms.some(function(m){return Array.from(m.addedNodes).some(function(n){return n.nodeType===1&&!n.matches('.adw-manual-label,.adw-low-stock');});}))schedule();}).observe(document.body,{childList:true,subtree:true});load();setInterval(function(){if(document.hidden)return;schedule();if(Date.now()-lastFetch>=3600000)load();},60000);document.addEventListener('visibilitychange',function(){if(!document.hidden){schedule();if(Date.now()-lastFetch>=300000)load();}});}
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 })();
+
 
 
