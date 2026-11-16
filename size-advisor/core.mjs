@@ -124,3 +124,12 @@ export function withAdviceDetails(advice, product) {
   }
   return {...advice,details};
 }
+
+
+export function validateGuidanceConstraint(answer,product,profile) {
+  const rule=approvedGuidance(product,profile);
+  if(rule && (answer.status!==rule.status || JSON.stringify(answer.candidates)!==JSON.stringify(rule.candidates))) throw Error('approved_guidance_mismatch');
+  if(rule?.status==='question' && (answer.question!==rule.question || JSON.stringify(answer.options)!==JSON.stringify(rule.options))) throw Error('approved_question_mismatch');
+  if(profile.calfHabit && answer.status==='question' && /ふくらはぎ/.test(answer.question) && /普段|細身/.test(answer.question)) throw Error('known_question');
+  return answer;
+}
