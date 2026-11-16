@@ -51,3 +51,13 @@ Node 22以上で `node --test tests/*.test.mjs`。12件成功。
 `private/preview.html` は単独で開ける非公開確認用ファイル。外部通信なし、AIなし、商品と在庫は埋め込みの確認用データ。実サイトへの接続や公開設定は含まない。通常の入力・質問・回答・入力変更時リセット・在庫選択を確認するためのプレビューで、AI一般分岐は表示用フォールバック。
 
 ブラウザ実画面確認は未完了。ローカルChromiumはsocket権限制限で起動できず、別ブラウザからのローカルHTTP接続も失敗。静的スマホ幅の表示例は作成したが、実機スクリーンショットではなく、色別在庫連動・タッチ操作の実機合格とは扱わない。公開前に非公開環境で実ブラウザ動作、新しいAI指示の回答品質、実在庫連携を別途確認する。mainへのマージ・既存診断の置換・本番公開なし。
+
+
+## 2026-11-16 Rev5: common AI path / blocked live verification
+Approved skinny guidance is now an input constraint; it no longer bypasses AI. All normalized preferences, concerns and notes reach the common Responses request. Output validation rejects changes to approved candidate/status and repeated known calf questions. Pending production guards remain unchanged. No catalog changes.
+
+New isolated GAS file/function: SizeAdvicePrivateRev5_20261116.gs / runSizeAdvicePrivateRev5_20261116. Prefix ADW_SIZE_PRIVATE_REV5_20261116_; lock + persistent pre-send count + per-case reservations; max8; no reset/retry; HALTED on API/transport/validation failure. Existing files/properties/triggers/deployments not changed, apart from newly authorized test-prefix records.
+
+Actual execution: only case1 sent (175cm70kg, usual M, often calf tightness, tight preference, note wants slim appearance). HTTP429, 1457ms, error_code credit_balance_exhausted, error_type insufficient_quota. No AI answer or usage returned. HALTED=api_error. Cases2–8 NOT SENT, budget remaining7 but halted; do not reset records or rerun. Case1 failed attempt consumed budget. This is not an accuracy pass. Owner billing/credit investigation is needed before a reviewed continuation that preserves counts. Do not expose keys.
+
+Rev4 hosted preview remains an offline simulation, not connected to this GAS test. Browser-to-AI integration, BASE real stock integration and human evaluation remain unfinished. No main merge/public launch.
