@@ -1,5 +1,7 @@
-import {ADVICE_SCHEMA, validateAdvice, approvedGuidance, withAdviceDetails} from './core.mjs';
-export const INSTRUCTIONS = `目的はサイズの不安を減らし、短い案内で選びやすくすることです。結論を先に、理由はひと言、必要な注意を1つだけ。実寸一覧や実着用の詳述をexplanationに列挙しません。
+import {ADVICE_SCHEMA, validateAdvice, approvedGuidance, withAdviceDetails, validateGuidanceConstraint} from './core.mjs';
+export const INSTRUCTIONS = `入力全体を読み、着方の希望・気になる部位・自由文の意図に応じた短い案内を作ります。同じ候補サイズでも希望に応じて説明を変えます。身長体重は参考であり、身体寸法や適合の根拠に換算しません。
+product.approvedConstraintがある場合、承認済み接客目安の候補・質問を守ります。これは商品固有の接客方針です。estimateの候補は変更せず説明を個別化し、insufficientなら候補を作らず、questionなら同じ質問と選択肢を使います。
+目的はサイズの不安を減らし、短い案内で選びやすくすることです。結論を先に、理由はひと言、必要な注意を1つだけ。実寸一覧や実着用の詳述をexplanationに列挙しません。
 承認済み接客目安は商品固有です。実寸計算や適合保証と呼びません。通常サイズが数値・ブランド独自表記・不明なら勝手に換算せず、在庫切れで小さいサイズへ変えません。
 calfHabitはoften=よくある、rare=あまりない、unknown=わからない。回答済みの同じ情報は再質問しません。rareとunknownでは、ふくらはぎを理由とする自動サイズアップをしません。実着用例の存在を全商品の利用条件にせず、根拠がある商品実寸や承認済み案内を利用します。根拠不足なら候補を作りません。
 あなたはADWENSの商品別サイズ相談担当です。日本語で簡潔に回答します。
@@ -10,8 +12,6 @@ calfHabitはoften=よくある、rare=あまりない、unknown=わからない�
 平置き幅・衣服周囲・身体寸法は別です。クロコの身幅は平置き幅で、中綿を除いた内周や身体胸囲ではありません。アジャスターで着丈は伸びません。
 スキニーのウエスト範囲の測定状態は未確認で、身体寸法や快適に履ける範囲へ変換しません。伸縮性unknownは不明です。
 fitEvidenceのoperator_confirmed_wearだけが運営者確認の実着用例です。merchant_observationは補助コメント、生成画像は実着用実績ではありません。
-174cm58kgのSの「かなりゆとり」は全部位に広げません。169cm74kgのL/XLはふくらはぎがきつく、ヒップ・太ももにはゆとり。運営者は2XLが必要と報告したが、2XLのふくらはぎの具体的なゆとりは未確認です。身長体重の近さだけで他人へ当てはめません。
-ふくらはぎの商品実寸は未取得です。ふくらはぎが気になる人に、ヒップや太ももだけを見て合うと言いません。
 タイト希望を自動サイズダウンにしません。ブランド名と普段のサイズだけで未検証の換算はしません。サイズを上げる比較では、他部位のゆとりと丈も変わることを説明します。
 根拠がある場合のみestimateで最大2サイズを比較候補として示し、根拠と限界を説明します。候補を出すために情報を捏造しません。
 重要な不足があり、追加回答がまだない場合はquestionで短い質問を1つ、すぐ答えられる選択肢を2〜3個出します。採寸や未知のcm値の推測を要求しません。「わからない」は独立した選択肢にします。
@@ -24,15 +24,13 @@ export function buildAdviceRequest(product, profile, model) {
   schema.properties.candidates.items.enum=product.measurements.map(r=>r.size);
   // Explicit allowlist: never transmit raw legacy height/weight grids.
   const input={product:{category:product.category,measurements:product.measurements,
-    material:product.material,serviceGuidance:product.serviceGuidance||null,fitEvidence:product.fitEvidence||[],measurementNotes:product.measurementNotes||[],
+    id:product.id, approvedConstraint:approvedGuidance(product,profile), material:product.material,serviceGuidance:product.serviceGuidance||null,fitEvidence:product.fitEvidence||[],measurementNotes:product.measurementNotes||[],
     unconfirmed:{openQuestions:product.rawChart?.openQuestions||[]},
     reviewStatus:product.reviewStatus,releaseBlockers:product.releaseBlockers||[]},profile};
   return {model,store:false,max_output_tokens:900,instructions:INSTRUCTIONS,input:JSON.stringify(input),
     text:{format:{type:'json_schema',name:'size_advice',strict:true,schema}}};
 }
 export async function consult(product, profile, {apiKey,model,fetchImpl=fetch}) {
-  const guidance=approvedGuidance(product,profile);
-  if(guidance)return withAdviceDetails(guidance,product);
   if (!apiKey || !model) throw Error('ai_not_configured');
   const response=await fetchImpl('https://api.openai.com/v1/responses',{
     method:'POST', signal:AbortSignal.timeout(15000),
@@ -42,6 +40,9 @@ export async function consult(product, profile, {apiKey,model,fetchImpl=fetch}) 
   const data=await response.json();
   if(data.status!=='completed')throw Error('ai_incomplete');
   const raw=(data.output||[]).flatMap(x=>x.content||[]).filter(x=>x.type==='output_text').map(x=>x.text).join('');
-  return withAdviceDetails(validateAdvice(JSON.parse(raw),product,profile),product);
+  const answer=validateAdvice(JSON.parse(raw),product,profile);
+  validateGuidanceConstraint(answer,product,profile);
+  return withAdviceDetails(answer,product);
 }
+
 
