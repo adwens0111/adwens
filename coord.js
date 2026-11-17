@@ -1529,22 +1529,29 @@ html.adw-home-discovery #oc-plugin-popup{display:none!important}
   }
 
   /* Video-first products. Native photos, purchase form and diagnosis stay intact. */
+  var productHeroRow=null;
+  function loadProductHero(){
+    var urls=['https://raw.githubusercontent.com/adwens0111/adwens/main/product_hero_media.json','https://adwens0111.github.io/adwens/product_hero_media.json'];
+    function read(i){return fetch(urls[i]+'?v='+Math.floor(Date.now()/60000),{cache:'no-store'}).then(function(r){if(!r.ok)throw Error('hero');return r.json();}).catch(function(e){if(i+1<urls.length)return read(i+1);throw e;});}
+    read(0).then(function(data){if(data.schema!==1||!data.items)return;productHeroRow=data.items[ITEM_ID]||null;setupProductHero(productHeroRow);}).catch(function(){/* Original product photos remain usable. */});
+  }
+
   function setupProductHero(row) {
-    if (ITEM_ID !== '124620244' && ITEM_ID !== '88671936') return;
-    var isSkinny = ITEM_ID === '88671936';
-    if (isSkinny) row = {url:'https://adwens0111.github.io/adwens/p00007-hero-c6c6431e.mp4',poster:'https://adwens0111.github.io/adwens/p00007-hero-c6c6431e.jpg'};
     if (!row || !row.url) return;
-    var heroName = isSkinny ? 'スキニーカーゴパンツ' : 'クロコレザーダウン';
+    var heroName = '商品';
     var gallery = document.querySelector('.item-image-list');
     var thumbs = document.querySelector('.item-image-thumbnail');
     var form = document.querySelector('#purchase_form');
     if (!gallery || !thumbs || !form || gallery.dataset.adwHero) return;
     var swiper = gallery.swiper;
     if (!swiper || typeof swiper.prependSlide !== 'function') return;
-    if (!isSkinny && !/^https:\/\/res\.cloudinary\.com\/heffp68z\/video\/upload\/.+\.mp4$/.test(row.url)) return;
-    gallery.dataset.adwHero = isSkinny ? 'skinny-v1' : 'croco-v1';
+    if (!/^https:\/\/(?:res\.cloudinary\.com\/heffp68z\/video\/upload\/|adwens0111\.github\.io\/adwens\/)[^\s]+\.mp4$/.test(row.url)) return;
+    gallery.dataset.adwHero = 'settings-v1';
+    var firstPhoto=gallery.querySelector('img');
+    var photoFallback=firstPhoto&&(firstPhoto.currentSrc||firstPhoto.src)||'';
     var style = document.createElement('style');
     style.textContent = '.adw-hero-slide{position:relative;background:#111;aspect-ratio:4/5;overflow:hidden}' +
+      '.adw-hero-slide .adw-hero-poster{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}' +
       '.adw-hero-slide video{display:block;width:100%;height:100%;position:absolute;inset:0;object-fit:contain;background:#111}' +
       '.adw-hero-controls{position:absolute;bottom:22px;left:12px;right:12px;display:flex;align-items:center;justify-content:space-between;gap:8px;z-index:2}' +
       '.adw-hero-controls button{font:12px/1.4 sans-serif!important;min-height:44px;min-width:44px;padding:10px 14px!important;border:1px solid #ffffff70!important;border-radius:24px!important;color:#fff!important;background:#111c!important;cursor:pointer}' +
@@ -1564,11 +1571,14 @@ html.adw-home-discovery #oc-plugin-popup{display:none!important}
     video.setAttribute('muted', '');
     video.setAttribute('playsinline', '');
     video.setAttribute('aria-label', heroName + 'の着用動画（音声なし）');
-    video.poster = row.poster || '';
+    video.poster = row.poster || photoFallback;
+    var posterImage=document.createElement('img');posterImage.className='adw-hero-poster';posterImage.src=video.poster;posterImage.alt='商品動画の静止画';posterImage.onerror=function(){posterImage.onerror=null;if(photoFallback)posterImage.src=photoFallback;};
     var controls = document.createElement('div');
-    controls.className = 'adw-hero-controls swiper-no-swiping';
+    controls.className = 'adw-hero-controls';
+    controls.style.pointerEvents='none';
     var play = document.createElement('button');
     play.type = 'button';
+    play.className='swiper-no-swiping';play.style.pointerEvents='auto';
     play.textContent = '▶ 再生';
     play.setAttribute('aria-label', '着用動画を再生');
     var hint = document.createElement('span');
@@ -1578,7 +1588,7 @@ html.adw-home-discovery #oc-plugin-popup{display:none!important}
     fallback.className = 'adw-hero-fallback';
     fallback.hidden = true;
     fallback.textContent = '動画を読み込めませんでした。スワイプして商品写真をご覧ください。';
-    slide.append(video, fallback, controls);
+    slide.append(posterImage, video, controls);
     var thumb = document.createElement('div');
     thumb.className = 'adw-hero-thumb';
     var preview = document.createElement('img');
@@ -1589,7 +1599,7 @@ html.adw-home-discovery #oc-plugin-popup{display:none!important}
     swiper.prependSlide(slide);
     swiper.slideTo(0, 0);
     swiper.update();
-    if (!isSkinny) {
+    if (ITEM_ID === '124620244' && !document.querySelector('.adw-croco-stock')) {
     var stock = document.createElement('p');
     stock.className = 'adw-croco-stock';
     stock.textContent = '在庫限り｜なくなり次第、販売終了';
@@ -1638,17 +1648,18 @@ html.adw-home-discovery #oc-plugin-popup{display:none!important}
     });
     video.addEventListener('play', function () { play.textContent = 'Ⅱ 一時停止'; play.setAttribute('aria-label', '着用動画を一時停止'); });
     video.addEventListener('pause', function () { play.textContent = '▶ 再生'; play.setAttribute('aria-label', '着用動画を再生'); });
-    video.addEventListener('error', function () { failed = true; fallback.hidden = false; play.hidden = true; });
+    video.addEventListener('error', function () { failed = true; video.pause();video.hidden=true;video.style.display='none';play.hidden=true;hint.textContent='スワイプで商品写真 →'; });
     swiper.on('slideChange', syncThumbs);
     document.addEventListener('visibilitychange', syncPlayback);
     if ('IntersectionObserver' in window) {
-      new IntersectionObserver(function (entries) { visible = entries[0].isIntersecting; syncPlayback(); }, {threshold:0.25}).observe(slide);
+      new IntersectionObserver(function (entries) { visible = entries[0].isIntersecting && entries[0].intersectionRatio >= 0.25; syncPlayback(); }, {threshold:0.25}).observe(slide);
     }
     syncThumbs();
   }
 
   function renderVideos() {
-    setupProductHero(videoRows[0]);
+    setupProductHero(productHeroRow);
+    
     var description = document.querySelector(
       '.item-description > .text.markdown'
     );
@@ -2168,6 +2179,7 @@ html.adw-home-discovery #oc-plugin-popup{display:none!important}
   function start() {
     run();
     loadVerifiedFit();
+    loadProductHero();
     loadVideos();
     loadGallery();
     loadStylingSuggestion();
