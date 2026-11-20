@@ -688,5 +688,35 @@
     ],
     "N": "",
     "I": "https://base-ec2.akamaized.net/images/item/origin/28985089f1fe7c4f7bdac00a899b0254.jpg"
+  },
+  "166525039": {
+    "H": [
+      160,
+      165,
+      170,
+      175,
+      180,
+      185
+    ],
+    "W": [
+      50,
+      55,
+      60,
+      65,
+      70,
+      75,
+      80
+    ],
+    "R": "H",
+    "G": [
+      "SSSMLXX",
+      "SSSMLXX",
+      "SSSMLXX",
+      "MMMMLXX",
+      "LLLLXXX",
+      "XXXXXXX"
+    ],
+    "N": "",
+    "I": "https://base-ec2.akamaized.net/images/item/origin/360ea955bcd02143ea4b17a0e8c8c2d0.jpg"
   }
 }
