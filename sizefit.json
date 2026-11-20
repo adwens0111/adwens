@@ -742,5 +742,26 @@
     ],
     "N": "",
     "I": "https://base-ec2.akamaized.net/images/item/origin/38d28a3b4d3a65fe62f5fd64a5d53efc.jpg"
+  },
+  "166536569": {
+    "H": [
+      170,
+      175,
+      180
+    ],
+    "W": [
+      65,
+      70,
+      75,
+      80
+    ],
+    "R": "H",
+    "G": [
+      "FFFF",
+      "FFFF",
+      "FFFF"
+    ],
+    "N": "",
+    "I": "https://base-ec2.akamaized.net/images/item/origin/3275cf6aa6561758de0c884b336098ec.jpg"
   }
 }
